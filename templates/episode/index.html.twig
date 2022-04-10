@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Episodes{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="my-3"> Les épisopdes du Burger Tech </h1>
+    <div class="row">
+        {% for episode in episodes %}
+            <div class="col-md-4">
+                <div class="card bg-light mb-3">
+                    <div class="card-header tect-center">
+                        <h1>Les oufss</h1>
+                    </div>
+
+                    <img src="http://placehold.it/1000x400" alt="Image" style="height: 200px; widht: 100%; display:block">
+
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            L'épisode à écouter
+                        </h4>
+                        <p class="card-text">
+                            Lorem frezhr thzLorem frezhr thzLorem frezhr thzLorem frezhr thzLorem frezhr thz
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}            
+    </div>
+</div>
+{% endblock %}

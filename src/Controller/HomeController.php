@@ -2,10 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Episode;
+use App\Form\ArticleNewType;
 use App\Repository\EpisodeRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class HomeController extends AbstractController
 {
@@ -13,7 +17,25 @@ class HomeController extends AbstractController
     public function index(EpisodeRepository $episodeRepository): Response
     {
         return $this->render('home/index.html.twig', [
-            'episode' => $episodeRepository->findAll()
+        'episode' => $episodeRepository->findAll()
+        ]);
+    }
+    #[Route('/ajout', name: 'app_ajout')]
+    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $epi = new Episode();
+
+        $form = $this->createForm(ArticleNewType::class, $epi);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+        $entityManager->persist($epi);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_home');
+        }
+        return $this->render('home/ajout.html.twig',[
+        'form' => $form->createView()
         ]);
     }
 }

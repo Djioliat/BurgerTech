@@ -24,7 +24,7 @@ class RegistrationFormType extends AbstractType
                 ],
                 'label' => 'Ton mail beautée'
             ])
-            ->add('RGPDConsent', CheckboxType::class, [
+            ->add('rgpd', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
                     new IsTrue([

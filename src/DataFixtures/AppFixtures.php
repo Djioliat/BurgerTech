@@ -12,11 +12,10 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        for($i =1; $i <= 30; $i++){
+        for($i =1; $i <= 10; $i++){
 
         $episode = new Episode();  
         $episode->setTitle("Episode")
-                ->setSlug("episode")
                 ->setCoverImage("https://www.burgertech.fr/images/2022-03-28_145_team_burgertech_-_ca_craint1.jpg")
                 ->setIntroduction("Introduction")
                 ->setContent("Contenue de l'annonce")

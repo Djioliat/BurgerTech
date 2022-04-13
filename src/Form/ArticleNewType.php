@@ -18,9 +18,6 @@ class ArticleNewType extends AbstractType
         ->add('title', TextType::class,[
         'label' => 'Titre',
         ])
-        ->add('slug', TextType::class,[
-        'label' => 'Slug',
-        ])
         ->add('introduction', TextType::class,[
         'label' => 'Introduction',
         ])

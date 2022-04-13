@@ -20,6 +20,7 @@ class HomeController extends AbstractController
         'episode' => $episodeRepository->findAll()
         ]);
     }
+    
     #[Route('/ajout', name: 'app_ajout')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -31,6 +32,11 @@ class HomeController extends AbstractController
         if($form->isSubmitted() && $form->isValid()){
         $entityManager->persist($epi);
         $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            "L'annonce {$epi->getTitle()} a bien été enregistrée"
+        );
 
         return $this->redirectToRoute('app_home');
         }

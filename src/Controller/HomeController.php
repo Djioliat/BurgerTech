@@ -17,8 +17,9 @@ class HomeController extends AbstractController
     public function index(EpisodeRepository $episodeRepository): Response
     {
         return $this->render('home/index.html.twig', [
-        'episode' => $episodeRepository->findAll()
-        ]);
+        'episode' => $episodeRepository->findBy([],
+        ['id' => 'DESC'])
+        ]); 
     }
     
     #[Route('/ajout', name: 'app_ajout')]

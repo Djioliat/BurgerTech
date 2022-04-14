@@ -19,7 +19,7 @@ class HomeController extends AbstractController
         return $this->render('home/index.html.twig', [
         'episode' => $episodeRepository->findBy([],
         ['id' => 'DESC'])
-        ]); 
+        ]);
     }
     
     #[Route('/ajout', name: 'app_ajout')]

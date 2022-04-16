@@ -22,7 +22,7 @@ class HomeController extends AbstractController
         ]);
     }
     
-    #[Route('/ajout', name: 'app_ajout')]
+    #[Route('/admin/ajout', name: 'app_ajout')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $epi = new Episode();

@@ -32,7 +32,7 @@ class Episode
 
     #[ORM\Column(type: 'string', length: 255)]
     private $Audio;
-    
+
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function initializeSlug(){

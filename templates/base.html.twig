@@ -16,6 +16,7 @@
     </head>
     <body>
         {% include "navbar.html.twig" %}
+        {% include "partial/header.html.twig" %}
         {% for label, messages in app.flashes %}
             <div class="container">
                 <div class="alert alert-{{ label }}">

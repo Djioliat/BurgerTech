@@ -12,7 +12,10 @@
                 <audio   class:"" controls preload="none">
                     <source src="{{ epi.audio }}">
                 </audio>
-                    <a href="{{ path('episode_detail', {'slug': epi.slug})}}" class="btn btn-primary">Plus d'infos</a>
+                    <a href="{{ path('episode_detail', {'slug': epi.slug})}}" class="btn btn-primary ms-4">Plus d'infos</a>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="#" class="btn btn-warning ms-5">Modifier</a>
+                {% endif %}
                 </div>
         </div>
         {% endfor %}

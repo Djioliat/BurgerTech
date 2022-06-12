@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Articles;
 use App\Entity\Episode;
 use App\Form\ArticleNewType;
 use App\Repository\EpisodeRepository;
@@ -10,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Constraints\Url;
 
 class HomeController extends AbstractController
 {
@@ -27,7 +29,9 @@ class HomeController extends AbstractController
     {
         $epi = new Episode();
 
-        $form = $this->createForm(ArticleNewType::class, $epi);
+        $article = new Articles();
+
+        $form = $this->createForm(ArticleNewType::class , $epi);
 
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
@@ -36,7 +40,7 @@ class HomeController extends AbstractController
 
         $this->addFlash(
             'success',
-            "L'annonce {$epi->getTitle()} a bien été enregistrée"
+            "L'episode {$epi->getTitle()} a bien été enregistrée"
         );
 
         return $this->redirectToRoute('app_home');

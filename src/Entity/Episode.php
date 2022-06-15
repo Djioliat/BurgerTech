@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\EpisodeRepository;
 use Cocur\Slugify\Slugify;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EpisodeRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: EpisodeRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -38,9 +38,17 @@ class Episode
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Articles::class)]
     private $articles;
 
+    #[ORM\OneToMany(mappedBy: 'episode', targetEntity: Comment::class, orphanRemoval: true)]
+    private $comments;
+
+    #[ORM\Column(type: 'datetime_immutable', options:['default' => 'CURRENT_TIMESTAMP'])]
+    private $created_at;
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
     }
 
     #[ORM\PrePersist]
@@ -130,6 +138,18 @@ class Episode
         return $this;
     }
 
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): self
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
+
+
     /**
      * @return Collection<int, Articles>
      */
@@ -159,4 +179,34 @@ class Episode
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setEpisode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getEpisode() === $this) {
+                $comment->setEpisode(null);
+            }
+        }
+
+        return $this;
+    }   
 }

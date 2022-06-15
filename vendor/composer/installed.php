@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'ffed8d04136a602d0525dba0683d7176b105b1d3',
+        'reference' => 'bdcbd1ddfb494362fee515bb701ef997d1337d78',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'ffed8d04136a602d0525dba0683d7176b105b1d3',
+            'reference' => 'bdcbd1ddfb494362fee515bb701ef997d1337d78',
             'dev_requirement' => false,
         ),
         'cocur/slugify' => array(
@@ -206,6 +206,15 @@
             'install_path' => __DIR__ . '/../friendsofphp/proxy-manager-lts',
             'aliases' => array(),
             'reference' => '8419f0158715b30d4b99a5bd37c6a39671994ad7',
+            'dev_requirement' => false,
+        ),
+        'fzaninotto/faker' => array(
+            'pretty_version' => 'v1.5.0',
+            'version' => '1.5.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../fzaninotto/faker',
+            'aliases' => array(),
+            'reference' => 'd0190b156bcca848d401fb80f31f504f37141c8d',
             'dev_requirement' => false,
         ),
         'laminas/laminas-code' => array(

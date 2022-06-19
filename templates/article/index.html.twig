@@ -5,19 +5,18 @@
         <section class="row">
         
         {% for art in articles %}
-            <h5 class="card-title">{{ art.title }}</h5>
-        {% endfor %}
-      
-
-        <div class="card m-5" style="width: 21rem;">
-            
-            <div class="card-body">
-                <h5 class="card-title"></h5>
-
+            <div class="card">
+                <div class="card-header">
+                    Les news!
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ art.title }}</h5>
+                    <a href="{{ art.url }}" target="_blank" class="btn btn-primary">Voir l'article</a>
+                </div>
             </div>
-        </div>
+            <h5 class="card-title"></h5>
+        {% endfor %}
 
-       
         </section>
     </main>
 {% endblock %}

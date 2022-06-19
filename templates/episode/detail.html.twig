@@ -3,19 +3,34 @@
 {% block body %}
     <main class="container">
         <section class="row">
-        <div class="card m-5" style="width: 25rem;">
-            <img src="{{ episode.coverImage }}" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title">{{ episode.title }}</h5>
-                <p class="card-text">{{ episode.introduction }}</p>
-                <audio   class:"" controls preload="none">
-                    <source src="{{ episode.audio }}">
-                </audio>
+            <div class="card m-5" style="width: 25rem;">
+                <img src="{{ episode.coverImage }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">{{ episode.title }}</h5>
+                    <p class="card-text">{{ episode.introduction }}</p>
+                    <audio controls>
+                        <source src="{{ episode.audio }}">
+                    </audio>
                 </div>
-        </div>
+            </div>
         </section>
         <section class="container">
-        
+            <div class="card m-5" style="width: 25rem;">
+                <h2>Liste des commentaires</h2>
+                {% for comment in episode.comments %}
+                    <p>Publier par {{ comment.author }}</p>
+                    <div>
+                    <p>{{ comment.content | raw }}</p>
+                    <p>
+                        <a href="#ajout-commentaire" data-reply data-id="{{comment.id}}" class="btn btn-primary">Répondre</a>
+                    </p>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="card m-5" style="width: 25rem;" id="ajout-commentaire">
+                <h2>Ajouter un commentaire</h2>
+                {{ form(commentForm) }}
+            </div> 
         </section>
     </main>
 {% endblock %}

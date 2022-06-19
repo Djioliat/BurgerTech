@@ -20,6 +20,7 @@ return array(
     'App\\Entity\\Users' => $baseDir . '/src/Entity/Users.php',
     'App\\Form\\ArticleNewType' => $baseDir . '/src/Form/ArticleNewType.php',
     'App\\Form\\ArticleType' => $baseDir . '/src/Form/ArticleType.php',
+    'App\\Form\\CommentType' => $baseDir . '/src/Form/CommentType.php',
     'App\\Form\\EditUserType' => $baseDir . '/src/Form/EditUserType.php',
     'App\\Form\\RegistrationFormType' => $baseDir . '/src/Form/RegistrationFormType.php',
     'App\\Kernel' => $baseDir . '/src/Kernel.php',

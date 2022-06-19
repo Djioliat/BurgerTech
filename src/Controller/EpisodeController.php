@@ -1,57 +1,71 @@
 <?php
 
-namespace App\Controller;
+    namespace App\Controller;
 
-use App\Entity\Comment;
-use App\Entity\Episode;
-use App\Form\CommentType;
-use App\Repository\EpisodeRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+    use App\Entity\Comment;
+    use App\Entity\Episode;
+    use App\Form\CommentType;
+    use App\Repository\EpisodeRepository;
+    use Doctrine\ORM\EntityManagerInterface;
+    use Symfony\Component\HttpFoundation\Response;
+    use Symfony\Component\Routing\Annotation\Route;
+    use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+    
+    use Symfony\Component\HttpFoundation\Request;
 
-#[Route('/episode', name: 'episode_')]
-class EpisodeController extends AbstractController
-{
-    #[Route('/', name: 'index')]
-    public function index(EpisodeRepository $episodeRepository): Response
+    #[Route('/episode', name: 'episode_')]
+    class EpisodeController extends AbstractController
     {
-        return $this->render('episode/index.html.twig', [
-        'episode' => $episodeRepository->findBy([],
-        ['id' => 'DESC'])
-        ]);
-    }
+        #[Route('/', name: 'index')]
+        public function index(EpisodeRepository $episodeRepository): Response
+        {
+            return $this->render('episode/index.html.twig', [
+            'episode' => $episodeRepository->findBy([],
+            ['id' => 'DESC'])
+            ]);
+        }
 
-    #[Route('/{slug}', name:('detail'))]
-    public function details(Episode $episode): Response
-    {
-        return $this->render('episode/detail.html.twig', compact('episode'));
-    }
+        #[Route('/{slug}', name:('detail'))]
+        public function details ($slug, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
+        {
+            // Afficher l'épisode
+            $episode = $episode->findOneBy(['slug' => $slug]);
 
-    #[Route('/{slug}/comment', name:('commentaire'))]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $comment = new Comment();
+            $comment = new Comment();
+            
+            // Traitement du formulaire
 
-        $form = $this->createForm(CommentType::class, $comment);
+            $commentForm = $this->createForm(CommentType::class, $comment);
+        
+            $commentForm->handleRequest($request);
 
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
-            $entityManager->persist($comment);
-            $entityManager->flush();
+            // Traitement du formulaire
+            
+            if($commentForm->isSubmitted() && $commentForm->isValid()){
 
-            $this->addFlash(
-                'success',
+                $comment->setEpisode($episode);
+                
+                $entityManager->persist($comment);
+                $entityManager->flush();
+
+                $this->addFlash(
+                    'success',
                 "Le commentaire {$comment->getContent()} a bien été enregistrée"
             );
-            return $this->redirectToRoute('app_home');
+             
+            return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
+            
         }
-        return $this->render('home/ajout.html.twig',[
-        'form' => $form->createView()
-        ]);
+            //
 
+            return $this->render('episode/detail.html.twig', [
+                'episode' => $episode,
+                'commentForm' => $commentForm->createView()
+            ]);
+        }
+
+            /*
+            
+        */
     }
-}
 

@@ -590,6 +590,7 @@ class ComposerStaticInit4f938fd3bd6b1af513e861245d41a2c6
         'App\\Entity\\Users' => __DIR__ . '/../..' . '/src/Entity/Users.php',
         'App\\Form\\ArticleNewType' => __DIR__ . '/../..' . '/src/Form/ArticleNewType.php',
         'App\\Form\\ArticleType' => __DIR__ . '/../..' . '/src/Form/ArticleType.php',
+        'App\\Form\\CommentType' => __DIR__ . '/../..' . '/src/Form/CommentType.php',
         'App\\Form\\EditUserType' => __DIR__ . '/../..' . '/src/Form/EditUserType.php',
         'App\\Form\\RegistrationFormType' => __DIR__ . '/../..' . '/src/Form/RegistrationFormType.php',
         'App\\Kernel' => __DIR__ . '/../..' . '/src/Kernel.php',

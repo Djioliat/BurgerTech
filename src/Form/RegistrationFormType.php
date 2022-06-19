@@ -23,7 +23,15 @@ class RegistrationFormType extends AbstractType
                     'class' => 'form-control'
                 ],
                 'label' => 'Ton mail beautée'
-            ])
+                ])
+                /*
+                ->add('passwordConfirm', PasswordType::class,[
+                    'label' => "Confirmer votre mot de passe",
+                    'attr' => [
+                        'classe' => 'form-control'
+                    ]
+                    ])
+                */
             ->add('rgpd', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
@@ -31,7 +39,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Accepte',
                     ]),
                 ],
-            ])
+                ])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller

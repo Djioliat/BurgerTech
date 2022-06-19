@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <h2>Liste des commentaires</h2>
                     {% for comment in episode.comments %}
-                        <p>Publier par {{ comment.author }}</p>
+                        <p>Publier par {{ comment.author }}</p>                  
                         <div>
                             <p>{{ comment.content | raw }}</p>
                         </div>

@@ -1,6 +1,6 @@
-{% extends 'base.html.twig' %}
+{% extends "base.html.twig" %}
 
-{% block title %}Les articles{% endblock %}
+{% block title %}Ajouter une news{% endblock %}
 
 {% block body %}
 <section class="container">
@@ -11,11 +11,8 @@
 
             {{ form_widget(form) }}
 
-            <button type="submit" class="btn btn-primary">Ajouter</button>
-
             {{ form_end(form) }}
         </div>
     </div>
 </section>
-
 {% endblock %}

@@ -11,6 +11,9 @@
                     <audio controls>
                         <source src="{{ episode.audio }}">
                     </audio>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="#" class="btn btn-warning ms-5">Modifier</a>
+                {% endif %}
                 </div>
             </div>
         </div>

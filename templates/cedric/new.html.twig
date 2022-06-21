@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends "base.html.twig" %}
 
 {% block title %}Les articles{% endblock %}
 
@@ -11,11 +11,8 @@
 
             {{ form_widget(form) }}
 
-            <button type="submit" class="btn btn-primary">Ajouter</button>
-
             {{ form_end(form) }}
         </div>
     </div>
 </section>
-
 {% endblock %}

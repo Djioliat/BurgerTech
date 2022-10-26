@@ -11,11 +11,10 @@
 
 namespace Cocur\Slugify\Bridge\Symfony;
 
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * CocurSlugifyBundle
+ * CourSlugifyBundle
  *
  * @package    cocur/slugify
  * @subpackage bridge
@@ -25,7 +24,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class CocurSlugifyBundle extends Bundle
 {
-    public function getContainerExtension(): ExtensionInterface
+    public function getContainerExtension()
     {
         return new CocurSlugifyExtension();
     }

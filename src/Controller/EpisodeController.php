@@ -3,7 +3,6 @@
     namespace App\Controller;
 
     use App\Entity\Comment;
-    use App\Entity\Episode;
     use App\Form\CommentType;
     use App\Repository\EpisodeRepository;
     use Doctrine\ORM\EntityManagerInterface;
@@ -19,9 +18,10 @@
         #[Route('/', name: 'index')]
         public function index(EpisodeRepository $episodeRepository): Response
         {
-            return $this->render('episode/index.html.twig', [
-            'episode' => $episodeRepository->findBy([],
-            ['id' => 'DESC'])
+            return $this->render('episode/index.html.twig', 
+            [
+                'episode' => $episodeRepository->findBy([],
+                ['id' => 'DESC'])
             ]);
         }
 
@@ -31,15 +31,13 @@
             // Afficher l'épisode
             $episode = $episode->findOneBy(['slug' => $slug]);
 
-            $comment = new Comment();
-            
             // Traitement du formulaire
 
+            $comment = new Comment();
+    
             $commentForm = $this->createForm(CommentType::class, $comment);
         
             $commentForm->handleRequest($request);
-
-            // Traitement du formulaire
             
             if($commentForm->isSubmitted() && $commentForm->isValid()){
 
@@ -63,9 +61,5 @@
                 'commentForm' => $commentForm->createView()
             ]);
         }
-
-            /*
-            
-        */
     }
 

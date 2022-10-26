@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Validator\Constraints\Url;
 
 class HomeController extends AbstractController
 {
@@ -28,8 +27,6 @@ class HomeController extends AbstractController
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $epi = new Episode();
-
-        $article = new Articles();
 
         $form = $this->createForm(ArticleNewType::class , $epi);
 

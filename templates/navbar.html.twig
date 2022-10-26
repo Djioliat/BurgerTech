@@ -10,18 +10,18 @@
           <a class="nav-link" href="{{ path('episode_index') }}">Episodes</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ path('app_article') }}">Articles</a>
+          <a class="nav-link" href="{{ path('article_index') }}">Articles</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
       {% if is_granted('ROLE_GAETAN') %}
         <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="{{ path('app_home') }}">PREPARATION</a>
+            <a class="nav-link" aria-current="page" href="{{ path('article_gaetan') }}">Mes articles</a>
         </li>
       {% endif %}
       {% if is_granted('ROLE_CEDRIC') %}
         <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="{{ path('app_home') }}">PREPARATION</a>
+            <a class="nav-link" aria-current="page" href="{{ path('app_article_cedric') }}">Mes articles</a>
         </li>
       {% endif %}
       {% if is_granted('ROLE_ADMIN') %}   
@@ -29,7 +29,7 @@
             <a class="nav-link" href="{{ path('app_ajout') }}">Ajouter épisode</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ path('app_newArticle') }}">Ajouter un article</a>
+            <a class="nav-link" href="{{ path('article_new') }}">Ajouter un article</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ path('admin_utilisateurs') }}">Utilisateur</a>

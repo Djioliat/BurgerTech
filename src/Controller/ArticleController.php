@@ -81,7 +81,7 @@ class ArticleController extends AbstractController
                 $entityManager->persist($art);
                 $entityManager->flush();
                 
-                return $this->redirectToRoute('article_gaetan');
+                return $this->redirectToRoute('article_index');
             }
             return $this->renderForm('article/edit.html.twig',
                 [

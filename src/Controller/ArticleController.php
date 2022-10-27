@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Articles;
 use App\Form\ArticleType;
 use App\Repository\ArticlesRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/article', name: 'article_')]
 class ArticleController extends AbstractController
 {
+    // Afficher les articles public
     #[Route('/', name: 'index')]
     public function index(ArticlesRepository $articlesRepository): Response
     {
@@ -26,6 +28,7 @@ class ArticleController extends AbstractController
         ]);
     }
 
+    // Créer un article
     #[Route('/new', name: 'new')]
     public function create( Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -45,6 +48,7 @@ class ArticleController extends AbstractController
         ]);
     }
     
+    // Article privé à un utilisateur
     #[Route('/cedric', name: 'cedric')]
     public function cedric(ArticlesRepository $articlesRepository): Response
     {
@@ -57,6 +61,7 @@ class ArticleController extends AbstractController
         ]);
     }
 
+    // Article privé à un utilisateur
     #[Route('/gaetan', name: 'gaetan')]
     public function gaetan(ArticlesRepository $articlesRepository): Response
     {       
@@ -69,10 +74,10 @@ class ArticleController extends AbstractController
             ]);
     }
 
+    // Modifier un article
     #[Route('/{slug}/edit', name:'detail_edit')]
     public function edit(Articles $art, Request $request, EntityManagerInterface $entityManager): Response       
     {
-        // Modifier annonce
         $form =$this->createForm(ArticleType::class, $art);
         $form->handleRequest($request);
         
@@ -88,15 +93,28 @@ class ArticleController extends AbstractController
                     'form' => $form,    
                 ]);         
             }
-
+    
+    // Afficher un article
     #[Route('/{slug}', name:'detail')]
     public function details($slug, ArticlesRepository $article, Request $request, Articles $art): Response
     {
-        // Afficher article
         $article = $article->findOneBy(['slug' => $slug]);
    
         return $this->render('article/detail.html.twig', [
             'articles' => $article,
         ]);
+    }
+
+    // Supprimer un article
+    #[Route('/{slug}/delete', name:'delete')]
+    public function delete(Articles $article, EntityManagerInterface $manager): Response
+    {
+        $manager->remove($article);
+        $manager->flush();
+
+        $this->addFlash('success',
+        "L'annonce {$article->getTitle()} à bien été supprimée"
+    );
+        return $this->redirectToRoute("article_index");
     }
 }

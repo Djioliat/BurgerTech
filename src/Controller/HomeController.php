@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Articles;
 use App\Entity\Episode;
 use App\Form\ArticleNewType;
 use App\Repository\EpisodeRepository;

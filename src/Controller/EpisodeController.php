@@ -6,6 +6,7 @@
     use App\Form\CommentType;
     use App\Repository\EpisodeRepository;
     use Doctrine\ORM\EntityManagerInterface;
+    use Knp\Component\Pager\PaginatorInterface;
     use Symfony\Component\HttpFoundation\Response;
     use Symfony\Component\Routing\Annotation\Route;
     use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,12 +17,18 @@
     class EpisodeController extends AbstractController
     {
         #[Route('/', name: 'index')]
-        public function index(EpisodeRepository $episodeRepository): Response
+        public function index(EpisodeRepository $episodeRepository, Request $request, PaginatorInterface $paginator): Response
         {
+            $data = $episodeRepository->findAll();
+            
+            $episode = $paginator->paginate(
+                $data,
+                $request->query->getInt('page', 1),
+                4
+            );
             return $this->render('episode/index.html.twig', 
             [
-                'episode' => $episodeRepository->findBy([],
-                ['id' => 'DESC'])
+                'episode' => $episode
             ]);
         }
 

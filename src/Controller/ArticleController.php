@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Articles;
 use App\Form\ArticleType;
-use App\Repository\ArticlesRepository;
 use Doctrine\ORM\EntityManager;
+use App\Repository\ArticlesRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,14 +18,20 @@ class ArticleController extends AbstractController
 {
     // Afficher les articles public
     #[Route('/', name: 'index')]
-    public function index(ArticlesRepository $articlesRepository): Response
+    public function index(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $data = $articlesRepository->findBy
+        (
+            ['auteur' => 'public' ],
+            ['id' => 'DESC'],
+        );
+        $article = $paginator->paginate(
+            $data,
+            $request->query->getInt('page', 1),
+            4
+        );
         return $this->render('article/index.html.twig', [
-            'articles' => $articlesRepository->findBy
-            (
-                ['auteur' => 'public' ],
-                ['id' => 'DESC']
-            )
+            'articles' => $article
         ]);
     }
 

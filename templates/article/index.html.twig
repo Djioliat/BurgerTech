@@ -1,33 +1,29 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <main class="container">
-        <section class="row">
-        <!--
-        {% if is_granted('ROLE_CEDRIC') %}
-        <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="{{ path('app_home') }}">Mes article</a>
-        </li>
-        {% endif %}      -->  
-        {% for art in articles %}
-        {% set url = path ('article_detail_edit', {'slug': art.slug}) %}
-        {% set delete = path ('article_delete', {'slug': art.slug}) %}
-            <div class="card">
-                <div class="card-header">
-                    Les news!
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ art.title }}</h5>
-                    <p>Publié par {{ art.auteur }}</p>
-                    <a href="{{ art.url }}" target="_blank" class="btn btn-primary">Voir l'article</a>
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ url }}" class="btn btn-warning">Modifier</a>
-                    <a href="{{ delete }}" class="btn btn-danger">Supprimer</a>
-                    {% endif %}
-                </div>
-            </div>
-            <h5 class="card-title"></h5>
-        {% endfor %}
-        </section>
-    </main>
+	<main class="container">
+		<section class="row">
+			<div class="card-header">
+				<h1>Les news !</h1>
+			</div>
+			{% for art in articles %}
+				{% set url = path ('article_detail_edit', {'slug': art.slug}) %}
+				{% set delete = path ('article_delete', {'slug': art.slug}) %}
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">{{ art.title }}</h5>
+						<a href="{{ art.url }}" target="_blank" class="btn btn-primary">Voir l'article</a>
+						{% if is_granted('ROLE_ADMIN') %}
+							<a href="{{ url }}" class="btn btn-warning">Modifier</a>
+							<a href="{{ delete }}" class="btn btn-danger">Supprimer</a>
+						{% endif %}
+					</div>
+				</div>
+			{% endfor %}
+				<div class="d-flex justify-content-center">
+					{% do articles.setPageRange(2) %}
+					{{ knp_pagination_render(articles, 'base/pagination.html.twig') }}
+				</div>
+		</section>
+	</main>
 {% endblock %}

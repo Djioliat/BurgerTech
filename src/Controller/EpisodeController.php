@@ -56,8 +56,7 @@
                 $this->addFlash(
                     'success',
                 "Le commentaire {$comment->getContent()} a bien été enregistrée"
-            );
-             
+            );   
             return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
             
         }

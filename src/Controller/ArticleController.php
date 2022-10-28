@@ -34,6 +34,32 @@ class ArticleController extends AbstractController
             'articles' => $article
         ]);
     }
+    // Article privé à un utilisateur
+    #[Route('/cedric', name: 'cedric')]
+    public function cedric(ArticlesRepository $articlesRepository): Response
+    {
+        return $this->render('article/index.html.twig', 
+        [
+            'articles' => $articlesRepository->findBy(
+            [
+                'auteur' => 'cedric'
+            ])
+        ]);
+    }
+    
+        // Article privé à un utilisateur
+        #[Route('/gaetan', name: 'gaetan')]
+        public function gaetan(ArticlesRepository $articlesRepository): Response
+        {       
+            return $this->render('article/index.html.twig', 
+                [
+                    'articles' => $articlesRepository->findBy(
+                    [
+                        'auteur' => 'gaetan' 
+                    ])
+                ]);
+        }
+    
 
     // Créer un article
     #[Route('/new', name: 'new')]
@@ -55,31 +81,6 @@ class ArticleController extends AbstractController
         ]);
     }
     
-    // Article privé à un utilisateur
-    #[Route('/cedric', name: 'cedric')]
-    public function cedric(ArticlesRepository $articlesRepository): Response
-    {
-        return $this->render('article/index.html.twig', 
-        [
-            'articles' => $articlesRepository->findBy(
-            [
-                'auteur' => 'cedric'
-            ])
-        ]);
-    }
-
-    // Article privé à un utilisateur
-    #[Route('/gaetan', name: 'gaetan')]
-    public function gaetan(ArticlesRepository $articlesRepository): Response
-    {       
-        return $this->render('article/index.html.twig', 
-            [
-                'articles' => $articlesRepository->findBy(
-                [
-                    'auteur' => 'gaetan' 
-                ])
-            ]);
-    }
 
     // Modifier un article
     #[Route('/{slug}/edit', name:'detail_edit')]

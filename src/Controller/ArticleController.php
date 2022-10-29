@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Articles;
 use App\Form\ArticleType;
-use Doctrine\ORM\EntityManager;
 use App\Repository\ArticlesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -25,6 +24,7 @@ class ArticleController extends AbstractController
             ['auteur' => 'public' ],
             ['id' => 'DESC'],
         );
+        dd($data);
         $article = $paginator->paginate(
             $data,
             $request->query->getInt('page', 1),

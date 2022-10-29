@@ -5,7 +5,7 @@
         <section class="row justify-content-md-center">
             {% for epi in episode %}
                 {% set url = path ('episode_detail', {'slug': epi.slug}) %}
-                <div class="card m-5 " style="width: 25rem; height:49rem">
+                <div class="card m-5 border-secondary rounded-bottom border-2" style="width: 25rem; height:49rem">
                     <div style="height: 110px">
                         <h3 class="card-title mt-3">{{ epi.title }}<h3>                    
                     </div>

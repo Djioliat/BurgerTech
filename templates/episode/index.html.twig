@@ -34,9 +34,9 @@
                 </div>
             {% endfor %}
             <div class="d-flex justify-content-center">
-					{% do episode.setPageRange(2) %}
-					{{ knp_pagination_render(episode, 'base/pagination.html.twig') }}
-				</div>
+				{% do episode.setPageRange(2) %}
+				{{ knp_pagination_render(episode, 'base/pagination.html.twig') }}
+			</div>
         </section>
     </main>
 {% endblock %}

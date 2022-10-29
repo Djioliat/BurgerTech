@@ -19,8 +19,10 @@
         #[Route('/', name: 'index')]
         public function index(EpisodeRepository $episodeRepository, Request $request, PaginatorInterface $paginator): Response
         {
-            $data = $episodeRepository->findAll();
-            
+            $data = $episodeRepository->findAll(
+                ['id' => 'DESC']
+            );
+
             $episode = $paginator->paginate(
                 $data,
                 $request->query->getInt('page', 1),

@@ -28,7 +28,7 @@ class ArticleController extends AbstractController
         $article = $paginator->paginate(
             $data,
             $request->query->getInt('page', 1),
-            4
+            6
         );
         return $this->render('article/index.html.twig', [
             'articles' => $article
@@ -36,27 +36,38 @@ class ArticleController extends AbstractController
     }
     // Article privé à un utilisateur
     #[Route('/cedric', name: 'cedric')]
-    public function cedric(ArticlesRepository $articlesRepository): Response
+    public function cedric(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        return $this->render('article/index.html.twig', 
-        [
-            'articles' => $articlesRepository->findBy(
-            [
-                'auteur' => 'cedric'
-            ])
+        $data = $articlesRepository->findBy(
+            ['auteur' => 'cedric'],
+            ['id' => 'DESC'],
+        );
+        $article = $paginator->paginate(
+            $data,
+            $request->query->getInt('page', 1),
+            3
+        );
+        return $this->render('article/index.html.twig', [
+            'articles' => $article
         ]);
     }
     
         // Article privé à un utilisateur
         #[Route('/gaetan', name: 'gaetan')]
-        public function gaetan(ArticlesRepository $articlesRepository): Response
-        {       
+        public function gaetan(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
+        {      
+            $data = $articlesRepository->findBy(
+                ['auteur' => 'gaetan'],
+                ['id' => 'DESC']
+            );
+            $article = $paginator->paginate(
+                $data,
+                $request->query->getInt('page',1),
+                6
+            );
             return $this->render('article/index.html.twig', 
                 [
-                    'articles' => $articlesRepository->findBy(
-                    [
-                        'auteur' => 'gaetan' 
-                    ])
+                    'articles' => $article
                 ]);
         }
     

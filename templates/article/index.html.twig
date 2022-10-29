@@ -15,7 +15,7 @@
 						<a href="{{ art.url }}" target="_blank" class="btn btn-primary">Voir l'article</a>
 						{% if is_granted('ROLE_ADMIN') %}
 							<a href="{{ url }}" class="btn btn-warning">Modifier</a>
-							<a href="{{ delete }}" class="btn btn-danger">Supprimer</a>
+							<a href="{{ delete }}" class="me-3 btn btn-danger position-absolute end-0 ">Supprimer</a>
 						{% endif %}
 					</div>
 				</div>

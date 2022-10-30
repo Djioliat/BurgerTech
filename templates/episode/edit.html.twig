@@ -1,0 +1,15 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Modifier l'épisode
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-3">
+        <h1>Modifier l'épisode :</h1>
+        {{ form_start(form)}}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

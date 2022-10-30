@@ -51,23 +51,23 @@ class ArticleController extends AbstractController
         ]);
     }
     
-        // Article privé à un utilisateur
-        #[Route('/gaetan', name: 'gaetan')]
-        public function gaetan(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
-        {      
-            $data = $articlesRepository->findBy(
-                ['auteur' => 'gaetan'],
-                ['id' => 'DESC']
-            );
-            $article = $paginator->paginate(
-                $data,
-                $request->query->getInt('page',1),
-                6
-            );
-            return $this->render('article/index.html.twig', 
-                [
-                    'articles' => $article
-                ]);
+    // Article privé à un utilisateur
+    #[Route('/gaetan', name: 'gaetan')]
+    public function gaetan(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
+    {      
+        $data = $articlesRepository->findBy(
+            ['auteur' => 'gaetan'],
+            ['id' => 'DESC']
+        );
+        $article = $paginator->paginate(
+            $data,
+            $request->query->getInt('page',1),
+            6
+        );
+        return $this->render('article/index.html.twig', 
+            [
+                'articles' => $article
+            ]);
         }
     
 
@@ -110,7 +110,7 @@ class ArticleController extends AbstractController
                 [
                     'form' => $form,    
                 ]);         
-            }
+        }
     
     // Afficher un article
     #[Route('/{slug}', name:'detail')]

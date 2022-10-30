@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\Episode;
+use App\Form\ArticleNewType;
 use App\Form\CommentType;
 use App\Repository\EpisodeRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,11 +15,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
-    #[Route('/episode', name: 'episode_')]
-    class EpisodeController extends AbstractController
-    {
-        #[Route('/', name: 'index')]
-        public function index(EpisodeRepository $episodeRepository, Request $request, PaginatorInterface $paginator): Response
+#[Route('/episode', name: 'episode_')]
+class EpisodeController extends AbstractController
+{
+    #[Route('/', name: 'index')]
+    public function index(EpisodeRepository $episodeRepository, Request $request, PaginatorInterface $paginator): Response
         {
             $data = $episodeRepository->findBy(
                 [],
@@ -33,8 +36,8 @@ use Symfony\Component\HttpFoundation\Request;
             ]);
         }
 
-        #[Route('/{slug}', name:('detail'))]
-        public function details ($slug, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
+    #[Route('/{slug}', name:('detail'))]
+    public function details ($slug, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
         {
             // Afficher l'épisode
             $episode = $episode->findOneBy(['slug' => $slug]);
@@ -47,26 +50,45 @@ use Symfony\Component\HttpFoundation\Request;
         
             $commentForm->handleRequest($request);
             
-            if($commentForm->isSubmitted() && $commentForm->isValid()){
+            if($commentForm->isSubmitted() && $commentForm->isValid())
+            {
 
                 $comment->setEpisode($episode);
                 
                 $entityManager->persist($comment);
                 $entityManager->flush();
 
-                $this->addFlash(
+                $this->addFlash
+                (
                     'success',
-                "Le commentaire {$comment->getContent()} a bien été enregistrée"
-            );   
-            return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
+                    "Le commentaire {$comment->getContent()} a bien été enregistrée"
+                );   
+                return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
             
-        }
-            //
-
+            }
             return $this->render('episode/detail.html.twig', [
                 'episode' => $episode,
                 'commentForm' => $commentForm->createView()
-            ]);
+                ]);
         }
-    }
+    #[Route('/{slug}/edit', name:('edit'))]
+    public function edit(Episode $episode, Request $request, EntityManagerInterface $entityManager): Response
+        {
+            $form = $this->createForm(ArticleNewType::class);
+            $form->handleRequest($request);
+            if($form->isSubmitted() && $form->isValid())
+            {
+                $entityManager->persist($episode);
+                $entityManager->flush();
+                return $this->redirectToRoute('episode_edit');
+            }
+        
+
+            return $this->renderForm('episode/edit.html.twig',
+            [
+                    'form' => $form,    
+            ]);
+        }         
+            
+}
 

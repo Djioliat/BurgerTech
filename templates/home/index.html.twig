@@ -8,6 +8,7 @@
 		<main class="container text-center">
 			<section class="row justify-content-md-center">
 				{% for epi in episode %}
+				{% set edit = path ('episode_edit', {'slug': epi.slug}) %}
 					<div class="card m-5 border-secondary rounded-bottom border-2" style="width: 25rem; height:49rem">
 						<div style="height: 110px">
 							<h4 class="card-title mt-3">{{ epi.title }}</h4>
@@ -30,7 +31,7 @@
 							<div class="mt-5">
 								<a href="{{ path('episode_detail', {'slug': epi.slug})}}" class="btn btn-primary ms-4">Plus d'infos</a>
 								{% if is_granted('ROLE_ADMIN') %}
-									<a href="#" class="btn btn-warning ms-5">Modifier</a>
+									<a href="{{ edit }}" class="btn btn-warning ms-5">Modifier</a>
 								{% endif %}
 							</div>
 						</div>

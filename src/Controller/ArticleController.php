@@ -24,7 +24,6 @@ class ArticleController extends AbstractController
             ['auteur' => 'public' ],
             ['id' => 'DESC'],
         );
-        dd($data);
         $article = $paginator->paginate(
             $data,
             $request->query->getInt('page', 1),

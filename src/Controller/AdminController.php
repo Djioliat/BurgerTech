@@ -32,7 +32,7 @@ class AdminController extends AbstractController
     #[Route('/utilisateur/modifier/{id}', name: 'modifier_utilisateur')]
     public function editUser(Users $user, Request $request, EntityManagerInterface $entityManager){
         
-        $user = new Users();
+        
         $form =$this->createForm(EditUserType::class, $user);
         $form->handleRequest($request);
 

@@ -32,7 +32,7 @@ class AdminController extends AbstractController
     #[Route('/utilisateur/modifier/{id}', name: 'modifier_utilisateur')]
     public function editUser(Users $user, Request $request, EntityManagerInterface $entityManager){
 
-        
+
         $form =$this->createForm(EditUserType::class, $user);
         $form->handleRequest($request);
 
@@ -44,6 +44,7 @@ class AdminController extends AbstractController
         }
 
         return $this->render('admin/edituser.html.twig', [
+            'user' => $user,
             'userForm' => $form->createView()
         ]);
     }

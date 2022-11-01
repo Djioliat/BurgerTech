@@ -3,6 +3,12 @@
 {% block title %}Modification{% endblock %}
 
 {% block body %}
-    <h1>Modifier le rôle de l'utilisateur</h1> 
-    {{ form(userForm) }}
+    <div class="container">
+        <div class="m-3">
+            <h1>Modifier le rôle de l'utilisateur</h1> 
+        </div>
+        <div class="m-3 fs-4">
+            {{ form(userForm) }}
+        </div>
+    </div>
 {% endblock %}

@@ -1,9 +1,46 @@
+/* .kenburns-left {
+        -webkit-animation: kenburns-top-left 5s ease-out both;
+        animation: kenburns-top-left 5s ease-out both;
+}
+
+@-webkit-keyframes kenburns-top-left {
+        0% {
+                -webkit-transform: scale(1) translate(0, 0);
+                transform: scale(1) translate(0, 0);
+                -webkit-transform-origin: 84% 16%;
+                transform-origin: 84% 16%;
+        }
+
+        100% {
+                -webkit-transform: scale(1.25) translate(20px, -15px);
+                transform: scale(1.25) translate(20px, -15px);
+                -webkit-transform-origin: left top;
+                transform-origin: left top;
+        }
+}
+
+@keyframes kenburns-top-left {
+        0% {
+                -webkit-transform: scale(1) translate(0, 0);
+                transform: scale(1) translate(0, 0);
+                -webkit-transform-origin: 84% 16%;
+                transform-origin: 84% 16%;
+        }
+
+        100% {
+                -webkit-transform: scale(1.25) translate(20px, -15px);
+                transform: scale(1.25) translate(20px, -15px);
+                -webkit-transform-origin: left top;
+                transform-origin: left top;
+        }
+}
+ */
 .home-title {
-    position: absolute;
-    top: 40%;
-    left: 30%;
-    transform: translate(-50%, -50%) rotate(-10deg);
-    font-size: 4.5rem;
-    color: #444444;
-    text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
+        position: absolute;
+        top: 30%;
+        left: 40%;
+        transform: translate(-50%, -50%) rotate(-10deg);
+        font-size: 4.5rem;
+        color: #444444;
+        text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
 }

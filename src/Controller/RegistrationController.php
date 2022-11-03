@@ -124,9 +124,9 @@ class RegistrationController extends AbstractController
 
         // On envoie un mail
         $mail->send(
-            'no-reply@monsite.net',
+            'no-reply@burger-tech.net',
             $user->getEmail(),
-            'Activation de votre compte sur le site e-commerce',
+            'Activation de votre compte sur le site Burger Tech',
             'register',
             compact('user', 'token')
         );

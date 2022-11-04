@@ -642,6 +642,8 @@ class ComposerStaticInit4f938fd3bd6b1af513e861245d41a2c6
         'App\\Repository\\GaetanRepository' => __DIR__ . '/../..' . '/src/Repository/GaetanRepository.php',
         'App\\Repository\\UsersRepository' => __DIR__ . '/../..' . '/src/Repository/UsersRepository.php',
         'App\\Security\\UsersAuthenticator' => __DIR__ . '/../..' . '/src/Security/UsersAuthenticator.php',
+        'App\\Service\\JWTService' => __DIR__ . '/../..' . '/src/Service/JWTService.php',
+        'App\\Service\\SendMailService' => __DIR__ . '/../..' . '/src/Service/SendMailService.php',
         'Behat\\Transliterator\\SyncTool' => __DIR__ . '/..' . '/behat/transliterator/src/Behat/Transliterator/SyncTool.php',
         'Behat\\Transliterator\\Transliterator' => __DIR__ . '/..' . '/behat/transliterator/src/Behat/Transliterator/Transliterator.php',
         'Cocur\\Slugify\\Bridge\\Laravel\\SlugifyFacade' => __DIR__ . '/..' . '/cocur/slugify/src/Bridge/Laravel/SlugifyFacade.php',

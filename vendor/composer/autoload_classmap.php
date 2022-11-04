@@ -33,6 +33,8 @@ return array(
     'App\\Repository\\GaetanRepository' => $baseDir . '/src/Repository/GaetanRepository.php',
     'App\\Repository\\UsersRepository' => $baseDir . '/src/Repository/UsersRepository.php',
     'App\\Security\\UsersAuthenticator' => $baseDir . '/src/Security/UsersAuthenticator.php',
+    'App\\Service\\JWTService' => $baseDir . '/src/Service/JWTService.php',
+    'App\\Service\\SendMailService' => $baseDir . '/src/Service/SendMailService.php',
     'Behat\\Transliterator\\SyncTool' => $vendorDir . '/behat/transliterator/src/Behat/Transliterator/SyncTool.php',
     'Behat\\Transliterator\\Transliterator' => $vendorDir . '/behat/transliterator/src/Behat/Transliterator/Transliterator.php',
     'Cocur\\Slugify\\Bridge\\Laravel\\SlugifyFacade' => $vendorDir . '/cocur/slugify/src/Bridge/Laravel/SlugifyFacade.php',

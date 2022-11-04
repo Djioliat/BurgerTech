@@ -45,6 +45,9 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public $passwordConfirm;
 
+    #[ORM\Column(type: 'string', length: 50)]
+    private $pseudo;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -155,6 +158,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $is_verified): self
     {
         $this->is_verified = $is_verified;
+
+        return $this;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(string $pseudo): self
+    {
+        $this->pseudo = $pseudo;
 
         return $this;
     }

@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Episode;
+use App\Entity\Users;
 use App\Form\ArticleNewType;
 use App\Form\CommentType;
 use App\Repository\EpisodeRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,15 +47,17 @@ class EpisodeController extends AbstractController
             $comment = new Comment();
     
             $commentForm = $this->createForm(CommentType::class, $comment);
-        
-            $commentForm->handleRequest($request);
             
+            $commentForm->handleRequest($request);
+  
             if($commentForm->isSubmitted() && $commentForm->isValid())
             {
 
                 $comment->setEpisode($episode);
+                     /*   ->setAuthor($this->getUser()); */
                 
                 $entityManager->persist($comment);
+
                 $entityManager->flush();
 
                 $this->addFlash

@@ -1,2 +1,10 @@
-{% include "navbar.html.twig" %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Page non trouvé{% endblock %}
+{% block body %}
+        <div class="container-fluid mt-3 col-6">
+            <h1 class="">Trop occupé pour trouver la page</h1>
+            <img class="w-25 img-thumbnail" src="/photos/error-page.jpg" alt="">
+        </div>
+{% endblock %}
 

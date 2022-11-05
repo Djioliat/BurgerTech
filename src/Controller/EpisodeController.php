@@ -45,19 +45,13 @@ class EpisodeController extends AbstractController
             // Traitement du formulaire
 
             $comment = new Comment();
-    
             $commentForm = $this->createForm(CommentType::class, $comment);
-            
             $commentForm->handleRequest($request);
-  
             if($commentForm->isSubmitted() && $commentForm->isValid())
             {
-
                 $comment->setEpisode($episode);
-                     /*   ->setAuthor($this->getUser()); */
-                
+                   
                 $entityManager->persist($comment);
-
                 $entityManager->flush();
 
                 $this->addFlash

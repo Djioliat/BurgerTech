@@ -15,9 +15,6 @@ class Comment
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $author;
-
     #[ORM\Column(type: 'text')]
     private $content;
 
@@ -34,27 +31,19 @@ class Comment
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private $replies;
 
+    #[ORM\OneToMany(mappedBy: 'comments', targetEntity: Users::class)]
+    private $users;
+
     public function __construct()
     {
         $this->created_At = new \DateTimeImmutable();
         $this->replies = new ArrayCollection();
+        $this->users = new ArrayCollection();
     } 
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getAuthor(): ?string
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(string $author): self
-    {
-        $this->author = $author;
-
-        return $this;
     }
 
     public function getContent(): ?string
@@ -129,6 +118,36 @@ class Comment
             // set the owning side to null (unless already changed)
             if ($reply->getParent() === $this) {
                 $reply->setParent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Users>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(Users $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setComments($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(Users $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getComments() === $this) {
+                $user->setComments(null);
             }
         }
 

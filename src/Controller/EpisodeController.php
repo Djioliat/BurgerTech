@@ -41,7 +41,7 @@ class EpisodeController extends AbstractController
         {
             // Afficher l'épisode
             $episode = $episode->findOneBy(['slug' => $slug]);
-
+            
             // Traitement du formulaire
 
             $comment = new Comment();
@@ -63,7 +63,7 @@ class EpisodeController extends AbstractController
             
             }
             return $this->render('episode/detail.html.twig', [
-                'episode' => $episode,
+                'episode' => $episode,  
                 'commentForm' => $commentForm->createView()
                 ]);
         }

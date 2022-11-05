@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UsersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -50,10 +51,14 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(targetEntity: Comment::class, inversedBy: 'users')]
     private $comments;
 
+    #[ORM\ManyToMany(targetEntity: Comment::class, mappedBy: 'user')]
+    private $comment;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
-        $this->created_at = new \DateTimeImmutable(); 
+        $this->created_at = new \DateTimeImmutable();
+        $this->comment = new ArrayCollection(); 
     }
 
     
@@ -184,6 +189,33 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setComments(?Comment $comments): self
     {
         $this->comments = $comments;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComment(): Collection
+    {
+        return $this->comment;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comment->contains($comment)) {
+            $this->comment[] = $comment;
+            $comment->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comment->removeElement($comment)) {
+            $comment->removeUser($this);
+        }
 
         return $this;
     }

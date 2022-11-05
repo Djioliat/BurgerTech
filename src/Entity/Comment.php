@@ -34,11 +34,15 @@ class Comment
     #[ORM\OneToMany(mappedBy: 'comments', targetEntity: Users::class)]
     private $users;
 
+    #[ORM\ManyToMany(targetEntity: Users::class, inversedBy: 'comment')]
+    private $user;
+
     public function __construct()
     {
         $this->created_At = new \DateTimeImmutable();
         $this->replies = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->user = new ArrayCollection();
     } 
 
     public function getId(): ?int
@@ -152,5 +156,13 @@ class Comment
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Users>
+     */
+    public function getUser(): Collection
+    {
+        return $this->user;
     }
 }

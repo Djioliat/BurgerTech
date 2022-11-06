@@ -49,7 +49,8 @@ class EpisodeController extends AbstractController
             $commentForm->handleRequest($request);
             if($commentForm->isSubmitted() && $commentForm->isValid())
             {
-                $comment->setEpisode($episode);
+                $comment->setEpisode($episode)
+                        ->setUser($this->getUser());
                    
                 $entityManager->persist($comment);
                 $entityManager->flush();

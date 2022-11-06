@@ -34,6 +34,9 @@ class Comment
     #[ORM\OneToMany(mappedBy: 'comments', targetEntity: Users::class)]
     private $users;
 
+    #[ORM\Column(type: 'string', length: 100)]
+    private $user;
+
     public function __construct()
     {
         $this->created_At = new \DateTimeImmutable();
@@ -151,6 +154,18 @@ class Comment
                 $user->setComments(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?string
+    {
+        return $this->user;
+    }
+
+    public function setUser(string $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20221105190734 extends AbstractMigration
+final class Version20221106164633 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,12 +20,12 @@ final class Version20221105190734 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE comment DROP author');
+        $this->addSql('ALTER TABLE comment ADD user VARCHAR(100) NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE comment ADD author VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE comment DROP user');
     }
 }

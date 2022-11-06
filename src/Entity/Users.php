@@ -48,12 +48,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 50)]
     private $pseudo;
 
-    #[ORM\ManyToOne(targetEntity: Comment::class, inversedBy: 'users')]
-    private $comments;
-
-    #[ORM\ManyToMany(targetEntity: Comment::class, mappedBy: 'user')]
-    private $comment;
-
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -180,44 +174,4 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-    public function getComments(): ?Comment
-    {
-        return $this->comments;
-    }
-
-    public function setComments(?Comment $comments): self
-    {
-        $this->comments = $comments;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Comment>
-     */
-    public function getComment(): Collection
-    {
-        return $this->comment;
-    }
-
-    public function addComment(Comment $comment): self
-    {
-        if (!$this->comment->contains($comment)) {
-            $this->comment[] = $comment;
-            $comment->addUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(Comment $comment): self
-    {
-        if ($this->comment->removeElement($comment)) {
-            $comment->removeUser($this);
-        }
-
-        return $this;
-    }
-
 }

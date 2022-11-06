@@ -31,18 +31,13 @@ class Comment
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private $replies;
 
-    #[ORM\OneToMany(mappedBy: 'comments', targetEntity: Users::class)]
+    #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: 'comment')]
     private $users;
-
-    #[ORM\Column(type: 'string', length: 100)]
-    private $user;
 
     public function __construct()
     {
         $this->created_At = new \DateTimeImmutable();
         $this->replies = new ArrayCollection();
-        $this->users = new ArrayCollection();
-        $this->user = new ArrayCollection();
     } 
 
     public function getId(): ?int
@@ -128,44 +123,14 @@ class Comment
         return $this;
     }
 
-    /**
-     * @return Collection<int, Users>
-     */
-    public function getUsers(): Collection
+    public function getUsers(): ?Users
     {
         return $this->users;
     }
 
-    public function addUser(Users $user): self
+    public function setUsers(?Users $users): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setComments($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(Users $user): self
-    {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getComments() === $this) {
-                $user->setComments(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getUser(): ?string
-    {
-        return $this->user;
-    }
-
-    public function setUser(string $user): self
-    {
-        $this->user = $user;
+        $this->users = $users;
 
         return $this;
     }

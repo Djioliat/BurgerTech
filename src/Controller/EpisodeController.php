@@ -4,20 +4,23 @@ namespace App\Controller;
 
 use App\Entity\Comment;
 use App\Entity\Episode;
-use App\Entity\Users;
 use App\Form\ArticleNewType;
 use App\Form\CommentType;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as ConfigurationSecurity;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
+
+
 #[Route('/episode', name: 'episode_')]
 class EpisodeController extends AbstractController
 {
+
     #[Route('/', name: 'index')]
     public function index(EpisodeRepository $episodeRepository, Request $request, PaginatorInterface $paginator): Response
         {
@@ -41,7 +44,6 @@ class EpisodeController extends AbstractController
         {
             // Afficher l'épisode
             $episode = $episode->findOneBy(['slug' => $slug]);
-            
             // Traitement du formulaire
 
             $comment = new Comment();
@@ -49,9 +51,8 @@ class EpisodeController extends AbstractController
             $commentForm->handleRequest($request);
             if($commentForm->isSubmitted() && $commentForm->isValid())
             {
-                $comment->setEpisode($episode)
-                        ->setUser($this->getUser());
-                   
+                $comment->setEpisode($episode);
+                $comment->setUsers($this->getUser());
                 $entityManager->persist($comment);
                 $entityManager->flush();
 

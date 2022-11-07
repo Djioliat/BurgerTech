@@ -31,7 +31,8 @@ class Comment
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private $replies;
 
-    #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: 'comment')]
+    #[ORM\ManyToOne(targetEntity: Users::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
     private $users;
 
     public function __construct()

@@ -61,7 +61,7 @@ class EpisodeController extends AbstractController
                     'success',
                     "Le commentaire {$comment->getContent()} a bien été enregistrée"
                 );   
-                return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
+               // return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
             
             }
             return $this->render('episode/detail.html.twig', [

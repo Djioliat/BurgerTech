@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Articles;
 use App\Entity\Comment;
 use App\Entity\Episode;
 use App\Form\ArticleNewType;
 use App\Form\CommentType;
+use App\Repository\ArticlesRepository;
 use App\Repository\EpisodeRepository;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as ConfigurationSecurity;
@@ -40,10 +43,20 @@ class EpisodeController extends AbstractController
         }
 
     #[Route('/{slug}', name:('detail'))]
-    public function details ($slug, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
+    public function details ($slug, EpisodeRepository $episode,ArticlesRepository $articleRepository,Articles $article, EntityManagerInterface $entityManager, Request $request): Response
         {
             // Afficher l'épisode
-            $episode = $episode->findOneBy(['slug' => $slug]);
+            $episode = $episode->findOneBy
+            (
+                [
+                    'slug' => $slug
+                ],
+            );
+            /* $article = $articleRepository->findOneBy
+            (
+                [],
+                ['id' => 'DESC']
+            ); */
             // Traitement du formulaire
 
             $comment = new Comment();
@@ -52,7 +65,7 @@ class EpisodeController extends AbstractController
             if($commentForm->isSubmitted() && $commentForm->isValid())
             {
                 $comment->setEpisode($episode);
-                $comment->setUsers($this->getUser());
+                $comment->setUsers($this->getUser()); 
                 $entityManager->persist($comment);
                 $entityManager->flush();
 
@@ -65,7 +78,9 @@ class EpisodeController extends AbstractController
             
             }
             return $this->render('episode/detail.html.twig', [
-                'episode' => $episode,  
+                'episode' => $episode,
+                  
+                /* 'article' => $article, */
                 'commentForm' => $commentForm->createView()
                 ]);
         }

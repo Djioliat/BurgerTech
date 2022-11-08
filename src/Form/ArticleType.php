@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Articles;
+use App\Entity\Episode;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,7 +26,12 @@ class ArticleType extends AbstractType
                     'Public' => 'public'
                 ]
             ])
-        ;
+            ->add('category', EntityType::class, 
+            [
+                'class' => Episode::class,
+                'choice_label' => 'title'
+            ]);
+        
     }
 
     public function configureOptions(OptionsResolver $resolver): void

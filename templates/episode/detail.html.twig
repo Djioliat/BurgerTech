@@ -3,6 +3,7 @@
 {% block body %}
 	<main class="container col-12">
 		<div class="d-flex mt-5 mb-3">
+        	{% set url = path ('episode_edit', {'slug': episode.slug}) %}
 			<div class="col-6">
 				<img src="{{ episode.coverImage }}" style="width: 25rem" alt="...">
 			</div>
@@ -19,15 +20,34 @@
                     </audio>
                 </div>
                 <div class="row">
-                    <p>{{ episode.content }}
+                    <p>{{ episode.content }}</p>
                 </div>
                 <div class="text-end">
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a href="#" class="btn btn-warning">Modifier</a>
+                        <a href="{{ url }}" class="btn btn-warning">Modifier</a>
                     {% endif %}
                 </div>
             <div>
 		</div>
+    </main>
+    <main>
+        <div>
+        <div class="text-center mt-5">
+            <h2 class="">Liste des articles de l'épisode</h2>
+        </div>
+        {% for articles in episode.article %}
+            <div class="container mt-3 card">
+                <div class="mt-3">            
+                    <p>{{ articles.title }}</p>
+                    <div class="text-end">
+                        <a href="{{ articles.url }}" target="_blank" class="btn btn-primary mb-2">Voir l'article</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        <div>
+        </div>
     </main>
     <main class="container col-12 mb-3">
         <div class="d-flex mt-5">
@@ -39,7 +59,9 @@
                         <div class="card mt-2">
                             <p>Publié par {{ comment.users.pseudo }}<br>Le {{ comment.createdAt | date("d/m/Y à H:i") }}</p>
                             <p class="mr-5">{{ comment.content | raw }}</p>
-                            <p><a class="btn btn-success" href="#ajout-commentaire" data-reply data-id="{{ comment.id }}">Répondre</a></p>
+                            {% if is_granted('ROLE_USER') %}
+                                <p><a class="btn btn-success" href="#ajout-commentaire" data-reply data-id="{{ comment.id }}">Répondre</a></p>
+                            {% endif %}
                         </div>
                     {% endfor %}
             </div>

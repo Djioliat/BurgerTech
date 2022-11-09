@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use Cocur\Slugify\Slugify;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ArticlesRepository;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\EpisodeRepository;
 
 #[ORM\HasLifecycleCallbacks]
 
@@ -21,18 +23,17 @@ class Articles
     #[ORM\Column(type: 'string', length: 255)]
     private $url;
 
-    #[ORM\ManyToOne(targetEntity: Episode::class, inversedBy: 'articles')]
-    private $category;
-
     #[ORM\Column(type: 'string', length: 255)]
     private $title;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $slug; 
 
-
     #[ORM\Column(type: 'string', length: 255)]
     private $auteur;
+
+    #[ORM\ManyToOne(targetEntity: Episode::class, inversedBy: 'article')]
+    private $episode;
     
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
@@ -42,8 +43,10 @@ class Articles
             $this->slug = $slugify->slugify($this->title);
         }
     }
+    public function __toString(){
+        return $this->title; // Remplacer champ par une propriété "string" de l'entité
+    }
     
-
     public function getId(): ?int
     {
         return $this->id;
@@ -57,18 +60,6 @@ class Articles
     public function setUrl(string $url): self
     {
         $this->url = $url;
-
-        return $this;
-    }
-
-    public function getCategory(): ?Episode
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?Episode $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -106,6 +97,18 @@ class Articles
     public function setAuteur(string $auteur): self
     {
         $this->auteur = $auteur;
+
+        return $this;
+    }
+
+    public function getEpisode(): ?Episode
+    {
+        return $this->episode;
+    }
+
+    public function setEpisode(?Episode $episode): self
+    {
+        $this->episode = $episode;
 
         return $this;
     }

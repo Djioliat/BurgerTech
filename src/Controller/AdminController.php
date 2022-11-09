@@ -30,9 +30,8 @@ class AdminController extends AbstractController
 
     }
     #[Route('/utilisateur/modifier/{id}', name: 'modifier_utilisateur')]
-    public function editUser(Users $user, Request $request, EntityManagerInterface $entityManager){
-
-
+    public function editUser(Users $user, Request $request, EntityManagerInterface $entityManager)
+    {
         $form =$this->createForm(EditUserType::class, $user);
         $form->handleRequest($request);
 
@@ -48,4 +47,14 @@ class AdminController extends AbstractController
             'userForm' => $form->createView()
         ]);
     }
+    #[Route('/utilisateur/supprimer/{id}', name: 'delete_utilisateur')]
+    public function delete(Users $user,EntityManagerInterface $manager): Response
+    {
+        $manager->remove($user);
+        $manager->flush();
+
+        $this->addFlash('success', "L'utilisateur {$user->getPseudo()} à bien été supprimé !");
+        return $this->redirectToRoute('admin_utilisateurs');    
+    }
+
 }

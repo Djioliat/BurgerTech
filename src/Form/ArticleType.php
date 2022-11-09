@@ -25,12 +25,13 @@ class ArticleType extends AbstractType
                     'Cédric' => 'cedric',
                     'Public' => 'public'
                 ]
-            ])
-            ->add('category', EntityType::class, 
+                ])
+                
+            ->add('episode', EntityType::class, 
             [
                 'class' => Episode::class,
                 'choice_label' => 'title'
-            ]);
+            ]); 
         
     }
 

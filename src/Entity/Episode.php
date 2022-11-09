@@ -35,20 +35,24 @@ class Episode
     #[ORM\Column(type: 'string', length: 255)]
     private $Audio;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Articles::class)]
-    private $articles;
-
     #[ORM\OneToMany(mappedBy: 'episode', targetEntity: Comment::class, orphanRemoval: true)]
     private $comments;
 
     #[ORM\Column(type: 'datetime_immutable', options:['default' => 'CURRENT_TIMESTAMP'])]
     private $created_at;
 
+    #[ORM\OneToMany(mappedBy: 'episode', targetEntity: Articles::class)]
+    private $article;
+
+    public function __toString(){
+        return $this->title; // Remplacer champ par une propriété "string" de l'entité
+    }
     public function __construct()
     {
         $this->articles = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->created_at = new \DateTimeImmutable();
+        $this->article = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -149,37 +153,6 @@ class Episode
         return $this;
     }
 
-
-    /**
-     * @return Collection<int, Articles>
-     */
-    public function getArticles(): Collection
-    {
-        return $this->articles;
-    }
-
-    public function addArticle(Articles $article): self
-    {
-        if (!$this->articles->contains($article)) {
-            $this->articles[] = $article;
-            $article->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArticle(Articles $article): self
-    {
-        if ($this->articles->removeElement($article)) {
-            // set the owning side to null (unless already changed)
-            if ($article->getCategory() === $this) {
-                $article->setCategory(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Comment>
      */
@@ -208,5 +181,35 @@ class Episode
         }
 
         return $this;
-    }   
+    }
+
+    /**
+     * @return Collection<int, Articles>
+     */
+    public function getArticle(): Collection
+    {
+        return $this->article;
+    }
+
+    public function addArticle(Articles $article): self
+    {
+        if (!$this->article->contains($article)) {
+            $this->article[] = $article;
+            $article->setEpisode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Articles $article): self
+    {
+        if ($this->article->removeElement($article)) {
+            // set the owning side to null (unless already changed)
+            if ($article->getEpisode() === $this) {
+                $article->setEpisode(null);
+            }
+        }
+
+        return $this;
+    }
 }

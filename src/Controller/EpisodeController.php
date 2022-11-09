@@ -9,10 +9,8 @@ use App\Form\ArticleNewType;
 use App\Form\CommentType;
 use App\Repository\ArticlesRepository;
 use App\Repository\EpisodeRepository;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as ConfigurationSecurity;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,7 +41,7 @@ class EpisodeController extends AbstractController
         }
 
     #[Route('/{slug}', name:('detail'))]
-    public function details ($slug, EpisodeRepository $episode,ArticlesRepository $articleRepository,Articles $article, EntityManagerInterface $entityManager, Request $request): Response
+    public function details ($slug,ArticlesRepository $articleRepository, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
         {
             // Afficher l'épisode
             $episode = $episode->findOneBy
@@ -52,11 +50,12 @@ class EpisodeController extends AbstractController
                     'slug' => $slug
                 ],
             );
-            /* $article = $articleRepository->findOneBy
-            (
-                [],
-                ['id' => 'DESC']
-            ); */
+            $article = $articleRepository->findAll(
+                [
+                    'id' => 'DESC'
+                ]
+            ); 
+            
             // Traitement du formulaire
 
             $comment = new Comment();
@@ -74,13 +73,12 @@ class EpisodeController extends AbstractController
                     'success',
                     "Le commentaire {$comment->getContent()} a bien été enregistrée"
                 );   
-               // return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
+                return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
             
             }
             return $this->render('episode/detail.html.twig', [
                 'episode' => $episode,
-                  
-                /* 'article' => $article, */
+                'article' => $article, 
                 'commentForm' => $commentForm->createView()
                 ]);
         }

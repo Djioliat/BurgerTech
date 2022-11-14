@@ -57,10 +57,10 @@
                     </div>
                     {% for comment in episode.comments %}
                         <div class="card mt-2">
-                            <p>Publié par {{ comment.users.pseudo }}<br>Le {{ comment.createdAt | date("d/m/Y à H:i") }}</p>
+                            <p>Publié par <strong>{{ comment.users.pseudo }}</strong><br>Le {{ comment.createdAt | date("d/m/Y à H:i") }}</p>
                             <p class="mr-5">{{ comment.content | raw }}</p>
                             {% if is_granted('ROLE_USER') %}
-                                <p><a class="btn btn-success" href="#ajout-commentaire" data-reply data-id="{{ comment.id }}">Répondre</a></p>
+                                <button id="btn-repondre"><a class="btn btn-success" href="#ajout-commentaire" data-reply data-id="{{ comment.id }}">Répondre</a></button>
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -88,12 +88,9 @@
 {% endblock %}
 {% block javascripts %}
     <script>
-        windows.onload = () => {
-            document.querySelectorAll("[data-reply]").forEach(element => {
-                element.addEventListener("click", function(){
-                    document.querySelector("#comment_parentid").value = this.dataset.id;
-                });
+            const button = document.getElementById('btn-repondre');
+            button.addEventListener('click', function handleClick() {
+            console.log('element clicked');
             });
-        }
     </script>
 {% endblock %}

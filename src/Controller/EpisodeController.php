@@ -8,6 +8,7 @@ use App\Entity\Episode;
 use App\Form\ArticleNewType;
 use App\Form\CommentType;
 use App\Repository\ArticlesRepository;
+use App\Repository\CommentRepository;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -41,7 +42,7 @@ class EpisodeController extends AbstractController
         }
 
     #[Route('/{slug}', name:('detail'))]
-    public function details ($slug,ArticlesRepository $articleRepository, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
+    public function details ($slug,ArticlesRepository $articleRepository,CommentRepository $comment, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
         {
             // Afficher l'épisode
             $episode = $episode->findOneBy
@@ -50,11 +51,17 @@ class EpisodeController extends AbstractController
                     'slug' => $slug
                 ],
             );
-            $article = $articleRepository->findAll(
+           /*  $article = $articleRepository->findAll(
                 [
                     'id' => 'DESC'
                 ]
-            ); 
+            );  */
+            /* $comment = $comment->findAll(
+                [
+                    'id' => 'DESC'
+                ]
+                );
+             */
             
             // Traitement du formulaire
 
@@ -78,7 +85,8 @@ class EpisodeController extends AbstractController
             }
             return $this->render('episode/detail.html.twig', [
                 'episode' => $episode,
-                'article' => $article, 
+                /* 'article' => $article,  
+                'comment' => $comment, */
                 'commentForm' => $commentForm->createView()
                 ]);
         }

@@ -14,7 +14,7 @@ class MailerService
     public function sendEmail(): void
     {
         $email = (new Email())
-            ->from('alverbreugh@gmail.com')
+            ->from('test-api-dev@alwaysdata.net')
             ->to('you@example.com')
             //->cc('cc@example.com')
             //->bcc('bcc@example.com')

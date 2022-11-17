@@ -51,7 +51,7 @@ class RegistrationController extends AbstractController
             $token = $jwt->generate($header, $payload, $this->getParameter('app.jwtsecret')); 
             // On envoie un mail
             $mail->send(
-                'no-reply@burger-tech.net',
+                'test-api-dev@alwaysdata.net',
                 $user->getEmail(),
                 'Activation de votre compte sur le site Burger Tech',
                 'register',

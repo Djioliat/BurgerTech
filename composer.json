@@ -12,6 +12,7 @@
         "doctrine/doctrine-bundle": "^2.6",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.11",
+        "ext-intl": "*",
         "fzaninotto/faker": "^1.5",
         "knplabs/knp-paginator-bundle": "^5.9",
         "phpdocumentor/reflection-docblock": "^5.3",

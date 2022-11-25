@@ -2,28 +2,27 @@
 
 namespace App\Controller;
 
-use App\Entity\Articles;
 use App\Entity\Comment;
 use App\Entity\Episode;
-use App\Form\ArticleNewType;
 use App\Form\CommentType;
-use App\Repository\ArticlesRepository;
+use App\Form\ArticleNewType;
 use App\Repository\CommentRepository;
 use App\Repository\EpisodeRepository;
+use App\Repository\ArticlesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 
 
 
-#[Route('/episode', name: 'episode_')]
+
 class EpisodeController extends AbstractController
 {
 
-    #[Route('/', name: 'index')]
+    #[Route('/episode', name: 'episode_index')]
     public function index(EpisodeRepository $episodeRepository, Request $request, PaginatorInterface $paginator): Response
         {
             $data = $episodeRepository->findBy(
@@ -41,7 +40,7 @@ class EpisodeController extends AbstractController
             ]);
         }
 
-    #[Route('/{slug}', name:('detail'))]
+    #[Route('episode/{slug}', name:('episode_detail'))]
     public function details ($slug,ArticlesRepository $articleRepository,CommentRepository $comment, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
         {
             // Afficher l'épisode
@@ -90,7 +89,7 @@ class EpisodeController extends AbstractController
                 'commentForm' => $commentForm->createView()
                 ]);
         }
-    #[Route('/{slug}/edit', name:('edit'))]
+    #[Route('/{slug}/edit', name:('episode_edit'))]
     public function edit(Episode $episode, Request $request, EntityManagerInterface $entityManager): Response
         {
             $form = $this->createForm(ArticleNewType::class);

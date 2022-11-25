@@ -12,37 +12,37 @@
 			<section class="row justify-content-md-center">
 				{% for epi in episode %}
 				{% set edit = path ('episode_edit', {'slug': epi.slug}) %}
-					<div class="card m-5 border-secondary rounded-bottom border-2" style="width: 25rem; height:49rem">
-						<div style="height: 110px">
-							<h4 class="card-title mt-3">{{ epi.title }}</h4>
+					<div class="card">
+						<div class="card-title">
+							<h3>{{ epi.title }}</h3>
 						</div>
 						<div>
 							<img src="{{ epi.coverImage }}" class="card-img-top" alt="Cover image">
 						</div>
 						<div class="card-body">
 							<div>
-								<p class="card-text mt-3">{{ epi.introduction }}</p>
+								<p>{{ epi.introduction }}</p>
 							</div>
-							<div class="mt-3">
+							<div class="card-date">
 								<time>Publié le : {{ epi.createdAt | date('d/m/Y') }}</time>
 							</div>
-							<div class="mt-3">
-								<audio class:"" controls preload="none">
+							<div class="card-audio">
+								<audio controls preload="none">
 									<source src="{{ epi.audio }}">
 								</audio>
 							</div>
-							<div class="mt-5">
-								<a href="{{ path('episode_detail', {'slug': epi.slug})}}" class="btn btn-primary ms-4">Plus d'infos</a>
+							<div class="card-btn">
+								<a href="{{ path('episode_detail', {'slug': epi.slug})}}" class="btn-infos btn rounded-pill">Toute les infos</a>
 								{% if is_granted('ROLE_ADMIN') %}
-									<a href="{{ edit }}" class="btn btn-warning ms-5">Modifier</a>
+									<a href="{{ edit }}" class="btn-edit btn rounded-pill">Modifier</a>
 								{% endif %}
 							</div>
 						</div>
 					</div>
 				{% endfor %}
 			</section>
-				<div class="ecouter">
-					<a href="{{ path('episode_index') }}" class="btn btn-success justify-content-md-center m-3 rounded-pill">Voir et écouter tout les épisodes</a>
+				<div class="full-episode">
+					<a href="{{ path('episode_index') }}" class="btn justify-content-md-center m-3 rounded-pill">Voir et écouter tout les épisodes</a>
 				</div>	
 		</main>
 	</body>

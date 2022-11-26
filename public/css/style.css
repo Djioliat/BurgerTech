@@ -100,6 +100,9 @@ html, main {
                 }
         }
 @media screen and (max-width: 500px) {
+        .img-acceuil img {
+                width: 100%;
+        }
         .home-title {
                 top: 55px;
         }

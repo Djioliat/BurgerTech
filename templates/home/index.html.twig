@@ -2,14 +2,14 @@
 
 {% block body %}
 	<body>
-		<div class="container mt-3 kenburns-left position-relative">
-			<img src="/images/acceuil.jpg" class="img-fluid rounded-pill"><img>
+		<div class="img-acceuil">
+			<img src="/images/acceuil.jpg" class="rounded-pill">
 			<div class="home-title">
 				<h1 class="home-title-h1">Burger Tech<br>News HighTech<br>Et... WTF</h1>
 			</div>
 		</div>
 		<main class="container text-center">
-			<section class="row justify-content-md-center">
+			<section class="row justify-content-md-center">	
 				{% for epi in episode %}
 				{% set edit = path ('episode_edit', {'slug': epi.slug}) %}
 					<div class="card">

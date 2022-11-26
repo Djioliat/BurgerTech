@@ -50,24 +50,27 @@ html, main {
 }
 .btn-infos {
         width: 150px;
-        background-color: cyan;
+        color: white;
+        background-color: #72FED1;
 }
 .btn-edit {
         width: 150px;
-        background-color: rgb(255, 214, 80);
+        color: white;
+        background-color: #AEDCFE;
 }
 .full-episode {
         padding-bottom: 170px;
      }
 .full-episode a {
-        background-color: rgb(22, 174, 134);
+        color: white;
+        background-color: #1789FC;
 }
 .pagination {
         margin-bottom: 6rem;
         justify-content: center;
 }
 .footer {
-        background: rgb(51, 51, 51);
+        background: #49525B;
         color: white;
         position:absolute;
         bottom:0;  
@@ -117,7 +120,7 @@ html, main {
         }
         .card {
                 margin: 0%;
-                margin-top: 3rem;
+                margin-top: 1rem;
         }
 }
 

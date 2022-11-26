@@ -42,6 +42,9 @@ html, main {
         height: 250px;
         width: 250px;
 }
+.card-date {
+        font-style: italic;
+}
 .card-audio {
         margin-top: 40px;
 }
@@ -51,12 +54,12 @@ html, main {
 .btn-infos {
         width: 150px;
         color: white;
-        background-color: #72FED1;
+        background-color: #34FEBE;
 }
 .btn-edit {
         width: 150px;
         color: white;
-        background-color: #AEDCFE;
+        background-color: #5DB8FD;
 }
 .full-episode {
         padding-bottom: 170px;
@@ -80,6 +83,14 @@ html, main {
 .footer-img {
         margin: 10px;
      }
+.title-epi {
+        margin-top: 5rem;
+}
+.title-epi p {
+        margin-top: 2rem;
+        font-size: 20px;
+        font-style: italic;
+}
 @media screen and (max-width: 1000px) {
                 .home-title h1 {
                         font-size: 30px;
@@ -121,6 +132,10 @@ html, main {
         .card {
                 margin: 0%;
                 margin-top: 1rem;
+                padding: 0%;
+        }
+        .pagination {
+                margin-top: 2rem;
         }
 }
 

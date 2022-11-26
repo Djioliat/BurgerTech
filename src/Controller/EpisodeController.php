@@ -32,7 +32,7 @@ class EpisodeController extends AbstractController
             $episodes = $paginator->paginate(
                 $data,
                 $request->query->getInt('page', 1),
-                4
+                3
             );
             return $this->render('episode/index.html.twig', 
             [

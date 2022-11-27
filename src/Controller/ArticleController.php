@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route('/article', name: 'article_')]
+
 class ArticleController extends AbstractController
 {
     // Afficher les articles public
-    #[Route('/', name: 'index')]
+    #[Route('/article', name: 'article_index')]
     public function index(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $data = $articlesRepository->findBy
@@ -34,7 +34,7 @@ class ArticleController extends AbstractController
         ]);
     }
     // Article privé à un utilisateur
-    #[Route('/cedric', name: 'cedric')]
+    #[Route('/article/cedric', name: 'article_cedric')]
     public function cedric(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $data = $articlesRepository->findBy(
@@ -52,7 +52,7 @@ class ArticleController extends AbstractController
     }
     
     // Article privé à un utilisateur
-    #[Route('/gaetan', name: 'gaetan')]
+    #[Route('/article/gaetan', name: 'article_gaetan')]
     public function gaetan(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
     {      
         $data = $articlesRepository->findBy(
@@ -72,7 +72,7 @@ class ArticleController extends AbstractController
     
 
     // Créer un article
-    #[Route('/new', name: 'new')]
+    #[Route('/article/new', name: 'article_new')]
     public function create( Request $request, EntityManagerInterface $entityManager): Response
     {
         $art = new Articles();
@@ -84,7 +84,7 @@ class ArticleController extends AbstractController
             $entityManager->persist($art);
             $entityManager->flush();
             
-            return $this->redirectToRoute('article_index');
+            return $this->redirectToRoute('episode_index');
         }
         return $this->render('article/new.html.twig',[
             'form' => $form->createView()
@@ -93,7 +93,7 @@ class ArticleController extends AbstractController
     
 
     // Modifier un article
-    #[Route('/{slug}/edit', name:'detail_edit')]
+    #[Route('/article/{slug}/edit', name:'article_detail_edit')]
     public function edit(Articles $art, Request $request, EntityManagerInterface $entityManager): Response       
     {
         $form =$this->createForm(ArticleType::class, $art);
@@ -104,7 +104,7 @@ class ArticleController extends AbstractController
                 $entityManager->persist($art);
                 $entityManager->flush();
                 
-                return $this->redirectToRoute('article_index');
+                return $this->redirectToRoute('episode_index');
             }
             return $this->renderForm('article/edit.html.twig',
                 [
@@ -113,7 +113,7 @@ class ArticleController extends AbstractController
         }
     
     // Afficher un article
-    #[Route('/{slug}', name:'detail')]
+    #[Route('/article/{slug}', name:'article_detail')]
     public function details($slug, ArticlesRepository $article, Request $request, Articles $art): Response
     {
         $article = $article->findOneBy(['slug' => $slug]);
@@ -124,7 +124,7 @@ class ArticleController extends AbstractController
     }
 
     // Supprimer un article
-    #[Route('/{slug}/delete', name:'delete')]
+    #[Route('/article/{slug}/delete', name:'article_delete')]
     public function delete(Articles $article, EntityManagerInterface $manager): Response
     {
         $manager->remove($article);
@@ -133,6 +133,6 @@ class ArticleController extends AbstractController
         $this->addFlash('success',
         "L'annonce {$article->getTitle()} à bien été supprimée"
     );
-        return $this->redirectToRoute("article_index");
+        return $this->redirectToRoute("episode_index");
     }
 }

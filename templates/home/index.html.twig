@@ -1,18 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-	<body>
+	<div>
 		<div class="img-acceuil">
 			<img src="/images/acceuil.jpg" class="rounded-pill">
 			<div class="home-title">
 				<h1 class="home-title-h1">Burger Tech<br>News HighTech<br>Et... WTF</h1>
 			</div>
 		</div>
-		<main class="container text-center">
-			<section class="row justify-content-md-center">	
+		<div class="container text-center">
+			<div class="row justify-content-center">	
 				{% for epi in episode %}
 				{% set edit = path ('episode_edit', {'slug': epi.slug}) %}
-					<div class="card">
+					<div class="card col-lg-5 col-sm-11 m-1 ">
 						<div class="card-title">
 							<h3>{{ epi.title }}</h3>
 						</div>
@@ -40,10 +40,10 @@
 						</div>
 					</div>
 				{% endfor %}
-			</section>
-				<div class="full-episode">
-					<a href="{{ path('episode_index') }}" class="btn justify-content-md-center m-3 rounded-pill">Voir et écouter tout les épisodes</a>
-				</div>	
-		</main>
-	</body>
+			</div>
+			<div class="full-episode">
+				<a href="{{ path('episode_index') }}" class="btn justify-content-md-center m-3 rounded-pill">Voir et écouter tout les épisodes</a>
+			</div>	
+		</div>
+	</div>
 {% endblock %}

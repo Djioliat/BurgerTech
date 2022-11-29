@@ -28,11 +28,11 @@ html, main {
 .home-title-h1 {
         font-size: 3.5rem;
 }
-.card-index {
+/* .card-index {
         width: 25rem;
         height: 45rem;
         margin: 2rem;
-}
+} */
 .card-title {
         margin-top: 15px;
         height: 120px;

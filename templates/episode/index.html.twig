@@ -1,24 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-	<body>
-		<main class="container text-center">
-			<div class="title-epi">
-				<h1>Burger Tech</h1>
-				<p>Un morceau de news, une tranche de hight-tech et quelques dés de what the fuck</p>
-			</div>
-			<section class="row justify-content-md-center">
+	<div>
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="text-center mt-5">
+					<h1>Burger Tech</h1>
+					<p class="mt-5">Un morceau de news, une tranche de hight-tech et quelques dés de what the fuck</p>
+				</div>
 				{% for epi in episode %}
 					{% set url = path ('episode_detail', {'slug': epi.slug}) %}
 					{% set edit = path ('episode_edit', {'slug': epi.slug}) %}
-					<div class="card-index border">
-						<div class="card-title">
-							<h3 class="card-title mt-3">{{ epi.title }}<h3>
-                        </div>
-						<div>
+					<div class="col-lg-5 border text-center m-3">
+						<div class="">
+							<div class="">
+								<h3 class="card-title mt-3">{{ epi.title }}<h3>
+                        	</div>
+						
 							<img src="{{ epi.coverImage }}" class="card-img-top" alt="logo-burger">
-						</div>
-						<div class="card-body">
+						
+						
 							<div>
 								<p>{{ epi.introduction }}</p>
 							</div>
@@ -26,7 +27,7 @@
 								<time>Publié le :
 									{{ epi.createdAt | date('d/m/Y') }}</time>
 							</div>
-							<div class="card-audio">
+							<div class="mt-3">
 								<audio controls preload="none">
 									<source src="{{ epi.audio }}">
 								</audio>
@@ -40,11 +41,11 @@
 						</div>
 					</div>
 				{% endfor %}
-					<div class="pagination">
-						{% do episode.setPageRange(2) %}
-						{{ knp_pagination_render(episode, 'base/pagination.html.twig') }}
-					</div>
-			</section>
-		</main>
-	</body>
+			</div>
+			<div class="pagination mt-5">
+				{% do episode.setPageRange(2) %}
+				{{ knp_pagination_render(episode, 'base/pagination.html.twig') }}
+			</div>
+		</div>
+	</div>
 {% endblock %}

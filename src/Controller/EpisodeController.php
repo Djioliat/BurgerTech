@@ -40,8 +40,8 @@ class EpisodeController extends AbstractController
             ]);
         }
 
-    #[Route('episode/{slug}', name:('episode_detail'))]
-    public function details ($slug,ArticlesRepository $articleRepository,CommentRepository $comment, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
+    #[Route('/episode/{slug}', name:('episode_detail'))]
+    public function details($slug,ArticlesRepository $articleRepository,CommentRepository $comment, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
         {
             // Afficher l'épisode
             $episode = $episode->findOneBy
@@ -78,18 +78,14 @@ class EpisodeController extends AbstractController
                 (
                     'success',
                     "Le commentaire {$comment->getContent()} a bien été enregistrée"
-                );   
-                return $this->redirectToRoute('episode_detail', ['slug' => $episode->getSlug()]);
-            
+                );      
             }
             return $this->render('episode/detail.html.twig', [
                 'episode' => $episode,
-                /* 'article' => $article,  
-                'comment' => $comment, */
                 'commentForm' => $commentForm->createView()
                 ]);
         }
-    #[Route('/{slug}/edit', name:('episode_edit'))]
+    #[Route('/episode/{slug}/edit', name:('episode_edit'))]
     public function edit(Episode $episode, Request $request, EntityManagerInterface $entityManager): Response
         {
             $form = $this->createForm(ArticleNewType::class);
@@ -98,10 +94,8 @@ class EpisodeController extends AbstractController
             {
                 $entityManager->persist($episode);
                 $entityManager->flush();
-                return $this->redirectToRoute('episode_edit');
+                //return $this->redirectToRoute('episode_edit');
             }
-        
-
             return $this->renderForm('episode/edit.html.twig',
             [
                     'form' => $form,    

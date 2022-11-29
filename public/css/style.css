@@ -28,10 +28,10 @@ html, main {
 .home-title-h1 {
         font-size: 3.5rem;
 }
-.card {
+.card-index {
         width: 25rem;
         height: 45rem;
-        margin: 5rem;
+        margin: 2rem;
 }
 .card-title {
         margin-top: 15px;
@@ -42,6 +42,34 @@ html, main {
         height: 250px;
         width: 250px;
 }
+.card-img-detail {
+        border-radius: 10%;
+        height: 250px;
+        width: 250px;
+}
+.episode-title p {
+        text-align: center;
+        font-style: italic;
+}
+.episode-content {
+        margin-top: 10px;
+}
+.epi-art {
+        display: flex;
+        
+}
+.border {
+
+        margin-right: 0px;
+}
+.epi-art p {
+        display: inline-block;
+        width: 60%;
+        
+}
+.epi-art a {
+        background-color: #2e92f7;
+}
 .card-date {
         font-style: italic;
 }
@@ -49,12 +77,13 @@ html, main {
         margin-top: 40px;
 }
 .card-btn {
+        margin-bottom: 10px;
         margin-top: 50px;
 }
 .btn-infos {
         width: 150px;
         color: white;
-        background-color: #34FEBE;
+        background-color: #a4b3ae;
 }
 .btn-edit {
         width: 150px;
@@ -67,6 +96,12 @@ html, main {
 .full-episode a {
         color: white;
         background-color: #1789FC;
+}
+.comment {
+        margin-bottom: 150px;
+}
+.comment-title {
+        width: 50%;
 }
 .pagination {
         margin-bottom: 6rem;
@@ -131,14 +166,6 @@ html, main {
                 transform: translate(-50%, -50%) rotate(-10deg);
                 color: #444444;
                 text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
-        }
-        .card {
-                margin: 0%;
-                margin-top: 1rem;
-                padding: 0%;
-        }
-        .card-btn {
-                margin-bottom: 10px;
         }
         .pagination {
                 margin-top: 2rem;

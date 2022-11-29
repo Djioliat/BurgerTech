@@ -11,7 +11,7 @@
 				{% for epi in episode %}
 					{% set url = path ('episode_detail', {'slug': epi.slug}) %}
 					{% set edit = path ('episode_edit', {'slug': epi.slug}) %}
-					<div class="card">
+					<div class="card-index border">
 						<div class="card-title">
 							<h3 class="card-title mt-3">{{ epi.title }}<h3>
                         </div>

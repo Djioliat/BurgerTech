@@ -3,9 +3,9 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-<section class="container my-3">
-    <div class="row">
-        <div class="col-6">
+<div class="container-fluid ">
+    
+        <div class="col-lg-6 mx-auto comment col-sm text-center">
             <form method="post">
                 {% if error %}
                     <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -17,10 +17,10 @@
                     </div>
                 {% endif %}
 
-                <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
-                <label for="inputEmail">Ton mail</label>
-                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-                <label for="inputPassword">Mot de passe</label>
+                <h2 class="m-3 text-center font-weight-normal">Connexion</h2>
+                <label class="mb-3 mt-5" for="inputEmail">Ton mail</label>
+                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control mb-3" autocomplete="email" required autofocus>
+                <label class="mb-3" for="inputPassword">Ton mot de passe</label>
                 <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
                 <input type="hidden" name="_csrf_token"
                     value="{{ csrf_token('authenticate') }}">
@@ -34,11 +34,11 @@
                         </label>
                     </div>
                 #}
-                <button class="btn btn-lg btn-primary my-3" type="submit">
+                <button class="btn btn-lg btn-primary mt-4 rounded-pill" type="submit">
                     Connexion
                 </button>
             </form>
         </div>
-    </div>
-</section>
+   
+</div>
 {% endblock %}

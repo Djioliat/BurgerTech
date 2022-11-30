@@ -5,16 +5,16 @@
 		<div class="row mt-5 mb-3">
         	{% set url = path ('episode_edit', {'slug': episode.slug}) %}
 			<div class="text-center col-lg-6 col-sm-12">
-				<img class="card-img-detail" src="{{ episode.coverImage }}" alt="...">
+				<img class="card-img-detail" src="{{ episode.coverImage }}" alt="logo image">
 			</div>
             <div class="mt-4 col-lg-6 col-sm-12 text-center ">
-                <div class="">
+                <div>
                     <h4>{{ episode.title }}</h4>
                 </div>
                 <div class="episode-title">
                     <p>{{ episode.introduction }}</p>
                 </div>
-                <div class="">
+                <div>
                     <audio controls>
                         <source class="col-lg-6" src="{{ episode.audio }}">
                     </audio>

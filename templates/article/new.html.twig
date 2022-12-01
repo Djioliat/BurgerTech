@@ -3,15 +3,15 @@
 {% block title %}Les articles{% endblock %}
 
 {% block body %}
-	<section class="container">
-		<div class="row">
-			<div class="col">
-				<h1>Ajout d'un article</h1>
+	<section class="container comment">
+		<div class="col-lg-10 col-sm-12 mx-auto">
+			<h1 class="text-center m-3">Ajout d'un article</h1>
 				{{ form_start(form) }}
 				{{ form_widget(form) }}
-				<button type="submit" class="btn btn-primary">Ajouter</button>
-				{{ form_end(form) }}
+			<div class="text-center">
+					<button type="submit" class="btn btn-primary">Ajouter</button>
 			</div>
+				{{ form_end(form) }}
 		</div>
 	</section>
 {% endblock %}

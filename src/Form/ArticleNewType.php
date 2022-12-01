@@ -16,19 +16,19 @@ class ArticleNewType extends AbstractType
     {
         $builder
         ->add('title', TextType::class,[
-        'label' => 'Titre',
+        'label' => 'Titre'
         ])
         ->add('introduction', TextType::class,[
-        'label' => 'Introduction',
+        'label' => 'Introduction'
         ])
         ->add('content', TextareaType::class,[
-        'label' => 'Contenu'
+        'label' => 'Contenu'  
         ])
         ->add('coverImage', UrlType::class,[
-        'label' => 'Url de l\'image'
+        'label' => 'Url de l\'image'  
         ])
         ->add('Audio', UrlType::class,[
-        'label' => 'Url de l\'enregistrement'
+        'label' => 'Url de l\'enregistrement' 
         ])
         ;
     }

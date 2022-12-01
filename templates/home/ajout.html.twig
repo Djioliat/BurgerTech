@@ -3,19 +3,16 @@
 {% block title %}Ajout d'un épisode{% endblock %}
 
 {% block body %}
-    <section class="container">
-        <div class="row">
-            <div class="col">
-                <h1>Ajout d'un épisode</h1>
+    <section class="container comment">
+        <div class="col-lg-10 col-sm-12 mx-auto">
+            <h1 class="m-3 text-center">Ajout d'un épisode</h1>
                 {{ form_start(form) }}
-
                 {{ form_widget(form) }}
-
-                <button type="submit" class="btn btn-primary">Ajouter</button>
-
-                {{ form_end(form) }}
+            <div class="text-center">
+            <button type="submit" class="btn btn-primary rounded-pill">Ajouter l'épisode</button>
             </div>
-        </div>
+                {{ form_end(form) }}
+        </div>  
     </section>
 {% endblock %}
 

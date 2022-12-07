@@ -3,27 +3,28 @@
 {% block title %}Utilisateurs{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>Liste des utilisateurs et gestion des roles</h1> 
+<div class="table-responsive-sm">
+    <h1 class="m-3 text-center">Liste des utilisateurs et gestion des roles</h1> 
     <table class="table">
-        <thead>
+        <thead class="m-3">
             <tr>
-                <th scope="col">ID</th>
+                
                 <th scope="col">Email</th>
                 <th scope="col">Rôles</th>
+                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
             {% for user in users %}
                 <tr>
-                    <td>{{ user.id }}</td>
+                    
                     <td>{{ user.email }}</td>
                     <td>
                         {% for role in user.roles %}
                             {% if role == "ROLE_USER" %}
-                                Utilisateur. 
+                                Utilisateur /
                             {% elseif role == "ROLE_ADMIN" %}
-                                Administarteur, 
+                                Administarteur /
                             {% endif %}
                             
                         {% endfor %}

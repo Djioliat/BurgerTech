@@ -103,7 +103,7 @@ class RegistrationController extends AbstractController
 
         if($user->getIsVerified()){
             $this->addFlash('warning', 'Cet utilisateur est déjà activé');
-            return $this->redirectToRoute('profile_index');    
+            return $this->redirectToRoute('profil_index');    
         }
 
         // On génère le JWT de l'utilisateur
@@ -130,6 +130,6 @@ class RegistrationController extends AbstractController
             compact('user', 'token')
         );
         $this->addFlash('success', 'Email de vérification envoyé');
-        return $this->redirectToRoute('profile_index');
+        return $this->redirectToRoute('profil_index');
     }
 }

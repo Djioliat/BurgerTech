@@ -11,7 +11,9 @@
         <div class="col-12 text-center mt-5">
             <h1 class="mt-5">{{ app.user.pseudo }}</h1>
         </div>
-        <p class="dark">Vous avez publié : {{app.user.comments | length}} commentaire</p>
+        <div>
+            <p class="dark">Vous avez publié : {{app.user.comments | length}} commentaire</p>
+        </div>
     </div>
 </div>
 {% endblock %}

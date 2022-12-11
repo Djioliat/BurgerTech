@@ -34,6 +34,14 @@ class RegistrationFormType extends AbstractType
                     ]
                     ])
                 */
+            ->add('avatar', TextType::class, [
+                'label' => 'Avatar',
+                'required' => false,
+                'data' => 'https://avatarfiles.alphacoders.com/269/269929.png',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+                ])
             ->add('rgpd', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [

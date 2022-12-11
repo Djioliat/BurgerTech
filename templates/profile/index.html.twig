@@ -3,13 +3,15 @@
 {% block title %}Profil{% endblock %}
 
 {% block body %}
-<div class="container">
+<div class="container comment">
     <div class="row">
-        <div class="col-3">
+        <div class="banner col-lg-12 rounded-pill mx-auto">
             <img src="{{user.avatar}}" class="avatar" alt="Avatar de {{ user.pseudo }}">
         </div>
-            <p class="dark">Vous avez publié : {{user.comments | length}} commentaire</p>
-        <div class="col-9"><h1>Bienvenue {{ user.pseudo }}</h1></div>
+        <div class="col-12 text-center mt-5">
+            <h1 class="mt-5">{{ user.pseudo }}</h1>
+        </div>
+        <p class="dark">Vous avez publié : {{user.comments | length}} commentaire</p>
     </div>
 </div>
 {% endblock %}

@@ -6,12 +6,12 @@
 <div class="container comment">
     <div class="row">
         <div class="banner col-lg-12 rounded-pill mx-auto">
-            <img src="{{user.avatar}}" class="avatar" alt="Avatar de {{ user.pseudo }}">
+            <img src="{{app.user.avatar}}" class="avatar" alt="Avatar de {{ app.user.pseudo }}">
         </div>
         <div class="col-12 text-center mt-5">
-            <h1 class="mt-5">{{ user.pseudo }}</h1>
+            <h1 class="mt-5">{{ app.user.pseudo }}</h1>
         </div>
-        <p class="dark">Vous avez publié : {{user.comments | length}} commentaire</p>
+        <p class="dark">Vous avez publié : {{app.user.comments | length}} commentaire</p>
     </div>
 </div>
 {% endblock %}

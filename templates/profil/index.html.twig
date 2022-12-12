@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Profil{% endblock %}
+{% block title %}Votre compte{% endblock %}
 
 {% block body %}
 <div class="container comment">
@@ -8,11 +8,27 @@
         <div class="banner col-lg-12 rounded-pill mx-auto">
             <img src="{{app.user.avatar}}" class="avatar" alt="Avatar de {{ app.user.pseudo }}">
         </div>
-        <div class="col-12 text-center mt-5">
-            <h1 class="mt-5">{{ app.user.pseudo }}</h1>
-        </div>
-        <div>
-            <p class="dark">Vous avez publié : {{app.user.comments | length}} commentaire</p>
+        <div class="card col-8 mx-auto card-user">
+          <div class="text-center mt-5">
+              <h1 class="mt-5">{{ app.user.pseudo }}</h1>
+          </div>
+          <div class="text-center mt-3">
+              <h5 class="">{{ app.user.email }}</h1>
+          </div>
+          <div class="text-center mt-3">
+              <p class="dark">Vous avez publié : {{app.user.comments | length}} commentaire</p>
+          </div>
+          <div class="text-center mt-3 mb-5">
+              <p class="dark">Inscrit depuis le : {{app.user.createdAt | date("d/m/Y")}}</p>
+          </div>
+          <div class="d-flex justify-content-center">
+            <div class="text-center btn-profil mb-5 m-3">
+              <a href="" class="btn btn-success rounded-pill">Modifier</a>
+            </div>
+            <div class="text-center mb-5 m-3">
+              <a href="{{ path('profil_delete', {'id': app.user.id}) }}" class="btn btn-danger rounded-pill">Supprimer</a>
+            </div>
+          </div>
         </div>
     </div>
 </div>

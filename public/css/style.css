@@ -90,6 +90,9 @@ html, main {
         color: white;
         background-color: #5DB8FD;
 }
+.btn-profil a {
+        width: 100px;
+}
 .full-episode {
         padding-bottom: 170px;
      }
@@ -108,7 +111,7 @@ html, main {
 .banner {
         position: relative;
         height: 100px; 
-        background: rgb(44, 44, 44);
+        background: rgb(114, 114, 114);
         margin-top: 30px;
 }
 .avatar {
@@ -119,6 +122,10 @@ html, main {
         top: 110%;
         transform: translate(-50%, -50%);
         box-shadow: 10px 10px 10px #ffffff, -16px -9px 20px 0px #474747;
+}
+.card-user {
+        margin-top: 80px;
+        background-image: linear-gradient(to right, rgb(239, 239, 239), rgb(214, 203, 252));
 }
 .pagination {
         margin-bottom: 6rem;

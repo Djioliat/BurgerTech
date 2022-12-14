@@ -39,6 +39,7 @@ security:
         - { path: ^/article/cedric, roles: ROLE_CEDRIC }
         - { path: ^/article/gaetan, roles: ROLE_GAETAN }
         - { path: ^/profil, roles: ROLE_USER }
+        - { path: ^/profil/supprimer, roles: ROLE_USER }
 when@test:
     security:
         password_hashers:

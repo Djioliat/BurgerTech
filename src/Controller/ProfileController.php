@@ -5,11 +5,12 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\ProfileEditType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 class ProfileController extends AbstractController
@@ -21,18 +22,31 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/profil/modifier/{id}', name: 'profil_modif')]
-    public function edit(Users $user, Request $request): Response
+    public function edit(UserPasswordHasherInterface $userPasswordHasher, Users $user, Request $request, EntityManagerInterface $entityManager): Response
     {
         if ($this->getUser() !== $user) {
             throw new AccessDeniedException("Vous n'avez pas l'autorisation de modifier ce compte.");
         }
-        $user = $user->getId();
-        $form = $this->createForm(ProfileEditType::class);
+        
+        $form = $this->createForm(ProfileEditType::class, $user);
         $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid())
+            {
+                $user = $form->getData();
+                $user->setPassword(
+                    $userPasswordHasher->hashPassword(
+                            $user,
+                            $form->get('password')->getData()
+                        )
+                    );
+                $entityManager->persist($user);
+                $entityManager->flush();
 
+                return $this->redirectToRoute('profil_index');
+            }
 
         return $this->render('profil/edit.html.twig', [
-            'user' => $user,
+            
             'form' => $form->createView()
         ]);
     }

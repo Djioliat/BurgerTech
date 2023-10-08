@@ -88,17 +88,19 @@ class EpisodeController extends AbstractController
     #[Route('/episode/{slug}/edit', name:('episode_edit'))]
     public function edit(Episode $episode, Request $request, EntityManagerInterface $entityManager): Response
         {
-            $form = $this->createForm(ArticleNewType::class);
+            
+            $form = $this->createForm(ArticleNewType::class, $episode);
             $form->handleRequest($request);
             if($form->isSubmitted() && $form->isValid())
             {
                 $entityManager->persist($episode);
                 $entityManager->flush();
-                //return $this->redirectToRoute('episode_edit');
+                return $this->redirectToRoute('episode_index');
             }
             return $this->renderForm('episode/edit.html.twig',
             [
-                    'form' => $form,    
+                'form' => $form,
+                'espisode' => $episode  
             ]);
         }         
             

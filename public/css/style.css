@@ -1,7 +1,11 @@
+.navbar {
+        background: #edfdf3;
+}
 .img-acceuil {
         text-align: center;
         position: relative;
-        margin: 30px;
+        margin-top: 5rem;
+        margin-bottom: 3rem;
 }
 .img-acceuil img {
         width: 80%;

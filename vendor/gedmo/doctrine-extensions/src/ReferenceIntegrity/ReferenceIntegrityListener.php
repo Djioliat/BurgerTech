@@ -20,6 +20,8 @@ use Gedmo\ReferenceIntegrity\Mapping\Validator;
  * The ReferenceIntegrity listener handles the reference integrity on related documents
  *
  * @author Evert Harmeling <evert.harmeling@freshheads.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class ReferenceIntegrityListener extends MappedEventSubscriber
 {
@@ -72,6 +74,8 @@ class ReferenceIntegrityListener extends MappedEventSubscriber
                             throw new InvalidMappingException(sprintf("Reference '%s' on '%s' should have 'mappedBy' option defined", $property, $meta->getName()));
                         }
 
+                        assert(class_exists($fieldMapping['targetDocument']));
+
                         $subMeta = $om->getClassMetadata($fieldMapping['targetDocument']);
 
                         if (!$subMeta->hasField($fieldMapping['mappedBy'])) {
@@ -95,6 +99,8 @@ class ReferenceIntegrityListener extends MappedEventSubscriber
                         if (!isset($fieldMapping['mappedBy'])) {
                             throw new InvalidMappingException(sprintf("Reference '%s' on '%s' should have 'mappedBy' option defined", $property, $meta->getName()));
                         }
+
+                        assert(class_exists($fieldMapping['targetDocument']));
 
                         $subMeta = $om->getClassMetadata($fieldMapping['targetDocument']);
 

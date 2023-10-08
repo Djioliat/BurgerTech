@@ -13,19 +13,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\PersistentCollection;
+use Gedmo\Exception\InvalidMappingException;
 use Gedmo\Tree\TreeListener;
 
 /**
  * Automatically maps the parent and children properties of Tree nodes
  *
  * @author Ilija Tovilo <ilija.tovilo@me.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class TreeObjectHydrator extends ObjectHydrator
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $config;
+    private $config = [];
 
     /**
      * @var string
@@ -58,13 +61,13 @@ class TreeObjectHydrator extends ObjectHydrator
     /**
      * We hook into the `hydrateAllData` to map the children collection of the entity
      *
-     * @return mixed[]
+     * @return array<int, object>
      */
     protected function hydrateAllData()
     {
         $data = parent::hydrateAllData();
 
-        if (0 === count($data)) {
+        if ([] === $data) {
             return $data;
         }
 
@@ -90,9 +93,9 @@ class TreeObjectHydrator extends ObjectHydrator
      * [parentId => [child1, child2, ...], ...]
      * ```
      *
-     * @param array $nodes
+     * @param array<int, object> $nodes
      *
-     * @return array
+     * @return array<int|string, array<int, object>>
      */
     protected function buildChildrenHashmap($nodes)
     {
@@ -113,8 +116,8 @@ class TreeObjectHydrator extends ObjectHydrator
     }
 
     /**
-     * @param array $nodes
-     * @param array $childrenHashmap
+     * @param array<int, object>                    $nodes
+     * @param array<int|string, array<int, object>> $childrenHashmap
      *
      * @return void
      */
@@ -147,9 +150,9 @@ class TreeObjectHydrator extends ObjectHydrator
     }
 
     /**
-     * @param array $nodes
+     * @param array<int, object> $nodes
      *
-     * @return array
+     * @return array<int, object>
      */
     protected function getRootNodes($nodes)
     {
@@ -179,7 +182,9 @@ class TreeObjectHydrator extends ObjectHydrator
      * [node1.id => true, node2.id => true, ...]
      * ```
      *
-     * @return array
+     * @param array<int, object> $nodes
+     *
+     * @return array<mixed, true>
      */
     protected function buildIdHashmap(array $nodes)
     {
@@ -212,7 +217,7 @@ class TreeObjectHydrator extends ObjectHydrator
     protected function getParentField()
     {
         if (!isset($this->config['parent'])) {
-            throw new \Gedmo\Exception\InvalidMappingException('The `parent` property is required for the TreeHydrator to work');
+            throw new InvalidMappingException('The `parent` property is required for the TreeHydrator to work');
         }
 
         return $this->config['parent'];
@@ -244,7 +249,7 @@ class TreeObjectHydrator extends ObjectHydrator
             return $associationMapping['fieldName'];
         }
 
-        throw new \Gedmo\Exception\InvalidMappingException('The children property could not found. It is identified through the `mappedBy` annotation to your parent property.');
+        throw new InvalidMappingException('The children property could not found. It is identified through the `mappedBy` annotation to your parent property.');
     }
 
     /**
@@ -252,7 +257,7 @@ class TreeObjectHydrator extends ObjectHydrator
      */
     protected function getTreeListener(EntityManagerInterface $em)
     {
-        foreach ($em->getEventManager()->getListeners() as $listeners) {
+        foreach ($em->getEventManager()->getAllListeners() as $listeners) {
             foreach ($listeners as $listener) {
                 if ($listener instanceof TreeListener) {
                     return $listener;
@@ -260,11 +265,11 @@ class TreeObjectHydrator extends ObjectHydrator
             }
         }
 
-        throw new \Gedmo\Exception\InvalidMappingException('Tree listener was not found on your entity manager, it must be hooked into the event manager');
+        throw new InvalidMappingException('Tree listener was not found on your entity manager, it must be hooked into the event manager');
     }
 
     /**
-     * @param array $data
+     * @param array<int, object> $data
      *
      * @return string
      */

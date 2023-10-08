@@ -9,17 +9,22 @@
 
 namespace Gedmo\Translatable\Query\TreeWalker;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\FromClause;
 use Doctrine\ORM\Query\AST\Join;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\RangeVariableDeclaration;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\SubselectFromClause;
 use Doctrine\ORM\Query\Exec\SingleSelectExecutor;
 use Doctrine\ORM\Query\SqlWalker;
+use Gedmo\Exception\RuntimeException;
 use Gedmo\Translatable\Hydrator\ORM\ObjectHydrator;
 use Gedmo\Translatable\Hydrator\ORM\SimpleObjectHydrator;
 use Gedmo\Translatable\Mapping\Event\Adapter\ORM as TranslatableEventAdapter;
@@ -36,6 +41,8 @@ use Gedmo\Translatable\TranslatableListener;
  * of the fields.
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class TranslationWalker extends SqlWalker
 {
@@ -63,21 +70,23 @@ class TranslationWalker extends SqlWalker
     /**
      * Stores all component references from select clause
      *
-     * @var array
+     * @var array<string, array<string, mixed>>
+     *
+     * @phpstan-var array<string, array{metadata: ClassMetadata}>
      */
     private $translatedComponents = [];
 
     /**
      * DBAL database platform
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     private $platform;
 
     /**
      * DBAL database connection
      *
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     private $conn;
 
@@ -85,14 +94,14 @@ class TranslationWalker extends SqlWalker
      * List of aliases to replace with translation
      * content reference
      *
-     * @var array
+     * @var array<string, string>
      */
     private $replacements = [];
 
     /**
      * List of joins for translated components in query
      *
-     * @var array
+     * @var array<string, string>
      */
     private $components = [];
 
@@ -131,7 +140,7 @@ class TranslationWalker extends SqlWalker
     public function walkSelectStatement(SelectStatement $AST)
     {
         $result = parent::walkSelectStatement($AST);
-        if (!count($this->translatedComponents)) {
+        if ([] === $this->translatedComponents) {
             return $result;
         }
 
@@ -161,9 +170,8 @@ class TranslationWalker extends SqlWalker
     public function walkSelectClause($selectClause)
     {
         $result = parent::walkSelectClause($selectClause);
-        $result = $this->replace($this->replacements, $result);
 
-        return $result;
+        return $this->replace($this->replacements, $result);
     }
 
     /**
@@ -212,9 +220,7 @@ class TranslationWalker extends SqlWalker
      */
     public function walkSubselect($subselect)
     {
-        $result = parent::walkSubselect($subselect);
-
-        return $result;
+        return parent::walkSubselect($subselect);
     }
 
     /**
@@ -252,7 +258,7 @@ class TranslationWalker extends SqlWalker
      * Walks from clause, and creates translation joins
      * for the translated components
      *
-     * @param \Doctrine\ORM\Query\AST\FromClause|\Doctrine\ORM\Query\AST\SubselectFromClause $from
+     * @param FromClause|SubselectFromClause $from
      */
     private function joinTranslations(Node $from): string
     {
@@ -386,6 +392,10 @@ class TranslationWalker extends SqlWalker
 
     /**
      * Search for translated components in the select clause
+     *
+     * @param array<string, array<string, ClassMetadata>> $queryComponents
+     *
+     * @phpstan-param array<string, array{metadata: ClassMetadata}> $queryComponents
      */
     private function extractTranslatedComponents(array $queryComponents): void
     {
@@ -405,12 +415,12 @@ class TranslationWalker extends SqlWalker
     /**
      * Get the currently used TranslatableListener
      *
-     * @throws \Gedmo\Exception\RuntimeException if listener is not found
+     * @throws RuntimeException if listener is not found
      */
     private function getTranslatableListener(): TranslatableListener
     {
         $em = $this->getEntityManager();
-        foreach ($em->getEventManager()->getListeners() as $event => $listeners) {
+        foreach ($em->getEventManager()->getAllListeners() as $event => $listeners) {
             foreach ($listeners as $hash => $listener) {
                 if ($listener instanceof TranslatableListener) {
                     return $listener;
@@ -418,12 +428,14 @@ class TranslationWalker extends SqlWalker
             }
         }
 
-        throw new \Gedmo\Exception\RuntimeException('The translation listener could not be found');
+        throw new RuntimeException('The translation listener could not be found');
     }
 
     /**
      * Replaces given sql $str with required
      * results
+     *
+     * @param array<string, string> $repl
      */
     private function replace(array $repl, string $str): string
     {

@@ -44,10 +44,10 @@ class TranslationProxy
     /**
      * Initializes translations collection
      *
-     * @param object $translatable object to translate
-     * @param string $locale       translation name
-     * @param array  $properties   object properties to translate
-     * @param string $class        translation entity|document class
+     * @param object   $translatable object to translate
+     * @param string   $locale       translation name
+     * @param string[] $properties   object properties to translate
+     * @param string   $class        translation entity|document class
      *
      * @throws \InvalidArgumentException Translation class doesn't implement TranslationInterface
      *
@@ -68,8 +68,8 @@ class TranslationProxy
     }
 
     /**
-     * @param string $method
-     * @param array  $arguments
+     * @param string  $method
+     * @param mixed[] $arguments
      *
      * @return mixed
      */
@@ -123,24 +123,22 @@ class TranslationProxy
     /**
      * @param string $property
      * @param mixed  $value
-     *
-     * @return self
      */
     public function __set($property, $value)
     {
         if (in_array($property, $this->properties, true)) {
             if (method_exists($this, $setter = 'set'.ucfirst($property))) {
-                return $this->$setter($value);
+                $this->$setter($value);
+
+                return;
             }
 
             $this->setTranslatedValue($property, $value);
 
-            return $this;
+            return;
         }
 
         $this->translatable->$property = $value;
-
-        return $this;
     }
 
     /**

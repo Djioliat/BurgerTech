@@ -13,6 +13,8 @@ namespace Gedmo\ReferenceIntegrity\Mapping;
  * This class is used to validate mapping information
  *
  * @author Evert Harmeling <evert.harmeling@freshheads.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class Validator
 {
@@ -23,9 +25,11 @@ class Validator
     /**
      * List of actions which are valid as integrity check
      *
-     * @var array
+     * @var string[]
+     *
+     * @phpstan-var array<int, self::NULLIFY|self::PULL|self::RESTRICT>
      */
-    private $integrityActions = [
+    public const INTEGRITY_ACTIONS = [
         self::NULLIFY,
         self::PULL,
         self::RESTRICT,
@@ -34,10 +38,12 @@ class Validator
     /**
      * Returns a list of available integrity actions
      *
-     * @return array
+     * @return string[]
+     *
+     * @phpstan-return array<int, self::NULLIFY|self::PULL|self::RESTRICT>
      */
     public function getIntegrityActions()
     {
-        return $this->integrityActions;
+        return self::INTEGRITY_ACTIONS;
     }
 }

@@ -10,8 +10,12 @@
 namespace Gedmo\Tree;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
 use Doctrine\Persistence\ObjectManager;
+use Gedmo\Exception\InvalidArgumentException;
+use Gedmo\Exception\UnexpectedValueException;
 use Gedmo\Mapping\MappedEventSubscriber;
 use Gedmo\Tree\Mapping\Event\TreeAdapter;
 
@@ -33,7 +37,7 @@ use Gedmo\Tree\Mapping\Event\TreeAdapter;
  *   path?: string,
  *   path_source?: string,
  *   path_separator?: string,
- *   path_append_id?: bool,
+ *   path_append_id?: ?bool,
  *   path_starts_with_separator?: bool,
  *   path_ends_with_separator?: bool,
  *   path_hash?: string,
@@ -42,6 +46,7 @@ use Gedmo\Tree\Mapping\Event\TreeAdapter;
  *   rootIdentifierMethod?: string,
  *   strategy?: string,
  *   useObjectClass?: class-string,
+ *   level_base?: int,
  * }
  *
  * @phpstan-method TreeConfiguration getConfiguration(ObjectManager $objectManager, $class)
@@ -53,21 +58,27 @@ class TreeListener extends MappedEventSubscriber
     /**
      * Tree processing strategies for object classes
      *
-     * @var array
+     * @var array<string, string>
+     *
+     * @phpstan-var array<class-string, string>
      */
     private $strategies = [];
 
     /**
      * List of strategy instances
      *
-     * @var array
+     * @var array<string, Strategy>
+     *
+     * @phpstan-var array<value-of<self::strategies>, Strategy>
      */
     private $strategyInstances = [];
 
     /**
      * List of used classes on flush
      *
-     * @var array
+     * @var array<string, null>
+     *
+     * @phpstan-var array<class-string, null>
      */
     private $usedClassesOnFlush = [];
 
@@ -101,20 +112,20 @@ class TreeListener extends MappedEventSubscriber
     {
         if (!isset($this->strategies[$class])) {
             $config = $this->getConfiguration($om, $class);
-            if (!$config) {
-                throw new \Gedmo\Exception\UnexpectedValueException("Tree object class: {$class} must have tree metadata at this point");
+            if ([] === $config) {
+                throw new UnexpectedValueException("Tree object class: {$class} must have tree metadata at this point");
             }
             $managerName = 'UnsupportedManager';
-            if ($om instanceof \Doctrine\ORM\EntityManagerInterface) {
+            if ($om instanceof EntityManagerInterface) {
                 $managerName = 'ORM';
-            } elseif ($om instanceof \Doctrine\ODM\MongoDB\DocumentManager) {
+            } elseif ($om instanceof DocumentManager) {
                 $managerName = 'ODM\\MongoDB';
             }
             if (!isset($this->strategyInstances[$config['strategy']])) {
                 $strategyClass = $this->getNamespace().'\\Strategy\\'.$managerName.'\\'.ucfirst($config['strategy']);
 
                 if (!class_exists($strategyClass)) {
-                    throw new \Gedmo\Exception\InvalidArgumentException($managerName." TreeListener does not support tree type: {$config['strategy']}");
+                    throw new InvalidArgumentException($managerName." TreeListener does not support tree type: {$config['strategy']}");
                 }
                 $this->strategyInstances[$config['strategy']] = new $strategyClass($this);
             }
@@ -298,7 +309,11 @@ class TreeListener extends MappedEventSubscriber
      * Get the list of strategy instances used for
      * given object classes
      *
-     * @return Strategy[]
+     * @phpstan-param array<class-string, null> $classes
+     *
+     * @return array<string, Strategy>
+     *
+     * @phpstan-return array<value-of<self::strategies>, Strategy>
      */
     protected function getStrategiesUsedForObjects(array $classes)
     {

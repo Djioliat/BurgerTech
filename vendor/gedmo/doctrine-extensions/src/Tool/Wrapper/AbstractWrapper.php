@@ -10,7 +10,9 @@
 namespace Gedmo\Tool\Wrapper;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as OdmClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata as OrmClassMetadata;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use Gedmo\Exception\UnsupportedObjectManagerException;
@@ -20,6 +22,10 @@ use Gedmo\Tool\WrapperInterface;
  * Wraps entity or proxy for more convenient
  * manipulation
  *
+ * @phpstan-template TClassMetadata of ClassMetadata
+ *
+ * @phpstan-implements WrapperInterface<TClassMetadata>
+ *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  */
 abstract class AbstractWrapper implements WrapperInterface
@@ -27,7 +33,9 @@ abstract class AbstractWrapper implements WrapperInterface
     /**
      * Object metadata
      *
-     * @var ClassMetadata
+     * @var ClassMetadata&(OrmClassMetadata|OdmClassMetadata)
+     *
+     * @phpstan-var TClassMetadata
      */
     protected $meta;
 
@@ -50,9 +58,9 @@ abstract class AbstractWrapper implements WrapperInterface
      *
      * @param object $object
      *
-     * @throws \Gedmo\Exception\UnsupportedObjectManagerException
+     * @throws UnsupportedObjectManagerException
      *
-     * @return \Gedmo\Tool\WrapperInterface
+     * @return WrapperInterface
      */
     public static function wrap($object, ObjectManager $om)
     {

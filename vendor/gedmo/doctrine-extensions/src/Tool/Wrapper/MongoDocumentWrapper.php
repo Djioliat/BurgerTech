@@ -10,20 +10,25 @@
 namespace Gedmo\Tool\Wrapper;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Wraps document or proxy for more convenient
  * manipulation
  *
+ * @phpstan-extends AbstractWrapper<ClassMetadata>
+ *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class MongoDocumentWrapper extends AbstractWrapper
 {
     /**
      * Document identifier
      *
-     * @var mixed
+     * @var string|null
      */
     private $identifier;
 
@@ -71,7 +76,12 @@ class MongoDocumentWrapper extends AbstractWrapper
         return (bool) $this->getIdentifier();
     }
 
-    public function getIdentifier($single = true)
+    /**
+     * @param bool $flatten
+     *
+     * @return string
+     */
+    public function getIdentifier($single = true, $flatten = false)
     {
         if (!$this->identifier) {
             if ($this->object instanceof GhostObjectInterface) {

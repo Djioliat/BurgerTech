@@ -14,6 +14,9 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use Gedmo\SoftDeleteable\SoftDeleteableListener;
 
+/**
+ * @final since gedmo/doctrine-extensions 3.11
+ */
 class SoftDeleteableFilter extends BsonFilter
 {
     /**
@@ -36,7 +39,9 @@ class SoftDeleteableFilter extends BsonFilter
     /**
      * Gets the criteria part to add to a query.
      *
-     * @return array The criteria array, if there is available, empty array otherwise
+     * @return array<string, array<int, array<string, array<string, \DateTime>|null>>|null> The criteria array, if there is available, empty array otherwise
+     *
+     * @phpstan-return array<string, array<int, array<string, array{'$gt': \DateTime}|null>>|null>
      */
     public function addFilterCriteria(ClassMetadata $targetEntity): array
     {
@@ -60,7 +65,7 @@ class SoftDeleteableFilter extends BsonFilter
             return [
                 '$or' => [
                     [$column['fieldName'] => null],
-                    [$column['fieldName'] => ['$gt' => new \DateTime('now')]],
+                    [$column['fieldName'] => ['$gt' => new \DateTime()]],
                 ],
             ];
         }
@@ -93,7 +98,7 @@ class SoftDeleteableFilter extends BsonFilter
     }
 
     /**
-     * @return SoftDeleteableListener|null
+     * @return SoftDeleteableListener
      */
     protected function getListener()
     {
@@ -101,7 +106,7 @@ class SoftDeleteableFilter extends BsonFilter
             $em = $this->getDocumentManager();
             $evm = $em->getEventManager();
 
-            foreach ($evm->getListeners() as $listeners) {
+            foreach ($evm->getAllListeners() as $listeners) {
                 foreach ($listeners as $listener) {
                     if ($listener instanceof SoftDeleteableListener) {
                         $this->listener = $listener;

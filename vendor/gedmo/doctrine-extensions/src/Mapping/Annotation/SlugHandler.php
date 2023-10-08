@@ -9,7 +9,6 @@
 
 namespace Gedmo\Mapping\Annotation;
 
-use Attribute;
 use Doctrine\Common\Annotations\Annotation;
 use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
 use Gedmo\Sluggable\Handler\SlugHandlerInterface;
@@ -22,9 +21,11 @@ use Gedmo\Sluggable\Handler\SlugHandlerInterface;
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  */
-#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 final class SlugHandler implements GedmoAnnotation
 {
+    use ForwardCompatibilityTrait;
+
     /**
      * @var string
      * @phpstan-var string|class-string<SlugHandlerInterface>
@@ -32,12 +33,15 @@ final class SlugHandler implements GedmoAnnotation
     public $class = '';
 
     /**
-     * @var array<SlugHandlerOption>|array<array{string, mixed}>
+     * @var array<SlugHandlerOption>|array<string, mixed>
      */
     public $options = [];
 
     /**
-     * @phpstan-param string|class-string<SlugHandlerInterface> $class
+     * @param array<string, mixed> $data
+     *
+     * @phpstan-param string|class-string<SlugHandlerInterface>     $class
+     * @phpstan-param array<SlugHandlerOption>|array<string, mixed> $options
      */
     public function __construct(
         array $data = [],
@@ -49,9 +53,16 @@ final class SlugHandler implements GedmoAnnotation
                 'Passing an array as first argument to "%s()" is deprecated. Use named arguments instead.',
                 __METHOD__
             ), E_USER_DEPRECATED);
+
+            $args = func_get_args();
+
+            $this->class = $this->getAttributeValue($data, 'class', $args, 1, $class);
+            $this->options = $this->getAttributeValue($data, 'options', $args, 2, $options);
+
+            return;
         }
 
-        $this->class = $data['class'] ?? $class;
-        $this->options = $data['options'] ?? $options;
+        $this->class = $class;
+        $this->options = $options;
     }
 }

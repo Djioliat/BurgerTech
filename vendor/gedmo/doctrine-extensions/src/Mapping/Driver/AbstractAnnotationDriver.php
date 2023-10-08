@@ -9,6 +9,7 @@
 
 namespace Gedmo\Mapping\Driver;
 
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
@@ -23,7 +24,9 @@ abstract class AbstractAnnotationDriver implements AnnotationDriverInterface
     /**
      * Annotation reader instance
      *
-     * @var object
+     * @var Reader|AttributeReader|object
+     *
+     * @todo Remove the support for the `object` type in the next major release.
      */
     protected $reader;
 
@@ -37,12 +40,26 @@ abstract class AbstractAnnotationDriver implements AnnotationDriverInterface
     /**
      * List of types which are valid for extension
      *
-     * @var array
+     * @var string[]
      */
     protected $validTypes = [];
 
     public function setAnnotationReader($reader)
     {
+        if (!$reader instanceof Reader && !$reader instanceof AttributeReader) {
+            trigger_deprecation(
+                'gedmo/doctrine-extensions',
+                '3.11',
+                'Passing an object not implementing "%s" or "%s" as argument 1 to "%s()" is deprecated and'
+                .' will throw an "%s" error in version 4.0. Instance of "%s" given.',
+                Reader::class,
+                AttributeReader::class,
+                __METHOD__,
+                \TypeError::class,
+                get_class($reader)
+            );
+        }
+
         $this->reader = $reader;
     }
 
@@ -65,18 +82,12 @@ abstract class AbstractAnnotationDriver implements AnnotationDriverInterface
      */
     public function getMetaReflectionClass($meta)
     {
-        $class = $meta->getReflectionClass();
-        if (!$class) {
-            // based on recent doctrine 2.3.0-DEV maybe will be fixed in some way
-            // this happens when running annotation driver in combination with
-            // static reflection services. This is not the nicest fix
-            $class = new \ReflectionClass($meta->getName());
-        }
-
-        return $class;
+        return $meta->getReflectionClass();
     }
 
     /**
+     * @param array<string, mixed> $config
+     *
      * @return void
      */
     public function validateFullMetadata(ClassMetadata $meta, array $config)
@@ -105,6 +116,10 @@ abstract class AbstractAnnotationDriver implements AnnotationDriverInterface
      * @param string        $name     the related object class name
      *
      * @return string related class name or empty string if does not exist
+     *
+     * @phpstan-param class-string|string $name
+     *
+     * @phpstan-return class-string|''
      */
     protected function getRelatedClassName($metadata, $name)
     {

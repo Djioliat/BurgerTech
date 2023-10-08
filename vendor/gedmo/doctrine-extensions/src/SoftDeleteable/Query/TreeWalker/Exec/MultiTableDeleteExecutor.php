@@ -20,9 +20,14 @@ use Doctrine\ORM\Query\Exec\MultiTableDeleteExecutor as BaseMultiTableDeleteExec
  *
  * @author Gustavo Falco <comfortablynumb84@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class MultiTableDeleteExecutor extends BaseMultiTableDeleteExecutor
 {
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(Node $AST, $sqlWalker, ClassMetadata $meta, AbstractPlatform $platform, array $config)
     {
         parent::__construct($AST, $sqlWalker);

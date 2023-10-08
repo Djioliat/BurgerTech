@@ -22,6 +22,8 @@ use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
  */
 final class SlugHandlerOption implements GedmoAnnotation
 {
+    use ForwardCompatibilityTrait;
+
     /**
      * @var string
      */
@@ -33,7 +35,8 @@ final class SlugHandlerOption implements GedmoAnnotation
     public $value;
 
     /**
-     * @param mixed $value
+     * @param array<string, mixed> $data
+     * @param mixed                $value
      */
     public function __construct(
         array $data = [],
@@ -45,9 +48,16 @@ final class SlugHandlerOption implements GedmoAnnotation
                 'Passing an array as first argument to "%s()" is deprecated. Use named arguments instead.',
                 __METHOD__
             ), E_USER_DEPRECATED);
+
+            $args = func_get_args();
+
+            $this->name = $this->getAttributeValue($data, 'name', $args, 1, $name);
+            $this->value = $this->getAttributeValue($data, 'value', $args, 2, $value);
+
+            return;
         }
 
-        $this->name = $data['name'] ?? $name;
-        $this->value = $data['value'] ?? $value;
+        $this->name = $name;
+        $this->value = $value;
     }
 }

@@ -13,6 +13,7 @@ use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Gedmo\Exception\RuntimeException;
 use Gedmo\Mapping\Event\Adapter\ORM as BaseAdapterORM;
 use Gedmo\Tool\Wrapper\AbstractWrapper;
 use Gedmo\Translatable\Entity\MappedSuperclass\AbstractPersonalTranslation;
@@ -79,7 +80,10 @@ final class ORM extends BaseAdapterORM implements TranslatableAdapter
                 $dql .= ' AND t.object = :object';
 
                 $q = $em->createQuery($dql);
-                $q->setParameters(compact('object', 'locale'));
+                $q->setParameters([
+                    'object' => $object,
+                    'locale' => $locale,
+                ]);
                 $result = $q->getArrayResult();
             }
         } else {
@@ -92,7 +96,11 @@ final class ORM extends BaseAdapterORM implements TranslatableAdapter
             $dql .= ' AND t.objectClass = :objectClass';
             // fetch results
             $q = $em->createQuery($dql);
-            $q->setParameters(compact('objectId', 'locale', 'objectClass'));
+            $q->setParameters([
+                'objectId' => $objectId,
+                'locale' => $locale,
+                'objectClass' => $objectClass,
+            ]);
             $result = $q->getArrayResult();
         }
 
@@ -135,7 +143,10 @@ final class ORM extends BaseAdapterORM implements TranslatableAdapter
                 'trans.field = :field'
             )
         ;
-        $qb->setParameters(compact('locale', 'field'));
+        $qb->setParameters([
+            'locale' => $locale,
+            'field' => $field,
+        ]);
         if ($this->usesPersonalTranslation($translationClass)) {
             $qb->andWhere('trans.object = :object');
             if ($wrapped->getIdentifier()) {
@@ -196,7 +207,7 @@ final class ORM extends BaseAdapterORM implements TranslatableAdapter
 
         $table = $meta->getTableName();
         if (!$em->getConnection()->insert($table, $data)) {
-            throw new \Gedmo\Exception\RuntimeException('Failed to insert new Translation record');
+            throw new RuntimeException('Failed to insert new Translation record');
         }
     }
 

@@ -18,7 +18,7 @@ use Doctrine\DBAL\Types\Type;
  */
 abstract class AbstractSqlExecutor
 {
-    /** @var mixed[]|string */
+    /** @var list<string>|string */
     protected $_sqlStatements;
 
     /** @var QueryCacheProfile */
@@ -34,9 +34,7 @@ abstract class AbstractSqlExecutor
         return $this->_sqlStatements;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setQueryCacheProfile(QueryCacheProfile $qcp)
     {
         $this->queryCacheProfile = $qcp;
@@ -55,10 +53,9 @@ abstract class AbstractSqlExecutor
     /**
      * Executes all sql statements.
      *
-     * @param Connection $conn The database connection that is used to execute the queries.
-     * @psalm-param array<int, mixed>|array<string, mixed> $params The parameters.
-     * @psalm-param array<int, int|string|Type|null>|
-     *              array<string, int|string|Type|null> $types The parameter types.
+     * @param Connection                                                           $conn   The database connection that is used to execute the queries.
+     * @param list<mixed>|array<string, mixed>                                     $params The parameters.
+     * @param array<int, int|string|Type|null>|array<string, int|string|Type|null> $types  The parameter types.
      *
      * @return Result|int
      */

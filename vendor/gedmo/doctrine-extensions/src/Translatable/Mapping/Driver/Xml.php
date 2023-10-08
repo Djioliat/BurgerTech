@@ -20,6 +20,8 @@ use Gedmo\Mapping\Driver\Xml as BaseXml;
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  * @author Miha Vrhovnik <miha.vrhovnik@gmail.com>
+ *
+ * @internal
  */
 class Xml extends BaseXml
 {
@@ -79,6 +81,9 @@ class Xml extends BaseXml
         }
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function inspectElementsForTranslatableFields(\SimpleXMLElement $xml, array &$config, ?string $prefix = null): void
     {
         if (!isset($xml->field)) {
@@ -96,6 +101,9 @@ class Xml extends BaseXml
         }
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function buildFieldConfiguration(string $fieldName, \SimpleXMLElement $mapping, array &$config): void
     {
         $mapping = $mapping->children(self::GEDMO_NAMESPACE_URI);

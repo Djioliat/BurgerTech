@@ -9,6 +9,7 @@
 
 namespace Gedmo\Loggable\Mapping\Driver;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Gedmo\Exception\InvalidMappingException;
 use Gedmo\Mapping\Driver;
 use Gedmo\Mapping\Driver\File;
@@ -23,8 +24,10 @@ use Gedmo\Mapping\Driver\File;
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  *
  * @deprecated since gedmo/doctrine-extensions 3.5, will be removed in version 4.0.
+ *
+ * @internal
  */
-class Yaml extends File implements Driver
+class Yaml extends File
 {
     /**
      * File extension
@@ -122,11 +125,11 @@ class Yaml extends File implements Driver
         }
 
         if (!$meta->isMappedSuperclass && $config) {
-            if (is_array($meta->getIdentifier()) && count($meta->getIdentifier()) > 1) {
+            if ($meta instanceof ClassMetadata && is_array($meta->getIdentifier()) && count($meta->getIdentifier()) > 1) {
                 throw new InvalidMappingException("Loggable does not support composite identifiers in class - {$meta->getName()}");
             }
             if (isset($config['versioned']) && !isset($config['loggable'])) {
-                throw new InvalidMappingException("Class must be annoted with Loggable annotation in order to track versioned fields in class - {$meta->getName()}");
+                throw new InvalidMappingException("Class must be annotated with Loggable annotation in order to track versioned fields in class - {$meta->getName()}");
             }
         }
     }
@@ -136,6 +139,10 @@ class Yaml extends File implements Driver
         return \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
     }
 
+    /**
+     * @param array<string, array<string, array<string, mixed>>> $mapping
+     * @param array<string, mixed>                               $config
+     */
     private function inspectEmbeddedForVersioned(string $field, array $mapping, array &$config): void
     {
         if (isset($mapping['fields'])) {

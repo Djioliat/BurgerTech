@@ -18,6 +18,8 @@ use Gedmo\Tree\Strategy\AbstractMaterializedPath;
  *
  * @author Gustavo Falco <comfortablynumb84@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class MaterializedPath extends AbstractMaterializedPath
 {
@@ -48,7 +50,7 @@ class MaterializedPath extends AbstractMaterializedPath
         }
 
         $results = $qb->getQuery()
-            ->execute();
+            ->toIterable();
 
         foreach ($results as $node) {
             $uow->scheduleForDelete($node);
@@ -69,7 +71,6 @@ class MaterializedPath extends AbstractMaterializedPath
             ->orderBy('e.'.$config['path'], 'asc');      // This may save some calls to updateNode
         $qb->setParameter('path', $path);
 
-        return $qb->getQuery()
-            ->execute();
+        return $qb->getQuery()->getResult();
     }
 }

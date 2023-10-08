@@ -23,6 +23,8 @@ use Gedmo\Tool\Wrapper\AbstractWrapper;
  * relation changes
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class InversedRelativeSlugHandler implements SlugHandlerInterface
 {
@@ -83,6 +85,8 @@ class InversedRelativeSlugHandler implements SlugHandlerInterface
                 $options['relationClass']
             );
             if ($mappedByConfig) {
+                assert(class_exists($options['relationClass']));
+
                 $meta = $this->om->getClassMetadata($options['relationClass']);
                 if (!$meta->isSingleValuedAssociation($options['mappedBy'])) {
                     throw new InvalidMappingException('Unable to find '.$wrapped->getMetadata()->getName()." relation - [{$options['mappedBy']}] in class - {$meta->getName()}");

@@ -2,7 +2,9 @@
 
 namespace Stof\DoctrineExtensionsBundle\DependencyInjection;
 
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -11,9 +13,80 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class StofDoctrineExtensionsExtension extends Extension
 {
+    private const LISTENER_EVENTS = array(
+        'blameable' => array(
+            'prePersist',
+            'onFlush',
+            'loadClassMetadata',
+        ),
+        'ip_traceable' => array(
+            'prePersist',
+            'onFlush',
+            'loadClassMetadata',
+        ),
+        'loggable' => array(
+            'loadClassMetadata',
+            'onFlush',
+            'postPersist',
+        ),
+        'reference_integrity' => array(
+            'loadClassMetadata',
+            'preRemove',
+        ),
+        'sluggable' => array(
+            'prePersist',
+            'onFlush',
+            'loadClassMetadata',
+        ),
+        'softdeleteable' => array(
+            'loadClassMetadata',
+            'onFlush',
+        ),
+        'sortable' => array(
+            'onFlush',
+            'loadClassMetadata',
+            'prePersist',
+            'postPersist',
+            'preUpdate',
+            'postRemove',
+            'postFlush',
+        ),
+        'timestampable' => array(
+            'prePersist',
+            'onFlush',
+            'loadClassMetadata',
+        ),
+        'translatable' => array(
+            'postLoad',
+            'postPersist',
+            'preFlush',
+            'onFlush',
+            'loadClassMetadata',
+        ),
+        'tree' => array(
+            'prePersist',
+            'preRemove',
+            'preUpdate',
+            'onFlush',
+            'loadClassMetadata',
+            'postPersist',
+            'postUpdate',
+            'postRemove',
+        ),
+        'uploadable' => array(
+            'loadClassMetadata',
+            'preFlush',
+            'onFlush',
+            'postFlush',
+        ),
+    );
+
     private $entityManagers   = array();
     private $documentManagers = array();
 
+    /**
+     * @return void
+     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $processor = new Processor();
@@ -25,8 +98,8 @@ class StofDoctrineExtensionsExtension extends Extension
 
         $loaded = array();
 
-        $this->entityManagers = $this->processObjectManagerConfigurations($config['orm'], $container, $loader, $loaded, 'doctrine.event_subscriber');
-        $this->documentManagers = $this->processObjectManagerConfigurations($config['mongodb'], $container, $loader, $loaded, 'doctrine_mongodb.odm.event_subscriber');
+        $this->entityManagers = $this->processObjectManagerConfigurations($config['orm'], $container, $loader, $loaded, 'doctrine.event_listener');
+        $this->documentManagers = $this->processObjectManagerConfigurations($config['mongodb'], $container, $loader, $loaded, 'doctrine_mongodb.odm.event_listener');
 
         $container->setParameter('stof_doctrine_extensions.default_locale', $config['default_locale']);
         $container->setParameter('stof_doctrine_extensions.translation_fallback', $config['translation_fallback']);
@@ -63,6 +136,12 @@ class StofDoctrineExtensionsExtension extends Extension
             }
         }
 
+        if (isset($config['metadata_cache_pool'])) {
+            $container->setAlias('stof_doctrine_extensions.metadata_cache', new Alias($config['metadata_cache_pool'], false));
+        } else {
+            $container->register('stof_doctrine_extensions.metadata_cache', ArrayAdapter::class)->setPublic(false);
+        }
+
         foreach ($config['class'] as $listener => $class) {
             $container->setParameter(sprintf('stof_doctrine_extensions.listener.%s.class', $listener), $class);
         }
@@ -91,11 +170,11 @@ class StofDoctrineExtensionsExtension extends Extension
      * @param ContainerBuilder $container
      * @param LoaderInterface  $loader
      * @param array            $loaded
-     * @param string           $doctrineSubscriberTag
+     * @param string           $doctrineListenerTag
      *
      * @return array
      */
-    private function processObjectManagerConfigurations(array $configs, ContainerBuilder $container, LoaderInterface $loader, array &$loaded, $doctrineSubscriberTag)
+    private function processObjectManagerConfigurations(array $configs, ContainerBuilder $container, LoaderInterface $loader, array &$loaded, string $doctrineListenerTag)
     {
         $usedManagers = array();
 
@@ -123,7 +202,11 @@ class StofDoctrineExtensionsExtension extends Extension
                 }
 
                 $definition = $container->getDefinition(sprintf('stof_doctrine_extensions.listener.%s', $ext));
-                $definition->addTag($doctrineSubscriberTag, $attributes);
+
+                foreach (self::LISTENER_EVENTS[$ext] as $event) {
+                    $attributes['event'] = $event;
+                    $definition->addTag($doctrineListenerTag, $attributes);
+                }
 
                 $usedManagers[$name] = true;
             }

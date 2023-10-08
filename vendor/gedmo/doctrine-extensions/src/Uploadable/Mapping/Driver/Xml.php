@@ -21,6 +21,8 @@ use Gedmo\Uploadable\Mapping\Validator;
  * @author Gustavo Falco <comfortablynumb84@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  * @author Miha Vrhovnik <miha.vrhovnik@gmail.com>
+ *
+ * @internal
  */
 class Xml extends BaseXml
 {
@@ -33,7 +35,7 @@ class Xml extends BaseXml
         $xmlDoctrine = $xml;
         $xml = $xml->children(self::GEDMO_NAMESPACE_URI);
 
-        if ('entity' === $xmlDoctrine->getName() || 'mapped-superclass' === $xmlDoctrine->getName()) {
+        if (in_array($xmlDoctrine->getName(), ['mapped-superclass', 'entity'], true)) {
             if (isset($xml->uploadable)) {
                 $xmlUploadable = $xml->uploadable;
                 $config['uploadable'] = true;

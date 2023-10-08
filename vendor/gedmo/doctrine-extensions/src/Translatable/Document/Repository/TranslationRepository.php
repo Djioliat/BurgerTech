@@ -10,11 +10,13 @@
 namespace Gedmo\Translatable\Document\Repository;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Gedmo\Exception\InvalidArgumentException;
+use Gedmo\Exception\RuntimeException;
+use Gedmo\Exception\UnexpectedValueException;
 use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
 use Gedmo\Translatable\Document\MappedSuperclass\AbstractPersonalTranslation;
 use Gedmo\Translatable\Mapping\Event\Adapter\ODM as TranslatableAdapterODM;
@@ -39,7 +41,7 @@ class TranslationRepository extends DocumentRepository
     public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $class)
     {
         if ($class->getReflectionClass()->isSubclassOf(AbstractPersonalTranslation::class)) {
-            throw new \Gedmo\Exception\UnexpectedValueException('This repository is useless for personal translations');
+            throw new UnexpectedValueException('This repository is useless for personal translations');
         }
         parent::__construct($dm, $uow, $class);
     }
@@ -61,7 +63,7 @@ class TranslationRepository extends DocumentRepository
         $listener = $this->getTranslatableListener();
         $config = $listener->getConfiguration($this->dm, $meta->getName());
         if (!isset($config['fields']) || !in_array($field, $config['fields'], true)) {
-            throw new \Gedmo\Exception\InvalidArgumentException("Document: {$meta->getName()} does not translate field - {$field}");
+            throw new InvalidArgumentException("Document: {$meta->getName()} does not translate field - {$field}");
         }
         $modRecordValue = (!$listener->getPersistDefaultLocaleTranslation() && $locale === $listener->getDefaultLocale())
             || $listener->getTranslatableLocale($document, $meta, $this->getDocumentManager()) === $locale
@@ -79,7 +81,12 @@ class TranslationRepository extends DocumentRepository
             $foreignKey = $meta->getReflectionProperty($meta->getIdentifier()[0])->getValue($document);
             $objectClass = $config['useObjectClass'];
             $transMeta = $this->dm->getClassMetadata($class);
-            $trans = $this->findOneBy(compact('locale', 'field', 'objectClass', 'foreignKey'));
+            $trans = $this->findOneBy([
+                'locale' => $locale,
+                'field' => $field,
+                'objectClass' => $objectClass,
+                'foreignKey' => $foreignKey,
+            ]);
             if (!$trans) {
                 $trans = $transMeta->newInstance();
                 $transMeta->getReflectionProperty('foreignKey')->setValue($trans, $foreignKey);
@@ -108,7 +115,7 @@ class TranslationRepository extends DocumentRepository
      *
      * @param object $document
      *
-     * @return array list of translations in locale groups
+     * @return array<string, array<string, string>> list of translations in locale groups
      */
     public function findTranslations($document)
     {
@@ -139,14 +146,9 @@ class TranslationRepository extends DocumentRepository
                 ->getQuery();
 
             $q->setHydrate(false);
-            $data = $q->execute();
-            if ($data instanceof Iterator) {
-                $data = $data->toArray();
-            }
-            if ($data && is_array($data) && count($data)) {
-                foreach ($data as $row) {
-                    $result[$row['locale']][$row['field']] = $row['content'];
-                }
+
+            foreach ($q->getIterator() as $row) {
+                $result[$row['locale']][$row['field']] = $row['content'];
             }
         }
 
@@ -181,11 +183,7 @@ class TranslationRepository extends DocumentRepository
             ->getQuery();
 
         $q->setHydrate(false);
-        $result = $q->execute();
-
-        if ($result instanceof Iterator) {
-            $result = $result->toArray();
-        }
+        $result = $q->getIterator()->toArray();
 
         $id = $result[0]['foreign_key'] ?? null;
 
@@ -202,7 +200,7 @@ class TranslationRepository extends DocumentRepository
      *
      * @param mixed $id primary key value of document
      *
-     * @return array
+     * @return array<string, array<string, string>>
      */
     public function findTranslationsByObjectId($id)
     {
@@ -215,15 +213,9 @@ class TranslationRepository extends DocumentRepository
                 ->getQuery();
 
             $q->setHydrate(false);
-            $data = $q->execute();
 
-            if ($data instanceof Iterator) {
-                $data = $data->toArray();
-            }
-            if ($data && is_array($data) && count($data)) {
-                foreach ($data as $row) {
-                    $result[$row['locale']][$row['field']] = $row['content'];
-                }
+            foreach ($q->getIterator() as $row) {
+                $result[$row['locale']][$row['field']] = $row['content'];
             }
         }
 
@@ -233,12 +225,12 @@ class TranslationRepository extends DocumentRepository
     /**
      * Get the currently used TranslatableListener
      *
-     * @throws \Gedmo\Exception\RuntimeException if listener is not found
+     * @throws RuntimeException if listener is not found
      */
     private function getTranslatableListener(): TranslatableListener
     {
         if (null === $this->listener) {
-            foreach ($this->dm->getEventManager()->getListeners() as $event => $listeners) {
+            foreach ($this->dm->getEventManager()->getAllListeners() as $event => $listeners) {
                 foreach ($listeners as $hash => $listener) {
                     if ($listener instanceof TranslatableListener) {
                         return $this->listener = $listener;
@@ -246,7 +238,7 @@ class TranslationRepository extends DocumentRepository
                 }
             }
 
-            throw new \Gedmo\Exception\RuntimeException('The translation listener could not be found');
+            throw new RuntimeException('The translation listener could not be found');
         }
 
         return $this->listener;

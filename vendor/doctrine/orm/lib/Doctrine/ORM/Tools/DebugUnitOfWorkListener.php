@@ -9,7 +9,6 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Proxy;
 use ReflectionObject;
 
 use function count;
@@ -46,12 +45,10 @@ class DebugUnitOfWorkListener
         $this->context = $context;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function onFlush(OnFlushEventArgs $args)
     {
-        $this->dumpIdentityMap($args->getEntityManager());
+        $this->dumpIdentityMap($args->getObjectManager());
     }
 
     /**
@@ -89,7 +86,7 @@ class DebugUnitOfWorkListener
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
                         } else {
-                            if ($value instanceof Proxy && ! $value->__isInitialized()) {
+                            if ($uow->isUninitializedObject($value)) {
                                 fwrite($fh, '[PROXY] ');
                             }
 
@@ -119,9 +116,7 @@ class DebugUnitOfWorkListener
         fclose($fh);
     }
 
-    /**
-     * @param mixed $var
-     */
+    /** @param mixed $var */
     private function getType($var): string
     {
         if (is_object($var)) {
@@ -133,9 +128,7 @@ class DebugUnitOfWorkListener
         return gettype($var);
     }
 
-    /**
-     * @param object $entity
-     */
+    /** @param object $entity */
     private function getIdString($entity, UnitOfWork $uow): string
     {
         if ($uow->isInIdentityMap($entity)) {

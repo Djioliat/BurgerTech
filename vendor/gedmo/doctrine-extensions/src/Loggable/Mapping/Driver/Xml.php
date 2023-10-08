@@ -9,6 +9,7 @@
 
 namespace Gedmo\Loggable\Mapping\Driver;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as ClassMetadataODM;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Gedmo\Exception\InvalidMappingException;
 use Gedmo\Mapping\Driver\Xml as BaseXml;
@@ -22,6 +23,8 @@ use Gedmo\Mapping\Driver\Xml as BaseXml;
  * @author Boussekeyt Jules <jules.boussekeyt@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  * @author Miha Vrhovnik <miha.vrhovnik@gmail.com>
+ *
+ * @internal
  */
 class Xml extends BaseXml
 {
@@ -35,7 +38,7 @@ class Xml extends BaseXml
 
         $xml = $xml->children(self::GEDMO_NAMESPACE_URI);
 
-        if ('entity' === $xmlDoctrine->getName() || 'document' === $xmlDoctrine->getName() || 'mapped-superclass' === $xmlDoctrine->getName()) {
+        if (in_array($xmlDoctrine->getName(), ['mapped-superclass', 'entity', 'document'], true)) {
             if (isset($xml->loggable)) {
                 /**
                  * @var \SimpleXMLElement;
@@ -72,7 +75,7 @@ class Xml extends BaseXml
         }
 
         if (!$meta->isMappedSuperclass && $config) {
-            if (is_array($meta->getIdentifier()) && count($meta->getIdentifier()) > 1) {
+            if ($meta instanceof ClassMetadataODM && is_array($meta->getIdentifier()) && count($meta->getIdentifier()) > 1) {
                 throw new InvalidMappingException("Loggable does not support composite identifiers in class - {$meta->getName()}");
             }
             if (isset($config['versioned']) && !isset($config['loggable'])) {
@@ -83,6 +86,8 @@ class Xml extends BaseXml
 
     /**
      * Searches mappings on element for versioned fields
+     *
+     * @param array<string, mixed> $config
      */
     private function inspectElementForVersioned(\SimpleXMLElement $element, array &$config, ClassMetadata $meta): void
     {

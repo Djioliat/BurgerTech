@@ -10,6 +10,7 @@
 namespace Gedmo\Translatable\Hydrator\ORM;
 
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator as BaseObjectHydrator;
+use Gedmo\Exception\RuntimeException;
 use Gedmo\Translatable\TranslatableListener;
 
 /**
@@ -19,6 +20,8 @@ use Gedmo\Translatable\TranslatableListener;
  * of the fields
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class ObjectHydrator extends BaseObjectHydrator
 {
@@ -56,14 +59,14 @@ class ObjectHydrator extends BaseObjectHydrator
     /**
      * Get the currently used TranslatableListener
      *
-     * @throws \Gedmo\Exception\RuntimeException if listener is not found
+     * @throws RuntimeException if listener is not found
      *
      * @return TranslatableListener
      */
     protected function getTranslatableListener()
     {
         $translatableListener = null;
-        foreach ($this->_em->getEventManager()->getListeners() as $event => $listeners) {
+        foreach ($this->_em->getEventManager()->getAllListeners() as $event => $listeners) {
             foreach ($listeners as $hash => $listener) {
                 if ($listener instanceof TranslatableListener) {
                     $translatableListener = $listener;
@@ -74,7 +77,7 @@ class ObjectHydrator extends BaseObjectHydrator
         }
 
         if (null === $translatableListener) {
-            throw new \Gedmo\Exception\RuntimeException('The translation listener could not be found');
+            throw new RuntimeException('The translation listener could not be found');
         }
 
         return $translatableListener;

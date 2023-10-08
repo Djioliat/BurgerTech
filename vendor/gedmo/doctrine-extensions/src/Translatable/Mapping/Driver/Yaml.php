@@ -22,6 +22,8 @@ use Gedmo\Mapping\Driver\File;
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  *
  * @deprecated since gedmo/doctrine-extensions 3.5, will be removed in version 4.0.
+ *
+ * @internal
  */
 class Yaml extends File implements Driver
 {
@@ -76,6 +78,10 @@ class Yaml extends File implements Driver
         return \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
     }
 
+    /**
+     * @param array<string, mixed> $fieldMapping
+     * @param array<string, mixed> $config
+     */
     private function buildFieldConfiguration(string $field, array $fieldMapping, array &$config): void
     {
         if (isset($fieldMapping['gedmo'])) {

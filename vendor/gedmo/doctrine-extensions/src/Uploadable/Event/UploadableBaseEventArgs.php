@@ -51,6 +51,8 @@ abstract class UploadableBaseEventArgs extends EventArgs
     /**
      * The configuration of the Uploadable extension for this entity class
      *
+     * @todo Check if this property must be removed, as it is never set.
+     *
      * @var array
      */
     private $extensionConfiguration;
@@ -85,7 +87,7 @@ abstract class UploadableBaseEventArgs extends EventArgs
     /**
      * Retrieve the associated listener
      *
-     * @return \Gedmo\Uploadable\UploadableListener
+     * @return UploadableListener
      */
     public function getListener()
     {
@@ -95,7 +97,7 @@ abstract class UploadableBaseEventArgs extends EventArgs
     /**
      * Retrieve associated EntityManager
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
@@ -125,7 +127,7 @@ abstract class UploadableBaseEventArgs extends EventArgs
     /**
      * Retrieve the FileInfo associated with this entity.
      *
-     * @return \Gedmo\Uploadable\FileInfo\FileInfoInterface
+     * @return FileInfoInterface
      */
     public function getFileInfo()
     {

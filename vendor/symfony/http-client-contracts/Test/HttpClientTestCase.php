@@ -969,6 +969,14 @@ abstract class HttpClientTestCase extends TestCase
         } finally {
             unset($_SERVER['http_proxy']);
         }
+
+        $response = $client->request('GET', 'http://localhost:8057/301/proxy', [
+            'proxy' => 'http://localhost:8057',
+        ]);
+
+        $body = $response->toArray();
+        $this->assertSame('localhost:8057', $body['HTTP_HOST']);
+        $this->assertMatchesRegularExpression('#^http://(localhost|127\.0\.0\.1):8057/$#', $body['REQUEST_URI']);
     }
 
     public function testNoProxy()
@@ -1125,7 +1133,7 @@ abstract class HttpClientTestCase extends TestCase
         $client2 = $client->withOptions(['base_uri' => 'http://localhost:8057/']);
 
         $this->assertNotSame($client, $client2);
-        $this->assertSame(\get_class($client), \get_class($client2));
+        $this->assertSame($client::class, $client2::class);
 
         $response = $client2->request('GET', '/');
         $this->assertSame(200, $response->getStatusCode());

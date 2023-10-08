@@ -9,7 +9,6 @@
 
 namespace Gedmo\Mapping\Annotation;
 
-use Attribute;
 use Doctrine\Common\Annotations\Annotation;
 use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
 
@@ -22,26 +21,34 @@ use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
  *
  * @author Evert Harmeling <evert.harmeling@freshheads.com>
  */
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 final class ReferenceIntegrity implements GedmoAnnotation
 {
+    use ForwardCompatibilityTrait;
+
     /** @var string|null */
     public $value;
 
     /**
-     * @param string|array|null $data
+     * @param string|array<string, mixed>|null $data
      */
     public function __construct($data = [], ?string $value = null)
     {
         if (is_string($data)) {
-            $data = ['value' => $data];
+            $value = $data;
         } elseif ([] !== $data) {
             @trigger_error(sprintf(
                 'Passing an array as first argument to "%s()" is deprecated. Use named arguments instead.',
                 __METHOD__
             ), E_USER_DEPRECATED);
+
+            $args = func_get_args();
+
+            $this->value = $this->getAttributeValue($data, 'value', $args, 1, $value);
+
+            return;
         }
 
-        $this->value = $data['value'] ?? $value;
+        $this->value = $value;
     }
 }

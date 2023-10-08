@@ -9,7 +9,6 @@
 
 namespace Gedmo\Mapping\Annotation;
 
-use Attribute;
 use Doctrine\Common\Annotations\Annotation;
 use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
 use Gedmo\Tree\Entity\MappedSuperclass\AbstractClosure;
@@ -23,9 +22,11 @@ use Gedmo\Tree\Entity\MappedSuperclass\AbstractClosure;
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  */
-#[Attribute(Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_CLASS)]
 final class TreeClosure implements GedmoAnnotation
 {
+    use ForwardCompatibilityTrait;
+
     /**
      * @var string
      * @phpstan-var string|class-string<AbstractClosure>
@@ -33,6 +34,8 @@ final class TreeClosure implements GedmoAnnotation
     public $class;
 
     /**
+     * @param array<string, mixed> $data
+     *
      * @phpstan-param string|class-string<AbstractClosure> $class
      */
     public function __construct(array $data = [], string $class = '')
@@ -42,8 +45,14 @@ final class TreeClosure implements GedmoAnnotation
                 'Passing an array as first argument to "%s()" is deprecated. Use named arguments instead.',
                 __METHOD__
             ), E_USER_DEPRECATED);
+
+            $args = func_get_args();
+
+            $this->class = $this->getAttributeValue($data, 'class', $args, 1, $class);
+
+            return;
         }
 
-        $this->class = $data['class'] ?? $class;
+        $this->class = $class;
     }
 }

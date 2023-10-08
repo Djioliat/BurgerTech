@@ -19,19 +19,21 @@ use Gedmo\Mapping\Driver\Xml as BaseXml;
  * extension.
  *
  * @author Aram Alipoor <aram.alipoor@gmail.com>
+ *
+ * @internal
  */
 class Xml extends BaseXml
 {
     /**
-     * @var array
+     * @var string[]
      */
-    private $validTypes = [
+    private const VALID_TYPES = [
         'document',
         'entity',
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
     private $validReferences = [
         'referenceOne',
@@ -49,7 +51,7 @@ class Xml extends BaseXml
 
         $xml = $xml->children(self::GEDMO_NAMESPACE_URI);
 
-        if ('entity' === $xmlDoctrine->getName() || 'document' === $xmlDoctrine->getName() || 'mapped-superclass' === $xmlDoctrine->getName()) {
+        if (in_array($xmlDoctrine->getName(), ['mapped-superclass', 'entity', 'document'], true)) {
             if (isset($xml->reference)) {
                 /**
                  * @var \SimpleXMLElement
@@ -60,8 +62,8 @@ class Xml extends BaseXml
                     }
 
                     $type = $this->_getAttribute($element, 'type');
-                    if (!in_array($type, $this->validTypes, true)) {
-                        throw new InvalidMappingException($type.' is not a valid reference type, valid types are: '.implode(', ', $this->validTypes));
+                    if (!in_array($type, self::VALID_TYPES, true)) {
+                        throw new InvalidMappingException($type.' is not a valid reference type, valid types are: '.implode(', ', self::VALID_TYPES));
                     }
 
                     $reference = $this->_getAttribute($element, 'reference');
@@ -91,10 +93,10 @@ class Xml extends BaseXml
                         'identifier' => $identifier,
                     ];
 
-                    if (!$this->_isAttributeSet($element, 'mappedBy')) {
+                    if ($this->_isAttributeSet($element, 'mappedBy')) {
                         $config[$reference][$field]['mappedBy'] = $this->_getAttribute($element, 'mappedBy');
                     }
-                    if (!$this->_isAttributeSet($element, 'inversedBy')) {
+                    if ($this->_isAttributeSet($element, 'inversedBy')) {
                         $config[$reference][$field]['inversedBy'] = $this->_getAttribute($element, 'inversedBy');
                     }
                 }

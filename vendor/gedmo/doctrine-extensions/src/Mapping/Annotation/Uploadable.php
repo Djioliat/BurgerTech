@@ -9,9 +9,9 @@
 
 namespace Gedmo\Mapping\Annotation;
 
-use Attribute;
 use Doctrine\Common\Annotations\Annotation;
 use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
+use Gedmo\Uploadable\FilenameGenerator\FilenameGeneratorInterface;
 use Gedmo\Uploadable\Mapping\Validator;
 
 /**
@@ -24,9 +24,11 @@ use Gedmo\Uploadable\Mapping\Validator;
  * @author Gustavo Falco <comfortablynumb84@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  */
-#[Attribute(Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_CLASS)]
 final class Uploadable implements GedmoAnnotation
 {
+    use ForwardCompatibilityTrait;
+
     /**
      * @var bool
      */
@@ -54,6 +56,8 @@ final class Uploadable implements GedmoAnnotation
 
     /**
      * @var string
+     *
+     * @phpstan-var Validator::FILENAME_GENERATOR_*|class-string<FilenameGeneratorInterface>
      */
     public $filenameGenerator = Validator::FILENAME_GENERATOR_NONE;
 
@@ -72,6 +76,9 @@ final class Uploadable implements GedmoAnnotation
      */
     public $disallowedTypes = '';
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(
         array $data = [],
         bool $allowOverwrite = false,
@@ -89,16 +96,30 @@ final class Uploadable implements GedmoAnnotation
                 'Passing an array as first argument to "%s()" is deprecated. Use named arguments instead.',
                 __METHOD__
             ), E_USER_DEPRECATED);
+
+            $args = func_get_args();
+
+            $this->allowOverwrite = $this->getAttributeValue($data, 'allowOverwrite', $args, 1, $allowOverwrite);
+            $this->appendNumber = $this->getAttributeValue($data, 'appendNumber', $args, 2, $appendNumber);
+            $this->path = $this->getAttributeValue($data, 'path', $args, 3, $path);
+            $this->pathMethod = $this->getAttributeValue($data, 'pathMethod', $args, 4, $pathMethod);
+            $this->callback = $this->getAttributeValue($data, 'callback', $args, 5, $callback);
+            $this->filenameGenerator = $this->getAttributeValue($data, 'filenameGenerator', $args, 6, $filenameGenerator);
+            $this->maxSize = $this->getAttributeValue($data, 'maxSize', $args, 7, $maxSize);
+            $this->allowedTypes = $this->getAttributeValue($data, 'allowedTypes', $args, 8, $allowedTypes);
+            $this->disallowedTypes = $this->getAttributeValue($data, 'disallowedTypes', $args, 9, $disallowedTypes);
+
+            return;
         }
 
-        $this->allowOverwrite = $data['allowOverwrite'] ?? $allowOverwrite;
-        $this->appendNumber = $data['appendNumber'] ?? $appendNumber;
-        $this->path = $data['path'] ?? $path;
-        $this->pathMethod = $data['pathMethod'] ?? $pathMethod;
-        $this->callback = $data['callback'] ?? $callback;
-        $this->filenameGenerator = $data['filenameGenerator'] ?? $filenameGenerator;
-        $this->maxSize = $data['maxSize'] ?? $maxSize;
-        $this->allowedTypes = $data['allowedTypes'] ?? $allowedTypes;
-        $this->disallowedTypes = $data['disallowedTypes'] ?? $disallowedTypes;
+        $this->allowOverwrite = $allowOverwrite;
+        $this->appendNumber = $appendNumber;
+        $this->path = $path;
+        $this->pathMethod = $pathMethod;
+        $this->callback = $callback;
+        $this->filenameGenerator = $filenameGenerator;
+        $this->maxSize = $maxSize;
+        $this->allowedTypes = $allowedTypes;
+        $this->disallowedTypes = $disallowedTypes;
     }
 }

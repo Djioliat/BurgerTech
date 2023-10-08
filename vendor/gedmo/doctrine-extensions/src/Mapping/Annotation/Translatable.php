@@ -9,7 +9,6 @@
 
 namespace Gedmo\Mapping\Annotation;
 
-use Attribute;
 use Doctrine\Common\Annotations\Annotation;
 use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
 
@@ -22,12 +21,17 @@ use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  */
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
 final class Translatable implements GedmoAnnotation
 {
+    use ForwardCompatibilityTrait;
+
     /** @var bool|null */
     public $fallback;
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(array $data = [], ?bool $fallback = null)
     {
         if ([] !== $data) {
@@ -35,8 +39,14 @@ final class Translatable implements GedmoAnnotation
                 'Passing an array as first argument to "%s()" is deprecated. Use named arguments instead.',
                 __METHOD__
             ), E_USER_DEPRECATED);
+
+            $args = func_get_args();
+
+            $this->fallback = $this->getAttributeValue($data, 'fallback', $args, 1, $fallback);
+
+            return;
         }
 
-        $this->fallback = $data['fallback'] ?? $fallback;
+        $this->fallback = $fallback;
     }
 }

@@ -48,6 +48,8 @@ use ProxyManager\Proxy\GhostObjectInterface;
  * @phpstan-method SortableConfiguration getConfiguration(ObjectManager $objectManager, $class)
  *
  * @method SortableAdapter getEventAdapter(EventArgs $args)
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class SortableListener extends MappedEventSubscriber
 {
@@ -122,12 +124,18 @@ class SortableListener extends MappedEventSubscriber
             }
         }
 
+        $updateValues = [];
         // process all objects being updated
         foreach ($ea->getScheduledObjectUpdates($uow) as $object) {
             $meta = $om->getClassMetadata(get_class($object));
             if ($config = $this->getConfiguration($om, $meta->getName())) {
-                $this->processUpdate($ea, $config, $meta, $object);
+                $position = $meta->getReflectionProperty($config['position'])->getValue($object);
+                $updateValues[$position] = [$ea, $config, $meta, $object];
             }
+        }
+        krsort($updateValues);
+        foreach ($updateValues as [$ea, $config, $meta, $object]) {
+            $this->processUpdate($ea, $config, $meta, $object);
         }
 
         // process all objects being inserted
@@ -258,6 +266,17 @@ class SortableListener extends MappedEventSubscriber
                                 // Otherwise we fallback to normal object comparison
                                 if ($gr instanceof Comparable) {
                                     $matches = $gr->compareTo($value);
+                                    // @todo: Remove "is_int" check and only support integer as the interface expects.
+                                    if (is_int($matches)) {
+                                        $matches = 0 === $matches;
+                                    } else {
+                                        @trigger_error(sprintf(
+                                            'Support for "%s" as return type from "%s::compareTo()" is deprecated since'
+                                            .' gedmo/doctrine-extensions 3.11 and will be removed in version 4.0. Return "integer" instead.',
+                                            gettype($matches),
+                                            Comparable::class
+                                        ), E_USER_DEPRECATED);
+                                    }
                                 } else {
                                     $matches = $gr == $value;
                                 }
@@ -298,8 +317,9 @@ class SortableListener extends MappedEventSubscriber
     /**
      * Computes node positions and updates the sort field in memory and in the db
      *
-     * @param ClassMetadata $meta
-     * @param object        $object
+     * @param array<string, mixed> $config
+     * @param ClassMetadata        $meta
+     * @param object               $object
      *
      * @return void
      */
@@ -365,8 +385,9 @@ class SortableListener extends MappedEventSubscriber
     /**
      * Computes node positions and updates the sort field in memory and in the db
      *
-     * @param ClassMetadata $meta
-     * @param object        $object
+     * @param array<string, mixed> $config
+     * @param ClassMetadata        $meta
+     * @param object               $object
      *
      * @return void
      */
@@ -484,18 +505,6 @@ class SortableListener extends MappedEventSubscriber
             $relocation = [$hash, $config['useObjectClass'], $groups, $oldPosition + 1, $newPosition + 1, -1];
         }
 
-        // Apply existing relocations
-        $applyDelta = 0;
-        if (isset($this->relocations[$hash])) {
-            foreach ($this->relocations[$hash]['deltas'] as $delta) {
-                if ($delta['start'] <= $newPosition
-                        && ($delta['stop'] > $newPosition || $delta['stop'] < 0)) {
-                    $applyDelta += $delta['delta'];
-                }
-            }
-        }
-        $newPosition += $applyDelta;
-
         if ($relocation) {
             // Add relocation
             call_user_func_array([$this, 'addRelocation'], $relocation);
@@ -508,8 +517,9 @@ class SortableListener extends MappedEventSubscriber
     /**
      * Computes node positions and updates the sort field in memory and in the db
      *
-     * @param ClassMetadata $meta
-     * @param object        $object
+     * @param array<string, mixed> $config
+     * @param ClassMetadata        $meta
+     * @param object               $object
      *
      * @return void
      */
@@ -558,7 +568,8 @@ class SortableListener extends MappedEventSubscriber
     }
 
     /**
-     * @param array $groups
+     * @param array<string, mixed> $groups
+     * @param array<string, mixed> $config
      *
      * @return string
      */
@@ -578,9 +589,10 @@ class SortableListener extends MappedEventSubscriber
     }
 
     /**
-     * @param ClassMetadata $meta
-     * @param array         $config
-     * @param object        $object
+     * @param ClassMetadata        $meta
+     * @param array<string, mixed> $config
+     * @param object               $object
+     * @param array<string, mixed> $groups
      *
      * @return int
      */
@@ -591,7 +603,7 @@ class SortableListener extends MappedEventSubscriber
         $maxPos = null;
 
         // Get groups
-        if (!count($groups)) {
+        if ([] === $groups) {
             $groups = $this->getGroups($meta, $config, $object);
         }
 
@@ -623,13 +635,15 @@ class SortableListener extends MappedEventSubscriber
     /**
      * Add a relocation rule
      *
-     * @param string $hash    The hash of the sorting group
-     * @param string $class   The object class
-     * @param array  $groups  The sorting groups
-     * @param int    $start   Inclusive index to start relocation from
-     * @param int    $stop    Exclusive index to stop relocation at
-     * @param int    $delta   The delta to add to relocated nodes
-     * @param array  $exclude Objects to be excluded from relocation
+     * @param string                $hash    The hash of the sorting group
+     * @param string                $class   The object class
+     * @param array<string, object> $groups  The sorting groups
+     * @param int                   $start   Inclusive index to start relocation from
+     * @param int                   $stop    Exclusive index to stop relocation at
+     * @param int                   $delta   The delta to add to relocated nodes
+     * @param array<int, object>    $exclude Objects to be excluded from relocation
+     *
+     * @phpstan-param class-string $class
      *
      * @return void
      */
@@ -661,11 +675,11 @@ class SortableListener extends MappedEventSubscriber
     }
 
     /**
-     * @param array         $config
-     * @param ClassMetadata $meta
-     * @param object        $object
+     * @param ClassMetadata                        $meta
+     * @param array<string, array<string, string>> $config
+     * @param object                               $object
      *
-     * @return array
+     * @return array<string, mixed>
      */
     protected function getGroups($meta, $config, $object)
     {

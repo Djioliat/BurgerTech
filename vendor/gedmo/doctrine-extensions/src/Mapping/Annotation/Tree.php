@@ -9,7 +9,6 @@
 
 namespace Gedmo\Mapping\Annotation;
 
-use Attribute;
 use Doctrine\Common\Annotations\Annotation;
 use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
 
@@ -22,9 +21,11 @@ use Gedmo\Mapping\Annotation\Annotation as GedmoAnnotation;
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  */
-#[Attribute(Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_CLASS)]
 final class Tree implements GedmoAnnotation
 {
+    use ForwardCompatibilityTrait;
+
     /**
      * @var string
      * @phpstan-var 'closure'|'materializedPath'|'nested'
@@ -48,6 +49,8 @@ final class Tree implements GedmoAnnotation
     public $identifierMethod;
 
     /**
+     * @param array<string, mixed> $data
+     *
      * @phpstan-param 'closure'|'materializedPath'|'nested'|null $type
      */
     public function __construct(
@@ -62,11 +65,20 @@ final class Tree implements GedmoAnnotation
                 'Passing an array as first argument to "%s()" is deprecated. Use named arguments instead.',
                 __METHOD__
             ), E_USER_DEPRECATED);
+
+            $args = func_get_args();
+
+            $this->type = $this->getAttributeValue($data, 'type', $args, 1, $type);
+            $this->activateLocking = $this->getAttributeValue($data, 'activateLocking', $args, 2, $activateLocking);
+            $this->lockingTimeout = $this->getAttributeValue($data, 'lockingTimeout', $args, 3, $lockingTimeout);
+            $this->identifierMethod = $this->getAttributeValue($data, 'identifierMethod', $args, 4, $identifierMethod);
+
+            return;
         }
 
-        $this->type = $data['type'] ?? $type;
-        $this->activateLocking = $data['activateLocking'] ?? $activateLocking;
-        $this->lockingTimeout = $data['lockingTimeout'] ?? $lockingTimeout;
-        $this->identifierMethod = $data['identifierMethod'] ?? $identifierMethod;
+        $this->type = $type;
+        $this->activateLocking = $activateLocking;
+        $this->lockingTimeout = $lockingTimeout;
+        $this->identifierMethod = $identifierMethod;
     }
 }

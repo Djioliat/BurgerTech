@@ -14,14 +14,21 @@ namespace Gedmo\Uploadable\FileInfo;
  *
  * @author Gustavo Falco <comfortablynumb84@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class FileInfoArray implements FileInfoInterface
 {
     /**
-     * @var array
+     * @var array<string, int|string>
+     *
+     * @phpstan-var array{error: int, size: int, type: string, tmp_name: string, name: string}
      */
     protected $fileInfo;
 
+    /**
+     * @param array<string, int|string> $fileInfo
+     */
     public function __construct(array $fileInfo)
     {
         $keys = ['error', 'size', 'type', 'tmp_name', 'name'];

@@ -10,7 +10,9 @@
 namespace Gedmo\Loggable\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Loggable\Entity\MappedSuperclass\AbstractLogEntry;
 use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
+use Gedmo\Loggable\Loggable;
 
 /**
  * Gedmo\Loggable\Entity\LogEntry
@@ -26,6 +28,10 @@ use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
  *     }
  * )
  * @ORM\Entity(repositoryClass="Gedmo\Loggable\Entity\Repository\LogEntryRepository")
+ *
+ * @phpstan-template T of Loggable|object
+ *
+ * @phpstan-extends AbstractLogEntry<T>
  */
 #[ORM\Entity(repositoryClass: LogEntryRepository::class)]
 #[ORM\Table(name: 'ext_log_entries', options: ['row_format' => 'DYNAMIC'])]
@@ -33,7 +39,7 @@ use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
 #[ORM\Index(name: 'log_date_lookup_idx', columns: ['logged_at'])]
 #[ORM\Index(name: 'log_user_lookup_idx', columns: ['username'])]
 #[ORM\Index(name: 'log_version_lookup_idx', columns: ['object_id', 'object_class', 'version'])]
-class LogEntry extends MappedSuperclass\AbstractLogEntry
+class LogEntry extends AbstractLogEntry
 {
     /*
      * All required columns are mapped through inherited superclass

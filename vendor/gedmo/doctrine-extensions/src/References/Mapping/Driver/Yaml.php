@@ -17,6 +17,8 @@ use Gedmo\Mapping\Driver\File;
  * @author Gonzalo Vilaseca <gonzalo.vilaseca@reiss.com>
  *
  * @deprecated since gedmo/doctrine-extensions 3.5, will be removed in version 4.0.
+ *
+ * @internal
  */
 class Yaml extends File implements Driver
 {
@@ -28,7 +30,7 @@ class Yaml extends File implements Driver
     protected $_extension = '.dcm.yml';
 
     /**
-     * @var array
+     * @var array<string, array<string, array<string, mixed>>>
      */
     private $validReferences = [
         'referenceOne' => [],

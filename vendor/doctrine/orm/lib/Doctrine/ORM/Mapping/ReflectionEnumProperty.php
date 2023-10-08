@@ -21,17 +21,15 @@ class ReflectionEnumProperty extends ReflectionProperty
     /** @var class-string<BackedEnum> */
     private $enumType;
 
-    /**
-     * @param class-string<BackedEnum> $enumType
-     */
+    /** @param class-string<BackedEnum> $enumType */
     public function __construct(ReflectionProperty $originalReflectionProperty, string $enumType)
     {
         $this->originalReflectionProperty = $originalReflectionProperty;
         $this->enumType                   = $enumType;
 
         parent::__construct(
-            $originalReflectionProperty->getDeclaringClass()->getName(),
-            $originalReflectionProperty->getName()
+            $originalReflectionProperty->class,
+            $originalReflectionProperty->name
         );
     }
 
@@ -65,8 +63,8 @@ class ReflectionEnumProperty extends ReflectionProperty
     }
 
     /**
-     * @param object                         $object
-     * @param int|string|int[]|string[]|null $value
+     * @param object                                                 $object
+     * @param int|string|int[]|string[]|BackedEnum|BackedEnum[]|null $value
      */
     public function setValue($object, $value = null): void
     {
@@ -84,11 +82,15 @@ class ReflectionEnumProperty extends ReflectionProperty
     }
 
     /**
-     * @param object     $object
-     * @param int|string $value
+     * @param object                $object
+     * @param int|string|BackedEnum $value
      */
     private function initializeEnumValue($object, $value): BackedEnum
     {
+        if ($value instanceof BackedEnum) {
+            return $value;
+        }
+
         $enumType = $this->enumType;
 
         try {
@@ -96,7 +98,7 @@ class ReflectionEnumProperty extends ReflectionProperty
         } catch (ValueError $e) {
             throw MappingException::invalidEnumValue(
                 get_class($object),
-                $this->originalReflectionProperty->getName(),
+                $this->originalReflectionProperty->name,
                 (string) $value,
                 $enumType,
                 $e

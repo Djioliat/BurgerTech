@@ -11,12 +11,18 @@ namespace Gedmo\Loggable\Document\MappedSuperclass;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoODM;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Gedmo\Loggable\LogEntryInterface;
+use Gedmo\Loggable\Loggable;
 
 /**
+ * @phpstan-template T of Loggable|object
+ *
+ * @phpstan-implements LogEntryInterface<T>
+ *
  * @MongoODM\MappedSuperclass
  */
 #[MongoODM\MappedSuperclass]
-abstract class AbstractLogEntry
+abstract class AbstractLogEntry implements LogEntryInterface
 {
     /**
      * @var string|null
@@ -28,6 +34,8 @@ abstract class AbstractLogEntry
 
     /**
      * @var string|null
+     *
+     * @phpstan-var self::ACTION_CREATE|self::ACTION_UPDATE|self::ACTION_REMOVE|null
      *
      * @MongoODM\Field(type="string")
      */
@@ -52,6 +60,8 @@ abstract class AbstractLogEntry
 
     /**
      * @var string|null
+     *
+     * @phpstan-var class-string<T>|null
      *
      * @MongoODM\Field(type="string")
      */

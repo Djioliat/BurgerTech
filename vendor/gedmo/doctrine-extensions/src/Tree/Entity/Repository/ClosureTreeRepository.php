@@ -38,8 +38,15 @@ class ClosureTreeRepository extends AbstractTreeRepository
             ->from($config['useObjectClass'], 'node')
             ->where('node.'.$config['parent'].' IS NULL');
 
-        if ($sortByField) {
-            $qb->orderBy('node.'.$sortByField, 'asc' === strtolower($direction) ? 'asc' : 'desc');
+        if (null !== $sortByField) {
+            $sortByField = (array) $sortByField;
+            $direction = (array) $direction;
+            foreach ($sortByField as $key => $field) {
+                $fieldDirection = $direction[$key] ?? 'asc';
+                if ($meta->hasField($field) || $meta->isSingleValuedAssociation($field)) {
+                    $qb->addOrderBy('node.'.$field, 'asc' === strtolower($fieldDirection) ? 'asc' : 'desc');
+                }
+            }
         }
 
         return $qb;
@@ -81,7 +88,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
         $dql .= ' WHERE c.descendant = :node';
         $dql .= ' ORDER BY c.depth DESC';
         $q = $this->_em->createQuery($dql);
-        $q->setParameters(compact('node'));
+        $q->setParameter('node', $node);
 
         return $q;
     }
@@ -91,7 +98,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
      *
      * @param object $node
      *
-     * @return array list of Nodes in path
+     * @return array<int, object|null> list of Nodes in path
      */
     public function getPath($node)
     {
@@ -104,10 +111,12 @@ class ClosureTreeRepository extends AbstractTreeRepository
      * @param object|null          $node        If null, all tree nodes will be taken
      * @param bool                 $direct      True to take only direct children
      * @param string|string[]|null $sortByField Field name or array of fields names to sort by
-     * @param string|string[]      $direction   Sort order ('ASC'|'DESC'). If $sortByField is an array, this may also be an array with matching number of elements
+     * @param string|string[]      $direction   Sort order ('asc'|'desc'|'ASC'|'DESC'). If $sortByField is an array, this may also be an array with matching number of elements
      * @param bool                 $includeNode Include the root node in results?
      *
      * @return QueryBuilder QueryBuilder object
+     *
+     * @phpstan-param 'asc'|'desc'|'ASC'|'DESC'|array<int, 'asc'|'desc'|'ASC'|'DESC'> $direction
      */
     public function childrenQueryBuilder($node = null, $direct = false, $sortByField = null, $direction = 'ASC', $includeNode = false)
     {
@@ -179,10 +188,12 @@ class ClosureTreeRepository extends AbstractTreeRepository
      * @param object|null          $node        If null, all tree nodes will be taken
      * @param bool                 $direct      True to take only direct children
      * @param string|string[]|null $sortByField Field name or array of fields names to sort by
-     * @param string|string[]      $direction   Sort order ('ASC'|'DESC'). If $sortByField is an array, this may also be an array with matching number of elements
+     * @param string|string[]      $direction   Sort order ('asc'|'desc'|'ASC'|'DESC'). If $sortByField is an array, this may also be an array with matching number of elements
      * @param bool                 $includeNode Include the root node in results?
      *
      * @return Query Query object
+     *
+     * @phpstan-param 'asc'|'desc'|'ASC'|'DESC'|array<int, 'asc'|'desc'|'ASC'|'DESC'> $direction
      */
     public function childrenQuery($node = null, $direct = false, $sortByField = null, $direction = 'ASC', $includeNode = false)
     {
@@ -193,10 +204,12 @@ class ClosureTreeRepository extends AbstractTreeRepository
      * @param object|null          $node        If null, all tree nodes will be taken
      * @param bool                 $direct      True to take only direct children
      * @param string|string[]|null $sortByField Field name or array of fields names to sort by
-     * @param string|string[]      $direction   Sort order ('ASC'|'DESC'). If $sortByField is an array, this may also be an array with matching number of elements
+     * @param string|string[]      $direction   Sort order ('asc'|'desc'|'ASC'|'DESC'). If $sortByField is an array, this may also be an array with matching number of elements
      * @param bool                 $includeNode Include the root node in results?
      *
-     * @return array|null List of children or null on failure
+     * @return array<int, object|null> List of children or null on failure
+     *
+     * @phpstan-param 'asc'|'desc'|'ASC'|'DESC'|array<int, 'asc'|'desc'|'ASC'|'DESC'> $direction
      */
     public function children($node = null, $direct = false, $sortByField = null, $direction = 'ASC', $includeNode = false)
     {
@@ -220,6 +233,9 @@ class ClosureTreeRepository extends AbstractTreeRepository
         return $this->childrenQuery($node, $direct, $sortByField, $direction, $includeNode);
     }
 
+    /**
+     * @return array<int, object|null>
+     */
     public function getChildren($node = null, $direct = false, $sortByField = null, $direction = 'ASC', $includeNode = false)
     {
         return $this->children($node, $direct, $sortByField, $direction, $includeNode);
@@ -232,8 +248,8 @@ class ClosureTreeRepository extends AbstractTreeRepository
      *
      * @param object $node
      *
-     * @throws \Gedmo\Exception\InvalidArgumentException
-     * @throws \Gedmo\Exception\RuntimeException         if something fails in transaction
+     * @throws InvalidArgumentException
+     * @throws \Gedmo\Exception\RuntimeException if something fails in transaction
      *
      * @return void
      */
@@ -255,7 +271,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
         $dql = "SELECT node FROM {$config['useObjectClass']} node";
         $dql .= " WHERE node.{$config['parent']} = :node";
         $q = $this->_em->createQuery($dql);
-        $q->setParameters(compact('node'));
+        $q->setParameter('node', $node);
         $nodesToReparent = $q->getResult();
         // process updates in transaction
         $this->_em->getConnection()->beginTransaction();
@@ -270,7 +286,10 @@ class ClosureTreeRepository extends AbstractTreeRepository
                 $dql .= " WHERE node.{$pk} = :id";
 
                 $q = $this->_em->createQuery($dql);
-                $q->setParameters(compact('parent', 'id'));
+                $q->setParameters([
+                    'parent' => $parent,
+                    'id' => $id,
+                ]);
                 $q->getSingleScalarResult();
 
                 $this->listener
@@ -285,7 +304,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
             $dql .= " WHERE node.{$pk} = :nodeId";
 
             $q = $this->_em->createQuery($dql);
-            $q->setParameters(compact('nodeId'));
+            $q->setParameter('nodeId', $nodeId);
             $q->getSingleScalarResult();
             $this->_em->getConnection()->commit();
         } catch (\Exception $e) {
@@ -299,14 +318,6 @@ class ClosureTreeRepository extends AbstractTreeRepository
         $node = null;
     }
 
-    /**
-     * Process nodes and produce an array with the
-     * structure of the tree
-     *
-     * @param array $nodes Array of nodes
-     *
-     * @return array Array with tree structure
-     */
     public function buildTreeArray(array $nodes)
     {
         $meta = $this->getClassMetadata();
@@ -317,7 +328,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
         $levelProp = $hasLevelProp ? $config['level'] : self::SUBQUERY_LEVEL;
         $childrenIndex = $this->repoUtils->getChildrenIndex();
 
-        if (count($nodes) > 0) {
+        if ([] !== $nodes) {
             $firstLevel = $hasLevelProp ? $nodes[0][0]['descendant'][$levelProp] : $nodes[0][$levelProp];
             $l = 1;     // 1 is only an initial value. We could have a tree which has a root node with any level (subtrees)
             $refs = [];
@@ -380,7 +391,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
 
         if (null !== $node) {
             $q->where('c.ancestor = :node');
-            $q->setParameters(compact('node'));
+            $q->setParameter('node', $node);
         } else {
             $q->groupBy('c.descendant');
         }
@@ -404,7 +415,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
     }
 
     /**
-     * @return array|bool
+     * @return array<int, string>|bool
      */
     public function verify()
     {
@@ -465,7 +476,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
             }
         }
 
-        return $errors ?: true;
+        return [] !== $errors ? $errors : true;
     }
 
     /**
@@ -515,7 +526,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
                 $entries = $q->getScalarResult();
                 $insertClosures($entries);
                 $newClosuresCount += count($entries);
-            } while (count($entries) > 0);
+            } while ([] !== $entries);
 
             return $newClosuresCount;
         };
@@ -609,7 +620,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
                 }
                 $this->_em->getConnection()->commit();
                 $levelUpdatesCount += count($entries);
-            } while (count($entries) > 0);
+            } while ([] !== $entries);
         }
 
         return $levelUpdatesCount;
@@ -621,7 +632,7 @@ class ClosureTreeRepository extends AbstractTreeRepository
     }
 
     /**
-     * @param array $association
+     * @param array<string, mixed> $association
      *
      * @return string|null
      */

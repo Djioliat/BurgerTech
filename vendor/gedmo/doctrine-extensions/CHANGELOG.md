@@ -9,7 +9,7 @@ Each release should include sub-headers for the Extension above the types of
 changes, in order to more easily recognize how an Extension has changed in
 a release.
 
-```
+```markdown
 ## [3.6.1] - 2022-07-26
 ### Fixed
 - Sortable: Fix issue with add+delete position synchronization (#1932)
@@ -18,6 +18,80 @@ a release.
 ---
 
 ## [Unreleased]
+
+## [3.13.0]
+### Fixed
+- References: fixed condition in `XML` Driver that did not allow to retrieve from the entity definition the `mappedBy` and `inversedBy` fields.
+- Fix bug collecting metadata for inherited mapped classes
+
+## [3.12.0] - 2023-07-08
+### Added
+- Tree: `setSibling()` and `getSibling()` methods in the `Node` interface through the BC `@method` annotation
+- Tree: Support array of fields and directions in the `$sortByField` and `$direction` parameters at `AbstractTreeRepository::recover()`
+- Loggable: Support for composite identifiers
+
+### Changed
+- Named arguments have precedence over the values passed in the `$data` array in annotation classes at `Gedmo\Mapping\Annotation\`
+  namespace
+- Removed conflict against "doctrine/cache" < 1.11, as this library is not used
+- Return type from `TranslationProxy::__set()` (from `TranslationProxy` to `void`)
+
+### Fixed
+- Tree: Creation of dynamic `Node::$sibling` property, which is deprecated as of PHP >= 8.2
+- Return type from `TranslationProxy::__set()` in order to honor its original signature (`void`)
+
+### Deprecated
+- Tree: Not implementing `Node` interface in classes that are used as nodes
+- Implementing the `Gedmo\Tool\WrapperInterface::getIdentifier()` method without the second argument (`$flatten`) is deprecated and will
+  be required in version 4.0
+
+## [3.11.1] - 2023-02-20
+### Fixed
+- Loggable: Remove unfixable deprecation when extending `LoggableListener`
+- Remove unfixable deprecations when extending repository classes
+- Fix error caused by the attempt of "doctrine/annotations" parsing a `@note` annotation
+
+## [3.11.0] - 2023-01-26
+### Added
+- Tree: [NestedSet] Added "base" property for tree level annotation
+- Tree: [NestedSet] Added `$options` as parameter 2 in `getPathQueryBuilder()` to specify whether you want the starting node included or not
+- Tree: [NestedSet] Added `getPathAsString()` method to entity repository
+- Tree: [NestedSet] Added "treeRootNode" option in `verify()` in case you want to verify a single tree in a forest
+- Tree: [NestedSet] Added `recoverFast()` method for where speed is more important than safety and entity manager state
+- Tree: [NestedSet] Added options to `recover()` for sibling order, tree root in a forest, verification skip and auto-flushing
+- Tree: [NestedSet] Verify and recover wrong levels in nested set
+
+### Added
+- Tree: Add `Nested::ALLOWED_NODE_POSITIONS` constant in order to expose the available node positions
+- Support for `doctrine/collections` 2.0
+- Support for `doctrine/event-manager` 2.0
+- Loggable: Add `LogEntryInterface` interface in order to be implemented by log entry models
+
+### Fixed
+- Sortable: Fix return value check of Comparable interface (#2541)
+- Uploadable: Retrieve the correct metadata when uploading entities of different classes (#2071)
+- Translatable: Fix property existence check at `TranslatableListener::getTranslatableLocale()`
+
+### Deprecated
+- In order to close the API, `@final` and `@internal` annotations were added to all non base classes, which means that extending
+  these classes is deprecated and can not be inherited in version 4.0.
+- Sortable: Accepting a return type other than "integer" from `Comparable::compareTo()` is deprecated in `SortableListener::postFlush()`.
+  This will not be accepted in version 4.0.
+- Deprecate the annotation reader being allowed to be any object.
+  In 4.0, a `Doctrine\Common\Annotations\Reader` or `Gedmo\Mapping\Driver\AttributeReader` instance will be required.
+- `Gedmo\DoctrineExtensions::registerAnnotations()` is deprecated and will be removed in 4.0, the method has been no-op'd as all
+  supported `doctrine/annotations` versions support autoloading
+- Loggable: Constants `LoggableListener::ACTION_CREATE`, `LoggableListener::ACTION_UPDATE` and `LoggableListener::ACTION_REMOVE`
+  are deprecated. Use `LogEntryInterface::ACTION_CREATE`, `LogEntryInterface::ACTION_UPDATE` and `LogEntryInterface::ACTION_REMOVE`
+  instead.
+
+## [3.10.0] - 2022-11-14
+### Changed
+- Bump "doctrine/event-manager" dependency from ^1.0 to ^1.2.
+
+### Fixed
+- Tree: TreeRoot without rootIdentifierMethod when calling getNextSiblings (#2518)
+- Sortable: Fix duplicated positions when manually updating position on more than one object (#2439)
 
 ## [3.9.0] - 2022-09-22
 ### Fixed
@@ -78,8 +152,8 @@ a release.
 - ReferenceIntegrity: Support to use annotations as attributes on PHP >= 8.0.
 - SoftDeleteable: Support for custom column types (like Carbon).
 - Timestampable: Support for custom column types (like Carbon).
-- Translatable: Added an index to `Translation` entity to speed up searches using 
-  `Gedmo\Translatable\Entity\Repository\TranslationRepository::findTranslations()` method. 
+- Translatable: Added an index to `Translation` entity to speed up searches using
+  `Gedmo\Translatable\Entity\Repository\TranslationRepository::findTranslations()` method.
 - `Gedmo\Mapping\Event\AdapterInterface::getObject()` method.
 
 ### Fixed
@@ -149,7 +223,7 @@ a release.
 
 ## [3.2.0] - 2021-10-05
 ### Added
-- PHP 8 Attributes for Doctrine ORM to entities & traits (#2251) 
+- PHP 8 Attributes for Doctrine ORM to entities & traits (#2251)
 
 ### Fixed
 - Removed legacy checks targeting older versions of PHP (#2201)

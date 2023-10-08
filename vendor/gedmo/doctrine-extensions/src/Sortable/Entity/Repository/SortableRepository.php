@@ -12,6 +12,9 @@ namespace Gedmo\Sortable\Entity\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
+use Gedmo\Exception\InvalidMappingException;
 use Gedmo\Sortable\SortableListener;
 
 /**
@@ -29,7 +32,7 @@ class SortableRepository extends EntityRepository
     protected $listener;
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     protected $config;
 
@@ -42,7 +45,7 @@ class SortableRepository extends EntityRepository
     {
         parent::__construct($em, $class);
         $sortableListener = null;
-        foreach ($em->getEventManager()->getListeners() as $event => $listeners) {
+        foreach ($em->getEventManager()->getAllListeners() as $event => $listeners) {
             foreach ($listeners as $hash => $listener) {
                 if ($listener instanceof SortableListener) {
                     $sortableListener = $listener;
@@ -53,7 +56,7 @@ class SortableRepository extends EntityRepository
         }
 
         if (null === $sortableListener) {
-            throw new \Gedmo\Exception\InvalidMappingException('This repository can be attached only to ORM sortable listener');
+            throw new InvalidMappingException('This repository can be attached only to ORM sortable listener');
         }
 
         $this->listener = $sortableListener;
@@ -62,7 +65,9 @@ class SortableRepository extends EntityRepository
     }
 
     /**
-     * @return \Doctrine\ORM\Query
+     * @param array<string, mixed> $groupValues
+     *
+     * @return Query
      */
     public function getBySortableGroupsQuery(array $groupValues = [])
     {
@@ -70,7 +75,9 @@ class SortableRepository extends EntityRepository
     }
 
     /**
-     * @return \Doctrine\ORM\QueryBuilder
+     * @param array<string, mixed> $groupValues
+     *
+     * @return QueryBuilder
      */
     public function getBySortableGroupsQueryBuilder(array $groupValues = [])
     {
@@ -81,7 +88,7 @@ class SortableRepository extends EntityRepository
             }
             unset($groups[$name]);
         }
-        if (count($groups) > 0) {
+        if ([] !== $groups) {
             throw new \InvalidArgumentException('You need to specify values for the following groups to select by sortable groups: '.implode(', ', array_keys($groups)));
         }
 
@@ -98,7 +105,9 @@ class SortableRepository extends EntityRepository
     }
 
     /**
-     * @return array
+     * @param array<string, mixed> $groupValues
+     *
+     * @return array<int, object>
      */
     public function getBySortableGroups(array $groupValues = [])
     {

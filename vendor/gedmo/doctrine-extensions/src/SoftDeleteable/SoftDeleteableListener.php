@@ -10,7 +10,9 @@
 namespace Gedmo\SoftDeleteable;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\UnitOfWork as MongoDBUnitOfWork;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Event\LoadClassMetadataEventArgs;
 use Gedmo\Mapping\MappedEventSubscriber;
 
@@ -19,6 +21,8 @@ use Gedmo\Mapping\MappedEventSubscriber;
  *
  * @author Gustavo Falco <comfortablynumb84@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class SoftDeleteableListener extends MappedEventSubscriber
 {
@@ -56,7 +60,7 @@ class SoftDeleteableListener extends MappedEventSubscriber
     public function onFlush(EventArgs $args)
     {
         $ea = $this->getEventAdapter($args);
-        /** @var \Doctrine\ORM\EntityManagerInterface|\Doctrine\ODM\MongoDB\DocumentManager $om */
+        /** @var EntityManagerInterface|DocumentManager $om */
         $om = $ea->getObjectManager();
         $uow = $om->getUnitOfWork();
         $evm = $om->getEventManager();

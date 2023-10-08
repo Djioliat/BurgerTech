@@ -14,7 +14,10 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use function array_merge;
 use function array_reverse;
 use function array_values;
+use function assert;
 use function implode;
+use function is_int;
+use function is_string;
 
 /**
  * Persister for one-to-many collections.
@@ -22,7 +25,7 @@ use function implode;
 class OneToManyPersister extends AbstractCollectionPersister
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int|null
      */
@@ -48,7 +51,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update(PersistentCollection $collection)
     {
@@ -59,7 +62,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(PersistentCollection $collection, $index)
     {
@@ -85,7 +88,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function count(PersistentCollection $collection)
     {
@@ -101,7 +104,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function slice(PersistentCollection $collection, $offset, $length = null)
     {
@@ -112,7 +115,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsKey(PersistentCollection $collection, $key)
     {
@@ -136,7 +139,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
      /**
-      * {@inheritdoc}
+      * {@inheritDoc}
       */
     public function contains(PersistentCollection $collection, $element)
     {
@@ -156,16 +159,14 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
         throw new BadMethodCallException('Filtering a collection by Criteria is not supported by this CollectionPersister.');
     }
 
-    /**
-     * @throws DBALException
-     */
+    /** @throws DBALException */
     private function deleteEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();
@@ -174,16 +175,22 @@ class OneToManyPersister extends AbstractCollectionPersister
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $columns     = [];
         $parameters  = [];
+        $types       = [];
 
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
             $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
             $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
+            $types[]      = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $sourceClass, $this->em);
         }
 
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
 
-        return $this->conn->executeStatement($statement, $parameters);
+        $numAffected = $this->conn->executeStatement($statement, $parameters, $types);
+
+        assert(is_int($numAffected));
+
+        return $numAffected;
     }
 
     /**
@@ -225,7 +232,9 @@ class OneToManyPersister extends AbstractCollectionPersister
             . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner'
         )->setParameter('owner', $collection->getOwner());
 
-        $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $query->getSQL();
+        $sql = $query->getSQL();
+        assert(is_string($sql));
+        $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ') ' . $sql;
         $parameters = array_values($sourceClass->getIdentifierValues($collection->getOwner()));
         $numDeleted = $this->conn->executeStatement($statement, $parameters);
 
@@ -244,6 +253,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         $statement = $this->platform->getDropTemporaryTableSQL($tempTable);
 
         $this->conn->executeStatement($statement);
+
+        assert(is_int($numDeleted));
 
         return $numDeleted;
     }

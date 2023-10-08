@@ -26,8 +26,9 @@ use Gedmo\Sortable\SortableListener;
 final class ORM extends BaseAdapterORM implements SortableAdapter
 {
     /**
-     * @param ClassMetadata $meta
-     * @param array         $groups
+     * @param array<string, mixed>    $config
+     * @param ClassMetadata           $meta
+     * @param iterable<string, mixed> $groups
      *
      * @return int|null
      */
@@ -48,9 +49,9 @@ final class ORM extends BaseAdapterORM implements SortableAdapter
     }
 
     /**
-     * @param array $relocation
-     * @param array $delta
-     * @param array $config
+     * @param array<string, mixed> $relocation
+     * @param array<string, mixed> $delta
+     * @param array<string, mixed> $config
      * @phpstan-param SortableRelocation $relocation
      *
      * @return void
@@ -80,7 +81,7 @@ final class ORM extends BaseAdapterORM implements SortableAdapter
         // add excludes
         if (!empty($delta['exclude'])) {
             $meta = $this->getObjectManager()->getClassMetadata($relocation['name']);
-            if (1 == count($meta->getIdentifier())) {
+            if (1 === count($meta->getIdentifier())) {
                 // if we only have one identifier, we can use IN syntax, for better performance
                 $excludedIds = [];
                 foreach ($delta['exclude'] as $entity) {
@@ -112,6 +113,9 @@ final class ORM extends BaseAdapterORM implements SortableAdapter
         $q->getSingleScalarResult();
     }
 
+    /**
+     * @param iterable<string, mixed> $groups
+     */
     private function addGroupWhere(QueryBuilder $qb, ClassMetadata $metadata, iterable $groups): void
     {
         $i = 1;

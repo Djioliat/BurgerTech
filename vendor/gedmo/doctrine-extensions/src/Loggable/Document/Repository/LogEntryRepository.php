@@ -9,9 +9,12 @@
 
 namespace Gedmo\Loggable\Document\Repository;
 
-use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Gedmo\Exception\RuntimeException;
+use Gedmo\Exception\UnexpectedValueException;
 use Gedmo\Loggable\Document\LogEntry;
+use Gedmo\Loggable\Loggable;
 use Gedmo\Loggable\LoggableListener;
 use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
 
@@ -20,13 +23,17 @@ use Gedmo\Tool\Wrapper\MongoDocumentWrapper;
  * to interact with log entries.
  *
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
+ *
+ * @phpstan-template T of Loggable|object
+ *
+ * @phpstan-extends DocumentRepository<T>
  */
 class LogEntryRepository extends DocumentRepository
 {
     /**
      * Currently used loggable listener
      *
-     * @var LoggableListener
+     * @var LoggableListener<T>
      */
     private $listener;
 
@@ -37,6 +44,10 @@ class LogEntryRepository extends DocumentRepository
      * @param object $document
      *
      * @return LogEntry[]
+     *
+     * @phpstan-param T $document
+     *
+     * @phpstan-return array<array-key, LogEntry<T>>
      */
     public function getLogEntries($document)
     {
@@ -47,14 +58,8 @@ class LogEntryRepository extends DocumentRepository
         $qb->field('objectId')->equals($objectId);
         $qb->field('objectClass')->equals($wrapped->getMetadata()->getName());
         $qb->sort('version', 'DESC');
-        $q = $qb->getQuery();
 
-        $result = $q->execute();
-        if ($result instanceof Iterator) {
-            $result = $result->toArray();
-        }
-
-        return $result;
+        return $qb->getQuery()->getIterator()->toArray();
     }
 
     /**
@@ -66,9 +71,11 @@ class LogEntryRepository extends DocumentRepository
      * @param object $document
      * @param int    $version
      *
-     * @throws \Gedmo\Exception\UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return void
+     *
+     * @phpstan-param T $document
      */
     public function revert($document, $version = 1)
     {
@@ -81,34 +88,38 @@ class LogEntryRepository extends DocumentRepository
         $qb->field('objectClass')->equals($objectMeta->getName());
         $qb->field('version')->lte((int) $version);
         $qb->sort('version', 'ASC');
-        $q = $qb->getQuery();
 
-        $logs = $q->execute();
-        if ($logs instanceof Iterator) {
-            $logs = $logs->toArray();
+        $logs = $qb->getQuery()->getIterator()->toArray();
+
+        if ([] === $logs) {
+            throw new UnexpectedValueException('Count not find any log entries under version: '.$version);
         }
-        if ($logs) {
-            $data = [];
-            while ($log = array_shift($logs)) {
-                $data = array_merge($data, $log->getData());
-            }
-            $this->fillDocument($document, $data);
-        } else {
-            throw new \Gedmo\Exception\UnexpectedValueException('Count not find any log entries under version: '.$version);
+
+        $data = [[]];
+        while ($log = array_shift($logs)) {
+            $data[] = $log->getData();
         }
+        $data = array_merge(...$data);
+        $this->fillDocument($document, $data);
     }
 
     /**
      * Fills a documents versioned fields with data
      *
-     * @param object $document
+     * @param object               $document
+     * @param array<string, mixed> $data
      *
      * @return void
+     *
+     * @phpstan-param T $document
      */
     protected function fillDocument($document, array $data)
     {
         $wrapped = new MongoDocumentWrapper($document, $this->dm);
         $objectMeta = $wrapped->getMetadata();
+
+        assert($objectMeta instanceof ClassMetadata);
+
         $config = $this->getLoggableListener()->getConfiguration($this->dm, $objectMeta->getName());
         $fields = $config['versioned'];
         foreach ($data as $field => $value) {
@@ -119,12 +130,16 @@ class LogEntryRepository extends DocumentRepository
             // Fill the embedded document
             if ($wrapped->isEmbeddedAssociation($field)) {
                 if (!empty($value)) {
+                    assert(class_exists($mapping['targetDocument']));
+
                     $embeddedMetadata = $this->dm->getClassMetadata($mapping['targetDocument']);
                     $document = $embeddedMetadata->newInstance();
                     $this->fillDocument($document, $value);
                     $value = $document;
                 }
             } elseif ($objectMeta->isSingleValuedAssociation($field)) {
+                assert(class_exists($mapping['targetDocument']));
+
                 $value = $value ? $this->dm->getReference($mapping['targetDocument'], $value) : null;
             }
             $wrapped->setPropertyValue($field, $value);
@@ -141,12 +156,14 @@ class LogEntryRepository extends DocumentRepository
     /**
      * Get the currently used LoggableListener
      *
-     * @throws \Gedmo\Exception\RuntimeException if listener is not found
+     * @throws RuntimeException if listener is not found
+     *
+     * @phpstan-return LoggableListener<T>
      */
     private function getLoggableListener(): LoggableListener
     {
         if (null === $this->listener) {
-            foreach ($this->dm->getEventManager()->getListeners() as $event => $listeners) {
+            foreach ($this->dm->getEventManager()->getAllListeners() as $event => $listeners) {
                 foreach ($listeners as $hash => $listener) {
                     if ($listener instanceof LoggableListener) {
                         $this->listener = $listener;
@@ -157,7 +174,7 @@ class LogEntryRepository extends DocumentRepository
             }
 
             if (null === $this->listener) {
-                throw new \Gedmo\Exception\RuntimeException('The loggable listener could not be found');
+                throw new RuntimeException('The loggable listener could not be found');
             }
         }
 

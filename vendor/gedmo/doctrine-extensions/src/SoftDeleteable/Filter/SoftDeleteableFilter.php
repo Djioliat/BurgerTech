@@ -9,6 +9,7 @@
 
 namespace Gedmo\SoftDeleteable\Filter;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
@@ -21,6 +22,8 @@ use Gedmo\SoftDeleteable\SoftDeleteableListener;
  * @author Gustavo Falco <comfortablynumb84@gmail.com>
  * @author Gediminas Morkevicius <gediminas.morkevicius@gmail.com>
  * @author Patrik Votoček <patrik@votocek.cz>
+ *
+ * @final since gedmo/doctrine-extensions 3.11
  */
 class SoftDeleteableFilter extends SQLFilter
 {
@@ -45,7 +48,7 @@ class SoftDeleteableFilter extends SQLFilter
      *
      * @return string
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
@@ -68,7 +71,7 @@ class SoftDeleteableFilter extends SQLFilter
 
         $column = $quoteStrategy->getColumnName($config['fieldName'], $targetEntity, $platform);
 
-        $addCondSql = $platform->getIsNullExpression($targetTableAlias.'.'.$column);
+        $addCondSql = $targetTableAlias.'.'.$column.' IS NULL';
         if (isset($config['timeAware']) && $config['timeAware']) {
             $addCondSql = "({$addCondSql} OR {$targetTableAlias}.{$column} > {$platform->getCurrentTimestampSQL()})";
         }
@@ -115,7 +118,7 @@ class SoftDeleteableFilter extends SQLFilter
             $em = $this->getEntityManager();
             $evm = $em->getEventManager();
 
-            foreach ($evm->getListeners() as $listeners) {
+            foreach ($evm->getAllListeners() as $listeners) {
                 foreach ($listeners as $listener) {
                     if ($listener instanceof SoftDeleteableListener) {
                         $this->listener = $listener;

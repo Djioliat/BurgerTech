@@ -9,22 +9,24 @@
 
 namespace Gedmo\Mapping;
 
-use function class_exists;
-
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as DocumentClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo as EntityClassMetadata;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
+use Gedmo\Exception\InvalidArgumentException;
+use Gedmo\Mapping\Driver\AttributeReader;
 use Gedmo\Mapping\Event\AdapterInterface;
+use Gedmo\ReferenceIntegrity\Mapping\Validator as ReferenceIntegrityValidator;
+use Gedmo\Uploadable\FilenameGenerator\FilenameGeneratorInterface;
+use Gedmo\Uploadable\Mapping\Validator as MappingValidator;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -46,7 +48,8 @@ abstract class MappedEventSubscriber implements EventSubscriber
      * leaving it static for reasons to look into
      * other listener configuration
      *
-     * @var array
+     * @var array<string, array<string, array<string, mixed>>>
+     *
      * @phpstan-var array<string, array<class-string, array<string, mixed>>>
      */
     protected static $configurations = [];
@@ -76,12 +79,12 @@ abstract class MappedEventSubscriber implements EventSubscriber
     /**
      * Custom annotation reader
      *
-     * @var object
+     * @var Reader|AttributeReader|object|null
      */
     private $annotationReader;
 
     /**
-     * @var AnnotationReader
+     * @var PsrCachedReader|null
      */
     private static $defaultAnnotationReader;
 
@@ -101,9 +104,29 @@ abstract class MappedEventSubscriber implements EventSubscriber
      * if cache driver is present it scans it also
      *
      * @param string $class
+     *
      * @phpstan-param class-string $class
      *
      * @return array<string, mixed>
+     *
+     * @phpstan-return array{
+     *  useObjectClass?: class-string,
+     *  referenceIntegrity?: array<string, array<string, value-of<ReferenceIntegrityValidator::INTEGRITY_ACTIONS>>>,
+     *  filePathField?: string,
+     *  uploadable?: bool,
+     *  fileNameField?: string,
+     *  allowOverwrite?: bool,
+     *  appendNumber?: bool,
+     *  maxSize?: float,
+     *  path?: string,
+     *  pathMethod?: string,
+     *  allowedTypes?: string[],
+     *  disallowedTypes?: string[],
+     *  filenameGenerator?: MappingValidator::FILENAME_GENERATOR_*|class-string<FilenameGeneratorInterface>,
+     *  fileMimeTypeField?: string,
+     *  fileSizeField?: string,
+     *  callback?: string,
+     * }
      */
     public function getConfiguration(ObjectManager $objectManager, $class)
     {
@@ -162,20 +185,35 @@ abstract class MappedEventSubscriber implements EventSubscriber
     }
 
     /**
-     * Set annotation reader class
-     * since older doctrine versions do not provide an interface
-     * it must provide these methods:
+     * Set the annotation reader instance
+     *
+     * When originally implemented, `Doctrine\Common\Annotations\Reader` was not available,
+     * therefore this method may accept any object implementing these methods from the interface:
+     *
      *     getClassAnnotations([reflectionClass])
      *     getClassAnnotation([reflectionClass], [name])
      *     getPropertyAnnotations([reflectionProperty])
      *     getPropertyAnnotation([reflectionProperty], [name])
      *
-     * @param Reader $reader annotation reader class
+     * @param Reader|AttributeReader|object $reader
      *
      * @return void
+     *
+     * NOTE Providing any object is deprecated, as of 4.0 a `Doctrine\Common\Annotations\Reader` or `Gedmo\Mapping\Driver\AttributeReader` will be required
      */
     public function setAnnotationReader($reader)
     {
+        if (!$reader instanceof Reader && !$reader instanceof AttributeReader) {
+            trigger_deprecation(
+                'gedmo/doctrine-extensions',
+                '3.11',
+                'Providing an annotation reader which does not implement %s or is not an instance of %s to %s() is deprecated.',
+                Reader::class,
+                AttributeReader::class,
+                __METHOD__
+            );
+        }
+
         $this->annotationReader = $reader;
     }
 
@@ -194,6 +232,8 @@ abstract class MappedEventSubscriber implements EventSubscriber
      */
     public function loadMetadataForObjectClass(ObjectManager $objectManager, $metadata)
     {
+        assert($metadata instanceof DocumentClassMetadata || $metadata instanceof EntityClassMetadata);
+
         $factory = $this->getExtensionMetadataFactory($objectManager);
 
         try {
@@ -211,9 +251,9 @@ abstract class MappedEventSubscriber implements EventSubscriber
      * Get an event adapter to handle event specific
      * methods
      *
-     * @throws \Gedmo\Exception\InvalidArgumentException if event is not recognized
+     * @throws InvalidArgumentException if event is not recognized
      *
-     * @return \Gedmo\Mapping\Event\AdapterInterface
+     * @return AdapterInterface
      */
     protected function getEventAdapter(EventArgs $args)
     {
@@ -221,7 +261,7 @@ abstract class MappedEventSubscriber implements EventSubscriber
         if (preg_match('@Doctrine\\\([^\\\]+)@', $class, $m) && in_array($m[1], ['ODM', 'ORM'], true)) {
             if (!isset($this->adapters[$m[1]])) {
                 $adapterClass = $this->getNamespace().'\\Mapping\\Event\\Adapter\\'.$m[1];
-                if (!class_exists($adapterClass)) {
+                if (!\class_exists($adapterClass)) {
                     $adapterClass = 'Gedmo\\Mapping\\Event\\Adapter\\'.$m[1];
                 }
                 $this->adapters[$m[1]] = new $adapterClass();
@@ -231,7 +271,7 @@ abstract class MappedEventSubscriber implements EventSubscriber
             return $this->adapters[$m[1]];
         }
 
-        throw new \Gedmo\Exception\InvalidArgumentException('Event mapper does not support event arg class: '.$class);
+        throw new InvalidArgumentException('Event mapper does not support event arg class: '.$class);
     }
 
     /**
@@ -270,17 +310,7 @@ abstract class MappedEventSubscriber implements EventSubscriber
     private function getDefaultAnnotationReader(): Reader
     {
         if (null === self::$defaultAnnotationReader) {
-            AnnotationRegistry::registerAutoloadNamespace('Gedmo\\Mapping\\Annotation', __DIR__.'/../../');
-
-            $reader = new AnnotationReader();
-
-            if (class_exists(ArrayAdapter::class)) {
-                $reader = new PsrCachedReader($reader, new ArrayAdapter());
-            } elseif (class_exists(ArrayCache::class)) {
-                $reader = new PsrCachedReader($reader, CacheAdapter::wrap(new ArrayCache()));
-            }
-
-            self::$defaultAnnotationReader = $reader;
+            self::$defaultAnnotationReader = new PsrCachedReader(new AnnotationReader(), new ArrayAdapter());
         }
 
         return self::$defaultAnnotationReader;

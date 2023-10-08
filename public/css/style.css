@@ -104,13 +104,25 @@ html, main {
         color: white;
         background-color: #1789FC;
 }
+.show-episode {
+        margin-top: 7rem;
+}
+.episode-infos {
+        margin-top: 7rem;
+}
+.user-edit {
+        margin-top: 7rem;
+}
 .comment {
+        margin-top: 7rem;
         margin-bottom: 170px;
 }
 .comment-title {
         width: 50%;
 }
-
+.new-episode {
+        margin-top: 5rem;
+}
 /*                     page profil     */
 .banner {
         position: relative;

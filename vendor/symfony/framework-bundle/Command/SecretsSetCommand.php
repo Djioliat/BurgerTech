@@ -33,8 +33,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'secrets:set', description: 'Set a secret in the vault')]
 final class SecretsSetCommand extends Command
 {
-    private $vault;
-    private $localVault;
+    private AbstractVault $vault;
+    private ?AbstractVault $localVault;
 
     public function __construct(AbstractVault $vault, AbstractVault $localVault = null)
     {
@@ -44,7 +44,7 @@ final class SecretsSetCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'The name of the secret')

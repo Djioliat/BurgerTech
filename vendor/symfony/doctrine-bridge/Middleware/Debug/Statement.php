@@ -15,6 +15,7 @@ use Doctrine\DBAL\Driver\Middleware\AbstractStatementMiddleware;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * @author Laurent VOULLEMIER <laurent.voullemier@gmail.com>
@@ -23,16 +24,17 @@ use Doctrine\DBAL\ParameterType;
  */
 final class Statement extends AbstractStatementMiddleware
 {
-    private $debugDataHolder;
-    private $connectionName;
-    private $query;
+    private Query $query;
 
-    public function __construct(StatementInterface $statement, DebugDataHolder $debugDataHolder, string $connectionName, string $sql)
-    {
+    public function __construct(
+        StatementInterface $statement,
+        private DebugDataHolder $debugDataHolder,
+        private string $connectionName,
+        string $sql,
+        private ?Stopwatch $stopwatch = null,
+    ) {
         parent::__construct($statement);
 
-        $this->debugDataHolder = $debugDataHolder;
-        $this->connectionName = $connectionName;
         $this->query = new Query($sql);
     }
 
@@ -59,12 +61,14 @@ final class Statement extends AbstractStatementMiddleware
         // clone to prevent variables by reference to change
         $this->debugDataHolder->addQuery($this->connectionName, $query = clone $this->query);
 
+        $this->stopwatch?->start('doctrine', 'doctrine');
         $query->start();
 
         try {
             $result = parent::execute($params);
         } finally {
             $query->stop();
+            $this->stopwatch?->stop('doctrine');
         }
 
         return $result;

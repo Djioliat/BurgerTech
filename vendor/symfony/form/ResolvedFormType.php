@@ -23,16 +23,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ResolvedFormType implements ResolvedFormTypeInterface
 {
-    private $innerType;
+    private FormTypeInterface $innerType;
 
     /**
      * @var FormTypeExtensionInterface[]
      */
     private array $typeExtensions;
 
-    private $parent;
+    private ?ResolvedFormTypeInterface $parent;
 
-    private $optionsResolver;
+    private OptionsResolver $optionsResolver;
 
     /**
      * @param FormTypeExtensionInterface[] $typeExtensions
@@ -50,41 +50,26 @@ class ResolvedFormType implements ResolvedFormTypeInterface
         $this->parent = $parent;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return $this->innerType->getBlockPrefix();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getParent(): ?ResolvedFormTypeInterface
     {
         return $this->parent;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getInnerType(): FormTypeInterface
     {
         return $this->innerType;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getTypeExtensions(): array
     {
         return $this->typeExtensions;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createBuilder(FormFactoryInterface $factory, string $name, array $options = []): FormBuilderInterface
     {
         try {
@@ -102,22 +87,17 @@ class ResolvedFormType implements ResolvedFormTypeInterface
         return $builder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createView(FormInterface $form, FormView $parent = null): FormView
     {
         return $this->newView($parent);
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (null !== $this->parent) {
-            $this->parent->buildForm($builder, $options);
-        }
+        $this->parent?->buildForm($builder, $options);
 
         $this->innerType->buildForm($builder, $options);
 
@@ -127,13 +107,11 @@ class ResolvedFormType implements ResolvedFormTypeInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        if (null !== $this->parent) {
-            $this->parent->buildView($view, $form, $options);
-        }
+        $this->parent?->buildView($view, $form, $options);
 
         $this->innerType->buildView($view, $form, $options);
 
@@ -143,13 +121,11 @@ class ResolvedFormType implements ResolvedFormTypeInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
-        if (null !== $this->parent) {
-            $this->parent->finishView($view, $form, $options);
-        }
+        $this->parent?->finishView($view, $form, $options);
 
         $this->innerType->finishView($view, $form, $options);
 
@@ -159,9 +135,6 @@ class ResolvedFormType implements ResolvedFormTypeInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getOptionsResolver(): OptionsResolver
     {
         if (!isset($this->optionsResolver)) {

@@ -84,7 +84,7 @@ class ComposerPlugin implements PluginInterface, EventSubscriberInterface
         $projectDir = $fs->makePathRelative($projectDir, $vendorDir);
         $nestingLevel = 0;
 
-        while (0 === strpos($projectDir, '../')) {
+        while (str_starts_with($projectDir, '../')) {
             ++$nestingLevel;
             $projectDir = substr($projectDir, 3);
         }
@@ -105,7 +105,12 @@ class ComposerPlugin implements PluginInterface, EventSubscriberInterface
             '%runtime_options%' => '['.substr(var_export($extra, true), 7, -1)."  'project_dir' => {$projectDir},\n]",
         ]);
 
-        file_put_contents(substr_replace($autoloadFile, '_runtime', -4, 0), $code);
+        // could use Composer\Util\Filesystem::filePutContentsIfModified once Composer 1.x support is dropped for this plugin
+        $path = substr_replace($autoloadFile, '_runtime', -4, 0);
+        $currentContent = @file_exists($path) ? @file_get_contents($path) : false;
+        if (false === $currentContent || $currentContent !== $code) {
+            file_put_contents($path, $code);
+        }
     }
 
     public static function getSubscribedEvents(): array

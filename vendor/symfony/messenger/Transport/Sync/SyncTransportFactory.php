@@ -21,19 +21,19 @@ use Symfony\Component\Messenger\Transport\TransportInterface;
  */
 class SyncTransportFactory implements TransportFactoryInterface
 {
-    private $messageBus;
+    private MessageBusInterface $messageBus;
 
     public function __construct(MessageBusInterface $messageBus)
     {
         $this->messageBus = $messageBus;
     }
 
-    public function createTransport(string $dsn, array $options, SerializerInterface $serializer): TransportInterface
+    public function createTransport(#[\SensitiveParameter] string $dsn, array $options, SerializerInterface $serializer): TransportInterface
     {
         return new SyncTransport($this->messageBus);
     }
 
-    public function supports(string $dsn, array $options): bool
+    public function supports(#[\SensitiveParameter] string $dsn, array $options): bool
     {
         return str_starts_with($dsn, 'sync://');
     }

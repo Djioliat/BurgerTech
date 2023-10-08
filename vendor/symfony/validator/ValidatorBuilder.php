@@ -48,12 +48,12 @@ class ValidatorBuilder
     private array $xmlMappings = [];
     private array $yamlMappings = [];
     private array $methodMappings = [];
-    private $annotationReader = null;
+    private ?Reader $annotationReader = null;
     private bool $enableAnnotationMapping = false;
-    private $metadataFactory = null;
-    private $validatorFactory;
-    private $mappingCache = null;
-    private $translator = null;
+    private ?MetadataFactoryInterface $metadataFactory = null;
+    private ConstraintValidatorFactoryInterface $validatorFactory;
+    private ?CacheItemPoolInterface $mappingCache = null;
+    private ?TranslatorInterface $translator = null;
     private ?string $translationDomain = null;
 
     /**
@@ -187,7 +187,7 @@ class ValidatorBuilder
     }
 
     /**
-     * Enables annotation based constraint mapping.
+     * Enables annotation and attribute based constraint mapping.
      *
      * @return $this
      */
@@ -203,7 +203,7 @@ class ValidatorBuilder
     }
 
     /**
-     * Disables annotation based constraint mapping.
+     * Disables annotation and attribute based constraint mapping.
      *
      * @return $this
      */

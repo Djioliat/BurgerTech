@@ -33,7 +33,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[AsCommand(name: 'router:match', description: 'Help debug routes by simulating a path info match')]
 class RouterMatchCommand extends Command
 {
-    private $router;
+    private RouterInterface $router;
     private iterable $expressionLanguageProviders;
 
     /**
@@ -47,10 +47,7 @@ class RouterMatchCommand extends Command
         $this->expressionLanguageProviders = $expressionLanguageProviders;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDefinition([
@@ -73,9 +70,6 @@ EOF
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

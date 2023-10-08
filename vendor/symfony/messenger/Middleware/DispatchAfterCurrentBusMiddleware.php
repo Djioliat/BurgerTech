@@ -97,7 +97,7 @@ class DispatchAfterCurrentBusMiddleware implements MiddlewareInterface
 
         $this->isRootDispatchCallRunning = false;
         if (\count($exceptions) > 0) {
-            throw new DelayedMessageHandlingException($exceptions);
+            throw new DelayedMessageHandlingException($exceptions, $returnedEnvelope);
         }
 
         return $returnedEnvelope;
@@ -109,8 +109,8 @@ class DispatchAfterCurrentBusMiddleware implements MiddlewareInterface
  */
 final class QueuedEnvelope
 {
-    private $envelope;
-    private $stack;
+    private Envelope $envelope;
+    private StackInterface $stack;
 
     public function __construct(Envelope $envelope, StackInterface $stack)
     {

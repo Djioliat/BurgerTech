@@ -24,8 +24,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class TranslationsCacheWarmer implements CacheWarmerInterface, ServiceSubscriberInterface
 {
-    private $container;
-    private $translator;
+    private ContainerInterface $container;
+    private TranslatorInterface $translator;
 
     public function __construct(ContainerInterface $container)
     {
@@ -34,8 +34,6 @@ class TranslationsCacheWarmer implements CacheWarmerInterface, ServiceSubscriber
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return string[]
      */
     public function warmUp(string $cacheDir): array
@@ -49,17 +47,11 @@ class TranslationsCacheWarmer implements CacheWarmerInterface, ServiceSubscriber
         return [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isOptional(): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function getSubscribedServices(): array
     {
         return [

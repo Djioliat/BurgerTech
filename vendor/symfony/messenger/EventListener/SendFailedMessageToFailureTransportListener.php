@@ -26,8 +26,8 @@ use Symfony\Component\Messenger\Stamp\SentToFailureTransportStamp;
  */
 class SendFailedMessageToFailureTransportListener implements EventSubscriberInterface
 {
-    private $failureSenders;
-    private $logger;
+    private ContainerInterface $failureSenders;
+    private ?LoggerInterface $logger;
 
     public function __construct(ContainerInterface $failureSenders, LoggerInterface $logger = null)
     {
@@ -35,6 +35,9 @@ class SendFailedMessageToFailureTransportListener implements EventSubscriberInte
         $this->logger = $logger;
     }
 
+    /**
+     * @return void
+     */
     public function onMessageFailed(WorkerMessageFailedEvent $event)
     {
         if ($event->willRetry()) {
@@ -60,12 +63,10 @@ class SendFailedMessageToFailureTransportListener implements EventSubscriberInte
             new RedeliveryStamp(0)
         );
 
-        if (null !== $this->logger) {
-            $this->logger->info('Rejected message {class} will be sent to the failure transport {transport}.', [
-                'class' => \get_class($envelope->getMessage()),
-                'transport' => \get_class($failureSender),
-            ]);
-        }
+        $this->logger?->info('Rejected message {class} will be sent to the failure transport {transport}.', [
+            'class' => $envelope->getMessage()::class,
+            'transport' => $failureSender::class,
+        ]);
 
         $failureSender->send($envelope);
     }

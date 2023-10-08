@@ -16,48 +16,33 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class FormFactory implements FormFactoryInterface
 {
-    private $registry;
+    private FormRegistryInterface $registry;
 
     public function __construct(FormRegistryInterface $registry)
     {
         $this->registry = $registry;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function create(string $type = FormType::class, mixed $data = null, array $options = []): FormInterface
     {
         return $this->createBuilder($type, $data, $options)->getForm();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createNamed(string $name, string $type = FormType::class, mixed $data = null, array $options = []): FormInterface
     {
         return $this->createNamedBuilder($name, $type, $data, $options)->getForm();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createForProperty(string $class, string $property, mixed $data = null, array $options = []): FormInterface
     {
         return $this->createBuilderForProperty($class, $property, $data, $options)->getForm();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createBuilder(string $type = FormType::class, mixed $data = null, array $options = []): FormBuilderInterface
     {
         return $this->createNamedBuilder($this->registry->getType($type)->getBlockPrefix(), $type, $data, $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createNamedBuilder(string $name, string $type = FormType::class, mixed $data = null, array $options = []): FormBuilderInterface
     {
         if (null !== $data && !\array_key_exists('data', $options)) {
@@ -75,9 +60,6 @@ class FormFactory implements FormFactoryInterface
         return $builder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createBuilderForProperty(string $class, string $property, mixed $data = null, array $options = []): FormBuilderInterface
     {
         if (null === $guesser = $this->registry->getTypeGuesser()) {
@@ -91,8 +73,8 @@ class FormFactory implements FormFactoryInterface
 
         $type = $typeGuess ? $typeGuess->getType() : TextType::class;
 
-        $maxLength = $maxLengthGuess ? $maxLengthGuess->getValue() : null;
-        $pattern = $patternGuess ? $patternGuess->getValue() : null;
+        $maxLength = $maxLengthGuess?->getValue();
+        $pattern = $patternGuess?->getValue();
 
         if (null !== $pattern) {
             $options = array_replace_recursive(['attr' => ['pattern' => $pattern]], $options);

@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\Test;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -25,6 +26,7 @@ use Symfony\Contracts\Service\ResetInterface;
 abstract class KernelTestCase extends TestCase
 {
     use MailerAssertionsTrait;
+    use NotificationAssertionsTrait;
 
     protected static $class;
 
@@ -82,6 +84,8 @@ abstract class KernelTestCase extends TestCase
      * used by other services.
      *
      * Using this method is the best way to get a container from your test code.
+     *
+     * @return Container
      */
     protected static function getContainer(): ContainerInterface
     {
@@ -106,9 +110,7 @@ abstract class KernelTestCase extends TestCase
      */
     protected static function createKernel(array $options = []): KernelInterface
     {
-        if (null === static::$class) {
-            static::$class = static::getKernelClass();
-        }
+        static::$class ??= static::getKernelClass();
 
         if (isset($options['environment'])) {
             $env = $options['environment'];

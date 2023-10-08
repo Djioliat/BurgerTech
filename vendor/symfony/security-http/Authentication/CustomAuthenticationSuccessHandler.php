@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
  */
 class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
-    private $handler;
+    private AuthenticationSuccessHandlerInterface $handler;
 
     /**
      * @param array $options Options for processing a successful authentication attempt
@@ -37,10 +37,7 @@ class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token): ?Response
     {
         return $this->handler->onAuthenticationSuccess($request, $token);
     }

@@ -23,7 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class ExecutionContextFactory implements ExecutionContextFactoryInterface
 {
-    private $translator;
+    private TranslatorInterface $translator;
     private ?string $translationDomain;
 
     public function __construct(TranslatorInterface $translator, string $translationDomain = null)
@@ -32,9 +32,6 @@ class ExecutionContextFactory implements ExecutionContextFactoryInterface
         $this->translationDomain = $translationDomain;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createContext(ValidatorInterface $validator, mixed $root): ExecutionContextInterface
     {
         return new ExecutionContext(

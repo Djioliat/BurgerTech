@@ -1,6 +1,28 @@
 CHANGELOG
 =========
 
+6.3
+---
+
+ * Don't render seconds for HTML5 date pickers unless "with_seconds" is explicitly set
+ * Add a `placeholder_attr` option to `ChoiceType`
+ * Deprecate not configuring the "widget" option of date/time form types, it will default to "single_text" in v7
+
+6.2
+---
+
+ * Allow passing `TranslatableInterface` objects to the `ChoiceView` label
+ * Allow passing `TranslatableInterface` objects to the `help` option
+ * Deprecate calling `Button/Form::setParent()`, `ButtonBuilder/FormConfigBuilder::setDataMapper()`, `TransformationFailedException::setInvalidMessage()` without arguments
+ * Change the signature of `FormConfigBuilderInterface::setDataMapper()` to `setDataMapper(?DataMapperInterface)`
+ * Change the signature of `FormInterface::setParent()` to `setParent(?self)`
+ * Add `PasswordHasherExtension` with support for `hash_property_path` option in `PasswordType`
+
+6.1
+---
+
+ * Add a `prototype_options` option to `CollectionType`
+
 6.0
 ---
 

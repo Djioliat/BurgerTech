@@ -30,8 +30,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'secrets:generate-keys', description: 'Generate new encryption keys')]
 final class SecretsGenerateKeysCommand extends Command
 {
-    private $vault;
-    private $localVault;
+    private AbstractVault $vault;
+    private ?AbstractVault $localVault;
 
     public function __construct(AbstractVault $vault, AbstractVault $localVault = null)
     {
@@ -41,7 +41,7 @@ final class SecretsGenerateKeysCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addOption('local', 'l', InputOption::VALUE_NONE, 'Update the local vault.')

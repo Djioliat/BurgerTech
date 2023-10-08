@@ -30,8 +30,8 @@ class HttpCache extends BaseHttpCache
     protected $cacheDir;
     protected $kernel;
 
-    private $store = null;
-    private $surrogate;
+    private ?StoreInterface $store = null;
+    private ?SurrogateInterface $surrogate;
     private array $options;
 
     /**
@@ -60,9 +60,6 @@ class HttpCache extends BaseHttpCache
         parent::__construct($kernel, $this->createStore(), $this->createSurrogate(), array_merge($this->options, $this->getOptions()));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function forward(Request $request, bool $catch = false, Response $entry = null): Response
     {
         $this->getKernel()->boot();

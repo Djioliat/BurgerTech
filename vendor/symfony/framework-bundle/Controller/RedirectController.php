@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class RedirectController
 {
-    private $router;
+    private ?UrlGeneratorInterface $router;
     private ?int $httpPort;
     private ?int $httpsPort;
 
@@ -124,9 +124,7 @@ class RedirectController
             return new RedirectResponse($path, $statusCode);
         }
 
-        if (null === $scheme) {
-            $scheme = $request->getScheme();
-        }
+        $scheme ??= $request->getScheme();
 
         if ($qs = $request->server->get('QUERY_STRING') ?: $request->getQueryString()) {
             if (!str_contains($path, '?')) {

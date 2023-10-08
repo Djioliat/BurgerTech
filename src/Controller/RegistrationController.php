@@ -103,7 +103,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_login');    
         }
 
-        if($user->getIsVerified()){
+        if($user->isVerified()){
             $this->addFlash('warning', 'Cet utilisateur est déjà activé');
             return $this->redirectToRoute('profil_index');    
         }
@@ -117,16 +117,16 @@ class RegistrationController extends AbstractController
 
         // On crée le Payload
         $payload = [
-            'user_id' => $user->getId()
+            'user_id' => $user->id()
         ];
 
         // On génère le token
         $token = $jwt->generate($header, $payload, $this->getParameter('app.jwtsecret'));
 
         // On envoie un mail
-        $mail->send(
+        $mail->sendEmail(
             'no-reply@burger-tech.net',
-            $user->getEmail(),
+            $user->email(),
             'Activation de votre compte sur le site Burger Tech',
             'register',
             compact('user', 'token')

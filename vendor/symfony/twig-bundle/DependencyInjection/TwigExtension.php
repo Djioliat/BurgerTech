@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\TwigBundle\DependencyInjection;
 
+use Symfony\Component\AssetMapper\AssetMapper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileExistenceResource;
 use Symfony\Component\Console\Application;
@@ -35,6 +36,9 @@ use Twig\Loader\LoaderInterface;
  */
 class TwigExtension extends Extension
 {
+    /**
+     * @return void
+     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
@@ -52,10 +56,6 @@ class TwigExtension extends Extension
 
         if ($container::willBeAvailable('symfony/console', Application::class, ['symfony/twig-bundle'])) {
             $loader->load('console.php');
-        }
-
-        if ($container::willBeAvailable('symfony/mailer', Mailer::class, ['symfony/twig-bundle'])) {
-            $loader->load('mailer.php');
         }
 
         if (!$container::willBeAvailable('symfony/translation', Translator::class, ['symfony/twig-bundle'])) {
@@ -78,6 +78,18 @@ class TwigExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
 
         $config = $this->processConfiguration($configuration, $configs);
+
+        if ($container::willBeAvailable('symfony/mailer', Mailer::class, ['symfony/twig-bundle'])) {
+            $loader->load('mailer.php');
+
+            if ($htmlToTextConverter = $config['mailer']['html_to_text_converter'] ?? null) {
+                $container->getDefinition('twig.mime_body_renderer')->setArgument('$converter', new Reference($htmlToTextConverter));
+            }
+        }
+
+        if ($container::willBeAvailable('symfony/asset-mapper', AssetMapper::class, ['symfony/twig-bundle'])) {
+            $loader->load('importmap.php');
+        }
 
         $container->setParameter('twig.form.resources', $config['form_themes']);
         $container->setParameter('twig.default_path', $config['default_path']);
@@ -104,6 +116,12 @@ class TwigExtension extends Extension
 
         // paths are modified in ExtensionPass if forms are enabled
         $container->getDefinition('twig.template_iterator')->replaceArgument(1, $config['paths']);
+
+        $container->getDefinition('twig.template_iterator')->replaceArgument(3, $config['file_name_pattern']);
+
+        if ($container->hasDefinition('twig.command.lint')) {
+            $container->getDefinition('twig.command.lint')->replaceArgument(1, $config['file_name_pattern'] ?: ['*.twig']);
+        }
 
         foreach ($this->getBundleTemplatePaths($container, $config) as $name => $paths) {
             $namespace = $this->normalizeBundleName($name);
@@ -188,9 +206,6 @@ class TwigExtension extends Extension
         return $name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getXsdValidationBasePath(): string|false
     {
         return __DIR__.'/../Resources/config/schema';

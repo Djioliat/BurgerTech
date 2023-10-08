@@ -19,9 +19,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
-use Symfony\Component\DependencyInjection\LazyProxy\ProxyHelper;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\TypedReference;
+use Symfony\Component\VarExporter\ProxyHelper;
 
 /**
  * @author Guilhem Niot <guilhem.niot@gmail.com>
@@ -33,7 +33,7 @@ class ResolveBindingsPass extends AbstractRecursivePass
     private array $errorMessages = [];
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function process(ContainerBuilder $container)
     {
@@ -90,9 +90,6 @@ class ResolveBindingsPass extends AbstractRecursivePass
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function processValue(mixed $value, bool $isRoot = false): mixed
     {
         if ($value instanceof TypedReference && $value->getType() === (string) $value) {
@@ -189,10 +186,11 @@ class ResolveBindingsPass extends AbstractRecursivePass
                     continue;
                 }
 
-                $typeHint = ProxyHelper::getTypeHint($reflectionMethod, $parameter);
+                $typeHint = ltrim(ProxyHelper::exportType($parameter) ?? '', '?');
+
                 $name = Target::parseName($parameter);
 
-                if ($typeHint && \array_key_exists($k = ltrim($typeHint, '\\').' $'.$name, $bindings)) {
+                if ($typeHint && \array_key_exists($k = preg_replace('/(^|[(|&])\\\\/', '\1', $typeHint).' $'.$name, $bindings)) {
                     $arguments[$key] = $this->getBindingValue($bindings[$k]);
 
                     continue;

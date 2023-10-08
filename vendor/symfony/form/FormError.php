@@ -30,7 +30,7 @@ class FormError
     /**
      * The form that spawned this error.
      */
-    private $origin = null;
+    private ?FormInterface $origin = null;
 
     /**
      * Any array key in $messageParameters will be used as a placeholder in
@@ -98,6 +98,8 @@ class FormError
      * Sets the form that caused this error.
      *
      * This method must only be called once.
+     *
+     * @return void
      *
      * @throws BadMethodCallException If the method is called more than once
      */

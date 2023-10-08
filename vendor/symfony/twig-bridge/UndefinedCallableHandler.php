@@ -25,6 +25,7 @@ class UndefinedCallableHandler
     private const FILTER_COMPONENTS = [
         'humanize' => 'form',
         'trans' => 'translation',
+        'sanitize_html' => 'html-sanitizer',
         'yaml_encode' => 'yaml',
         'yaml_dump' => 'yaml',
     ];
@@ -62,6 +63,7 @@ class UndefinedCallableHandler
     ];
 
     private const FULL_STACK_ENABLE = [
+        'html-sanitizer' => 'enable "framework.html_sanitizer"',
         'form' => 'enable "framework.form"',
         'security-core' => 'add the "SecurityBundle"',
         'security-http' => 'add the "SecurityBundle"',
@@ -85,7 +87,7 @@ class UndefinedCallableHandler
         }
 
         if ('webpack-encore-bundle' === self::FUNCTION_COMPONENTS[$name]) {
-            return new TwigFunction($name, static function () { return ''; });
+            return new TwigFunction($name, static fn () => '');
         }
 
         throw new SyntaxError(self::onUndefined($name, 'function', self::FUNCTION_COMPONENTS[$name]));

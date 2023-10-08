@@ -33,8 +33,8 @@ use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 final class DebugFirewallCommand extends Command
 {
     private array $firewallNames;
-    private $contexts;
-    private $eventDispatchers;
+    private ContainerInterface $contexts;
+    private ContainerInterface $eventDispatchers;
     private array $authenticators;
 
     /**
@@ -152,7 +152,7 @@ EOF
         );
     }
 
-    private function displaySwitchUser(FirewallContext $context, SymfonyStyle $io)
+    private function displaySwitchUser(FirewallContext $context, SymfonyStyle $io): void
     {
         if ((null === $config = $context->getConfig()) || (null === $switchUser = $config->getSwitchUser())) {
             return;
@@ -216,11 +216,9 @@ EOF
         $io->table(
             ['Classname'],
             array_map(
-                static function ($authenticator) {
-                    return [
-                        \get_class($authenticator),
-                    ];
-                },
+                static fn ($authenticator) => [
+                    $authenticator::class,
+                ],
                 $authenticators
             )
         );
@@ -230,7 +228,7 @@ EOF
     {
         if (\is_array($callable)) {
             if (\is_object($callable[0])) {
-                return sprintf('%s::%s()', \get_class($callable[0]), $callable[1]);
+                return sprintf('%s::%s()', $callable[0]::class, $callable[1]);
             }
 
             return sprintf('%s::%s()', $callable[0], $callable[1]);
@@ -242,7 +240,7 @@ EOF
 
         if ($callable instanceof \Closure) {
             $r = new \ReflectionFunction($callable);
-            if (false !== strpos($r->name, '{closure}')) {
+            if (str_contains($r->name, '{closure}')) {
                 return 'Closure()';
             }
             if ($class = \PHP_VERSION_ID >= 80111 ? $r->getClosureCalledClass() : $r->getClosureScopeClass()) {
@@ -253,7 +251,7 @@ EOF
         }
 
         if (method_exists($callable, '__invoke')) {
-            return sprintf('%s::__invoke()', \get_class($callable));
+            return sprintf('%s::__invoke()', $callable::class);
         }
 
         throw new \InvalidArgumentException('Callable is not describable.');

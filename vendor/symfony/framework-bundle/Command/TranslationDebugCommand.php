@@ -50,9 +50,9 @@ class TranslationDebugCommand extends Command
     public const MESSAGE_UNUSED = 1;
     public const MESSAGE_EQUALS_FALLBACK = 2;
 
-    private $translator;
-    private $reader;
-    private $extractor;
+    private TranslatorInterface $translator;
+    private TranslationReaderInterface $reader;
+    private ExtractorInterface $extractor;
     private ?string $defaultTransPath;
     private ?string $defaultViewsPath;
     private array $transPaths;
@@ -73,10 +73,7 @@ class TranslationDebugCommand extends Command
         $this->enabledLocales = $enabledLocales;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDefinition([
@@ -121,9 +118,6 @@ EOF
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -153,7 +147,7 @@ EOF
                 if ($this->defaultViewsPath) {
                     $codePaths[] = $this->defaultViewsPath;
                 }
-            } catch (\InvalidArgumentException $e) {
+            } catch (\InvalidArgumentException) {
                 // such a bundle does not exist, so treat the argument as path
                 $path = $input->getArgument('bundle');
 
@@ -186,7 +180,7 @@ EOF
         }
 
         // No defined or extracted messages
-        if (empty($allMessages) || null !== $domain && empty($allMessages[$domain])) {
+        if (!$allMessages || null !== $domain && empty($allMessages[$domain])) {
             $outputMessage = sprintf('No defined or extracted messages for locale "%s"', $locale);
 
             if (null !== $domain) {

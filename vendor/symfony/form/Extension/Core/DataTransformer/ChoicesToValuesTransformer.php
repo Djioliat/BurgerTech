@@ -17,10 +17,12 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * @implements DataTransformerInterface<array, array>
  */
 class ChoicesToValuesTransformer implements DataTransformerInterface
 {
-    private $choiceList;
+    private ChoiceListInterface $choiceList;
 
     public function __construct(ChoiceListInterface $choiceList)
     {

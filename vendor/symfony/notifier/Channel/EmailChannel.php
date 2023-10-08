@@ -29,10 +29,10 @@ use Symfony\Component\Notifier\Recipient\RecipientInterface;
  */
 class EmailChannel implements ChannelInterface
 {
-    private $transport;
-    private $bus;
+    private ?TransportInterface $transport;
+    private ?MessageBusInterface $bus;
     private string|Address|null $from;
-    private $envelope;
+    private ?Envelope $envelope;
 
     public function __construct(TransportInterface $transport = null, MessageBusInterface $bus = null, string $from = null, Envelope $envelope = null)
     {
@@ -53,7 +53,7 @@ class EmailChannel implements ChannelInterface
             $message = $notification->asEmailMessage($recipient, $transportName);
         }
 
-        $message = $message ?: EmailMessage::fromNotification($notification, $recipient, $transportName);
+        $message ??= EmailMessage::fromNotification($notification, $recipient, $transportName);
         $email = $message->getMessage();
         if ($email instanceof Email) {
             if (!$email->getFrom()) {

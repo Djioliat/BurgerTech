@@ -64,9 +64,6 @@ class UrlPackage extends Package
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getUrl(string $path): string
     {
         if ($this->isAbsoluteUrl($path)) {
@@ -110,14 +107,14 @@ class UrlPackage extends Package
      */
     protected function chooseBaseUrl(string $path): int
     {
-        return (int) fmod(hexdec(substr(hash('sha256', $path), 0, 10)), \count($this->baseUrls));
+        return abs(crc32($path)) % \count($this->baseUrls);
     }
 
-    private function getSslUrls(array $urls)
+    private function getSslUrls(array $urls): array
     {
         $sslUrls = [];
         foreach ($urls as $url) {
-            if ('https://' === substr($url, 0, 8) || '//' === substr($url, 0, 2)) {
+            if (str_starts_with($url, 'https://') || str_starts_with($url, '//') || '' === $url) {
                 $sslUrls[] = $url;
             } elseif (null === parse_url($url, \PHP_URL_SCHEME)) {
                 throw new InvalidArgumentException(sprintf('"%s" is not a valid URL.', $url));

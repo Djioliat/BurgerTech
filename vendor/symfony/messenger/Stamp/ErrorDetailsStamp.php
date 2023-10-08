@@ -13,7 +13,6 @@ namespace Symfony\Component\Messenger\Stamp;
 
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
-use Throwable;
 
 /**
  * Stamp applied when a messages fails due to an exception in the handler.
@@ -23,7 +22,7 @@ final class ErrorDetailsStamp implements StampInterface
     private string $exceptionClass;
     private int|string $exceptionCode;
     private string $exceptionMessage;
-    private $flattenException;
+    private ?FlattenException $flattenException;
 
     public function __construct(string $exceptionClass, int|string $exceptionCode, string $exceptionMessage, FlattenException $flattenException = null)
     {
@@ -33,7 +32,7 @@ final class ErrorDetailsStamp implements StampInterface
         $this->flattenException = $flattenException;
     }
 
-    public static function create(Throwable $throwable): self
+    public static function create(\Throwable $throwable): self
     {
         if ($throwable instanceof HandlerFailedException) {
             $throwable = $throwable->getPrevious();
@@ -44,7 +43,7 @@ final class ErrorDetailsStamp implements StampInterface
             $flattenException = FlattenException::createFromThrowable($throwable);
         }
 
-        return new self(\get_class($throwable), $throwable->getCode(), $throwable->getMessage(), $flattenException);
+        return new self($throwable::class, $throwable->getCode(), $throwable->getMessage(), $flattenException);
     }
 
     public function getExceptionClass(): string

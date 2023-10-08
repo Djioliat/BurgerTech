@@ -32,8 +32,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'secrets:remove', description: 'Remove a secret from the vault')]
 final class SecretsRemoveCommand extends Command
 {
-    private $vault;
-    private $localVault;
+    private AbstractVault $vault;
+    private ?AbstractVault $localVault;
 
     public function __construct(AbstractVault $vault, AbstractVault $localVault = null)
     {
@@ -43,7 +43,7 @@ final class SecretsRemoveCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('name', InputArgument::REQUIRED, 'The name of the secret')

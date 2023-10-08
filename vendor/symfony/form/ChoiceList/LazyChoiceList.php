@@ -27,7 +27,7 @@ use Symfony\Component\Form\ChoiceList\Loader\ChoiceLoaderInterface;
  */
 class LazyChoiceList implements ChoiceListInterface
 {
-    private $loader;
+    private ChoiceLoaderInterface $loader;
 
     /**
      * The callable creating string values for each choice.
@@ -48,52 +48,34 @@ class LazyChoiceList implements ChoiceListInterface
     public function __construct(ChoiceLoaderInterface $loader, callable $value = null)
     {
         $this->loader = $loader;
-        $this->value = null === $value || $value instanceof \Closure ? $value : \Closure::fromCallable($value);
+        $this->value = null === $value ? null : $value(...);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChoices(): array
     {
         return $this->loader->loadChoiceList($this->value)->getChoices();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValues(): array
     {
         return $this->loader->loadChoiceList($this->value)->getValues();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getStructuredValues(): array
     {
         return $this->loader->loadChoiceList($this->value)->getStructuredValues();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getOriginalKeys(): array
     {
         return $this->loader->loadChoiceList($this->value)->getOriginalKeys();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChoicesForValues(array $values): array
     {
         return $this->loader->loadChoicesForValues($values, $this->value);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getValuesForChoices(array $choices): array
     {
         return $this->loader->loadValuesForChoices($choices, $this->value);

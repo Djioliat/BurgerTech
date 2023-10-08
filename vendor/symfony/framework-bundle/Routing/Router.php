@@ -33,7 +33,7 @@ use Symfony\Contracts\Service\ServiceSubscriberInterface;
  */
 class Router extends BaseRouter implements WarmableInterface, ServiceSubscriberInterface
 {
-    private $container;
+    private ContainerInterface $container;
     private array $collectedParameters = [];
     private \Closure $paramFetcher;
 
@@ -49,9 +49,9 @@ class Router extends BaseRouter implements WarmableInterface, ServiceSubscriberI
         $this->setOptions($options);
 
         if ($parameters) {
-            $this->paramFetcher = \Closure::fromCallable([$parameters, 'get']);
+            $this->paramFetcher = $parameters->get(...);
         } elseif ($container instanceof SymfonyContainerInterface) {
-            $this->paramFetcher = \Closure::fromCallable([$container, 'getParameter']);
+            $this->paramFetcher = $container->getParameter(...);
         } else {
             throw new \LogicException(sprintf('You should either pass a "%s" instance or provide the $parameters argument of the "%s" method.', SymfonyContainerInterface::class, __METHOD__));
         }
@@ -59,9 +59,6 @@ class Router extends BaseRouter implements WarmableInterface, ServiceSubscriberI
         $this->defaultLocale = $defaultLocale;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getRouteCollection(): RouteCollection
     {
         if (null === $this->collection) {
@@ -76,7 +73,7 @@ class Router extends BaseRouter implements WarmableInterface, ServiceSubscriberI
                 } else {
                     $this->collection->addResource(new FileExistenceResource($containerFile));
                 }
-            } catch (ParameterNotFoundException $exception) {
+            } catch (ParameterNotFoundException) {
             }
         }
 
@@ -84,8 +81,6 @@ class Router extends BaseRouter implements WarmableInterface, ServiceSubscriberI
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return string[] A list of classes to preload on PHP 7.4+
      */
     public function warmUp(string $cacheDir): array
@@ -114,7 +109,7 @@ class Router extends BaseRouter implements WarmableInterface, ServiceSubscriberI
      * - the route schemes,
      * - the route methods.
      */
-    private function resolveParameters(RouteCollection $collection)
+    private function resolveParameters(RouteCollection $collection): void
     {
         foreach ($collection as $route) {
             foreach ($route->getDefaults() as $name => $value) {
@@ -193,9 +188,6 @@ class Router extends BaseRouter implements WarmableInterface, ServiceSubscriberI
         return str_replace('%%', '%', $escapedValue);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function getSubscribedServices(): array
     {
         return [

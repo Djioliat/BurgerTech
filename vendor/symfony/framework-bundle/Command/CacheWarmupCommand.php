@@ -30,7 +30,7 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerAggregate;
 #[AsCommand(name: 'cache:warmup', description: 'Warm up an empty cache')]
 class CacheWarmupCommand extends Command
 {
-    private $cacheWarmer;
+    private CacheWarmerAggregate $cacheWarmer;
 
     public function __construct(CacheWarmerAggregate $cacheWarmer)
     {
@@ -39,10 +39,7 @@ class CacheWarmupCommand extends Command
         $this->cacheWarmer = $cacheWarmer;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDefinition([
@@ -58,9 +55,6 @@ EOF
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

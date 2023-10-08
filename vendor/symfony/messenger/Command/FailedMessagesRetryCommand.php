@@ -13,6 +13,7 @@ namespace Symfony\Component\Messenger\Command;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,11 +24,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Symfony\Component\Messenger\EventListener\StopWorkerOnMessageLimitListener;
-use Symfony\Component\Messenger\Exception\LogicException;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\MessageDecodingFailedStamp;
 use Symfony\Component\Messenger\Transport\Receiver\ListableReceiverInterface;
 use Symfony\Component\Messenger\Transport\Receiver\ReceiverInterface;
 use Symfony\Component\Messenger\Transport\Receiver\SingleMessageReceiver;
+use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 use Symfony\Component\Messenger\Worker;
 use Symfony\Contracts\Service\ServiceProviderInterface;
 
@@ -35,24 +37,24 @@ use Symfony\Contracts\Service\ServiceProviderInterface;
  * @author Ryan Weaver <ryan@symfonycasts.com>
  */
 #[AsCommand(name: 'messenger:failed:retry', description: 'Retry one or more messages from the failure transport')]
-class FailedMessagesRetryCommand extends AbstractFailedMessagesCommand
+class FailedMessagesRetryCommand extends AbstractFailedMessagesCommand implements SignalableCommandInterface
 {
-    private $eventDispatcher;
-    private $messageBus;
-    private $logger;
+    private EventDispatcherInterface $eventDispatcher;
+    private MessageBusInterface $messageBus;
+    private ?LoggerInterface $logger;
+    private ?array $signals;
+    private ?Worker $worker = null;
 
-    public function __construct(?string $globalReceiverName, ServiceProviderInterface $failureTransports, MessageBusInterface $messageBus, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger = null)
+    public function __construct(?string $globalReceiverName, ServiceProviderInterface $failureTransports, MessageBusInterface $messageBus, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger = null, PhpSerializer $phpSerializer = null, array $signals = null)
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->messageBus = $messageBus;
         $this->logger = $logger;
+        $this->signals = $signals;
 
-        parent::__construct($globalReceiverName, $failureTransports);
+        parent::__construct($globalReceiverName, $failureTransports, $phpSerializer);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this
@@ -83,9 +85,6 @@ EOF
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->eventDispatcher->addSubscriber(new StopWorkerOnMessageLimitListener(1));
@@ -128,7 +127,25 @@ EOF
         return 0;
     }
 
-    private function runInteractive(string $failureTransportName, SymfonyStyle $io, bool $shouldForce)
+    public function getSubscribedSignals(): array
+    {
+        return $this->signals ?? [\SIGTERM, \SIGINT];
+    }
+
+    public function handleSignal(int $signal, int|false $previousExitCode = 0): int|false
+    {
+        if (!$this->worker) {
+            return false;
+        }
+
+        $this->logger?->info('Received signal {signal}.', ['signal' => $signal, 'transport_names' => $this->worker->getMetadata()->getTransportNames()]);
+
+        $this->worker->stop();
+
+        return 0;
+    }
+
+    private function runInteractive(string $failureTransportName, SymfonyStyle $io, bool $shouldForce): void
     {
         $receiver = $this->failureTransports->get($failureTransportName);
         $count = 0;
@@ -139,23 +156,23 @@ EOF
             // to be temporarily "acked", even if the user aborts
             // handling the message
             while (true) {
-                $ids = [];
-                foreach ($receiver->all(1) as $envelope) {
-                    ++$count;
-
-                    $id = $this->getMessageId($envelope);
-                    if (null === $id) {
-                        throw new LogicException(sprintf('The "%s" receiver is able to list messages by id but the envelope is missing the TransportMessageIdStamp stamp.', $failureTransportName));
+                $envelopes = [];
+                $this->phpSerializer?->acceptPhpIncompleteClass();
+                try {
+                    foreach ($receiver->all(1) as $envelope) {
+                        ++$count;
+                        $envelopes[] = $envelope;
                     }
-                    $ids[] = $id;
+                } finally {
+                    $this->phpSerializer?->rejectPhpIncompleteClass();
                 }
 
                 // break the loop if all messages are consumed
-                if (0 === \count($ids)) {
+                if (0 === \count($envelopes)) {
                     break;
                 }
 
-                $this->retrySpecificIds($failureTransportName, $ids, $io, $shouldForce);
+                $this->retrySpecificEnvelopes($envelopes, $failureTransportName, $io, $shouldForce);
             }
         } else {
             // get() and ask messages one-by-one
@@ -177,7 +194,11 @@ EOF
 
             $this->displaySingleMessage($envelope, $io);
 
-            $shouldHandle = $shouldForce || $io->confirm('Do you want to retry (yes) or delete this message (no)?');
+            if ($envelope->last(MessageDecodingFailedStamp::class)) {
+                throw new \RuntimeException(sprintf('The message with id "%s" could not decoded, it can only be shown or removed.', $this->getMessageId($envelope) ?? '?'));
+            }
+
+            $shouldHandle = $shouldForce || 'retry' === $io->choice('Please select an action', ['retry', 'delete'], 'retry');
 
             if ($shouldHandle) {
                 return;
@@ -188,7 +209,7 @@ EOF
         };
         $this->eventDispatcher->addListener(WorkerMessageReceivedEvent::class, $listener);
 
-        $worker = new Worker(
+        $this->worker = new Worker(
             [$failureTransportName => $receiver],
             $this->messageBus,
             $this->eventDispatcher,
@@ -196,15 +217,16 @@ EOF
         );
 
         try {
-            $worker->run();
+            $this->worker->run();
         } finally {
+            $this->worker = null;
             $this->eventDispatcher->removeListener(WorkerMessageReceivedEvent::class, $listener);
         }
 
         return $count;
     }
 
-    private function retrySpecificIds(string $failureTransportName, array $ids, SymfonyStyle $io, bool $shouldForce)
+    private function retrySpecificIds(string $failureTransportName, array $ids, SymfonyStyle $io, bool $shouldForce): void
     {
         $receiver = $this->getReceiver($failureTransportName);
 
@@ -213,11 +235,26 @@ EOF
         }
 
         foreach ($ids as $id) {
-            $envelope = $receiver->find($id);
+            $this->phpSerializer?->acceptPhpIncompleteClass();
+            try {
+                $envelope = $receiver->find($id);
+            } finally {
+                $this->phpSerializer?->rejectPhpIncompleteClass();
+            }
             if (null === $envelope) {
                 throw new RuntimeException(sprintf('The message "%s" was not found.', $id));
             }
 
+            $singleReceiver = new SingleMessageReceiver($receiver, $envelope);
+            $this->runWorker($failureTransportName, $singleReceiver, $io, $shouldForce);
+        }
+    }
+
+    private function retrySpecificEnvelopes(array $envelopes, string $failureTransportName, SymfonyStyle $io, bool $shouldForce): void
+    {
+        $receiver = $this->getReceiver($failureTransportName);
+
+        foreach ($envelopes as $envelope) {
             $singleReceiver = new SingleMessageReceiver($receiver, $envelope);
             $this->runWorker($failureTransportName, $singleReceiver, $io, $shouldForce);
         }

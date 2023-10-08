@@ -32,11 +32,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  */
 class LogoutListener extends AbstractListener
 {
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
     private array $options;
-    private $httpUtils;
-    private $csrfTokenManager;
-    private $eventDispatcher;
+    private HttpUtils $httpUtils;
+    private ?CsrfTokenManagerInterface $csrfTokenManager;
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * @param array $options An array of options to process a logout attempt
@@ -54,9 +54,6 @@ class LogoutListener extends AbstractListener
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supports(Request $request): ?bool
     {
         return $this->requiresLogout($request);
@@ -69,9 +66,9 @@ class LogoutListener extends AbstractListener
      * validate the request.
      *
      * @throws LogoutException   if the CSRF token is invalid
-     * @throws \RuntimeException if the LogoutSuccessHandlerInterface instance does not return a response
+     * @throws \RuntimeException if the LogoutEvent listener does not set a response
      */
-    public function authenticate(RequestEvent $event)
+    public function authenticate(RequestEvent $event): void
     {
         $request = $event->getRequest();
 

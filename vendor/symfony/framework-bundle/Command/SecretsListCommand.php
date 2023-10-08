@@ -31,8 +31,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'secrets:list', description: 'List all secrets')]
 final class SecretsListCommand extends Command
 {
-    private $vault;
-    private $localVault;
+    private AbstractVault $vault;
+    private ?AbstractVault $localVault;
 
     public function __construct(AbstractVault $vault, AbstractVault $localVault = null)
     {
@@ -42,7 +42,7 @@ final class SecretsListCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addOption('reveal', 'r', InputOption::VALUE_NONE, 'Display decrypted values alongside names')
@@ -70,14 +70,12 @@ EOF
         }
 
         $secrets = $this->vault->list($reveal);
-        $localSecrets = null !== $this->localVault ? $this->localVault->list($reveal) : null;
+        $localSecrets = $this->localVault?->list($reveal);
 
         $rows = [];
 
         $dump = new Dumper($output);
-        $dump = static function (?string $v) use ($dump) {
-            return null === $v ? '******' : $dump($v);
-        };
+        $dump = static fn (?string $v) => null === $v ? '******' : $dump($v);
 
         foreach ($secrets as $name => $value) {
             $rows[$name] = [$name, $dump($value)];

@@ -5,7 +5,7 @@
     "keywords": [
         "property",
         "type",
-        "PHPDoc",
+        "phpdoc",
         "symfony",
         "validator",
         "doctrine"
@@ -23,7 +23,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0.2",
+        "php": ">=8.1",
         "symfony/string": "^5.4|^6.0"
     },
     "require-dev": {
@@ -36,14 +36,8 @@
     },
     "conflict": {
         "phpdocumentor/reflection-docblock": "<5.2",
-        "phpdocumentor/type-resolver": "<1.4.0",
+        "phpdocumentor/type-resolver": "<1.5.1",
         "symfony/dependency-injection": "<5.4"
-    },
-    "suggest": {
-        "psr/cache-implementation": "To cache results",
-        "symfony/doctrine-bridge": "To use Doctrine metadata",
-        "phpdocumentor/reflection-docblock": "To use the PHPDoc",
-        "symfony/serializer": "To use Serializer metadata"
     },
     "autoload": {
         "psr-4": { "Symfony\\Component\\PropertyInfo\\": "" },

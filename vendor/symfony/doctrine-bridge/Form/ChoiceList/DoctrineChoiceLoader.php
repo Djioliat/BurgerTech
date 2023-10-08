@@ -22,10 +22,10 @@ use Symfony\Component\Form\Exception\LogicException;
  */
 class DoctrineChoiceLoader extends AbstractChoiceLoader
 {
-    private $manager;
+    private ObjectManager $manager;
     private string $class;
-    private $idReader;
-    private $objectLoader;
+    private ?IdReader $idReader;
+    private ?EntityLoaderInterface $objectLoader;
 
     /**
      * Creates a new choice loader.
@@ -41,7 +41,7 @@ class DoctrineChoiceLoader extends AbstractChoiceLoader
         $classMetadata = $manager->getClassMetadata($class);
 
         if ($idReader && !$idReader->isSingleId()) {
-            throw new \InvalidArgumentException(sprintf('The second argument `$idReader` of "%s" must be null when the query cannot be optimized because of composite id fields.', __METHOD__));
+            throw new \InvalidArgumentException(sprintf('The second argument "$idReader" of "%s" must be null when the query cannot be optimized because of composite id fields.', __METHOD__));
         }
 
         $this->manager = $manager;
@@ -50,9 +50,6 @@ class DoctrineChoiceLoader extends AbstractChoiceLoader
         $this->objectLoader = $objectLoader;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function loadChoices(): iterable
     {
         return $this->objectLoader
@@ -60,9 +57,6 @@ class DoctrineChoiceLoader extends AbstractChoiceLoader
             : $this->manager->getRepository($this->class)->findAll();
     }
 
-    /**
-     * @internal to be remove in Symfony 6
-     */
     protected function doLoadValuesForChoices(array $choices): array
     {
         // Optimize performance for single-field identifiers. We already

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
 
     {% for url in urls %}
-        <url>
+        <channel>
             <loc>
                 {% if url.loc|replace({hostname:''}) == url.loc %}
                     {{ hostname }}{{ url.loc }}
@@ -35,6 +35,6 @@
                 </image:image>
             {% endif %}
 
-        </url>
+        </channel>
     {% endfor %}
-</urlset>
+</rss>

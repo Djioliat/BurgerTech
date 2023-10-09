@@ -36,9 +36,10 @@ class FluxrssController extends AbstractController
                 'loc' => $this->generateUrl('episode_detail', [
                     'slug' => $episode->getSlug()
                 ]),
-                'image' => $images,
+                'title' => $episode->getTitle(),
                 'audio'=> $episode->getAudio(),
-                'content' => $episode->getContent()
+                'content' => $episode->getContent(),
+                'pubDate' => $episode->getCreatedAt(),
             ];
         }
         // Fabriquer la réponse 
@@ -55,4 +56,3 @@ class FluxrssController extends AbstractController
         return $response;
     }
 }
- 

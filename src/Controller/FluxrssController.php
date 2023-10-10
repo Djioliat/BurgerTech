@@ -16,7 +16,7 @@ class FluxrssController extends AbstractController
     public function index(Request $request, EpisodeRepository $episodeRepository): Response
     {
         // Récupérer hôte depuis l'url
-        $hostname = $request->getSchemeAndHttpHost('episode_detail');
+        $hostname = $request->getSchemeAndHttpHost();
         
         $urls = [];
 

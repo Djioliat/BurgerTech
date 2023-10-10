@@ -3,13 +3,18 @@
     <channel>
         <title>L'apéro des papas manchots !</title>
         <link>{{ hostname }}</link>
-        <description>Podcast</description>
+        <description>Le podcast traitant de Linux et de l'open source</description>
         <language>fr-FR</language>
 
         <itunes:category text="Technology" />
         <itunes:image href="https://nsm09.casimages.com/img/2023/10/10//23101012042424921118272290.png" />
         <itunes:explicit>no</itunes:explicit>
-
+        <itunes:author>Donkluivert et John Guecko</itunes:author>
+        <itunes:keywords>linux,opensource,librebloguelinux</itunes:keywords>
+        <itunes:owner>
+            <itunes:email>donkluivert@yahoo.fr</itunes:email>
+            <itunes:name>Donkluivert et John Guecko</itunes:name>
+        </itunes:owner>
         {% for url in urls %}
             <item>
                 <title>{{ url.title }}</title>

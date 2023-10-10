@@ -26,7 +26,7 @@ class FluxrssController extends AbstractController
         foreach($episodes as $episode){
 
             $urls[] = [
-                'loc' => $this->generateUrl('episode_detail', [ 
+                'loc' => $this->generateUrl('episode_index', [ 
                     'slug' => $episode->getSlug()
                 ]),
                 'title' => $episode->getTitle(),

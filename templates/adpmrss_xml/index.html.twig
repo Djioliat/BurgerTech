@@ -21,7 +21,7 @@
                 <link>{{ url.loc }}</link>
                 <pubDate>{{ url.pubDate | date('r') }}</pubDate>
                 <description>{{ url.content }}</description>
-                <enclosure url="{{ url.audio }}" length="1" type="audio/mpeg" />
+                <enclosure url="{{ url.audio }}" length="{{ url.length }}" type="audio/mpeg" />
             </item>
         {% endfor %}
     </channel>

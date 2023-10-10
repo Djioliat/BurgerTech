@@ -24,16 +24,18 @@ class FluxrssController extends AbstractController
         $episodes = $episodeRepository->findAll();
 
         foreach($episodes as $episode){
-
+            $audioUrl = $episode->getAudio();
+            $length = $this->getRemoteFileSize($audioUrl);
             $urls[] = [
                 'loc' => $this->generateUrl('episode_detail', [ 
                     'slug' => $episode->getSlug()
                 ]),
                 'title' => $episode->getTitle(),
                 'images' => $episode->getCoverImage(),
-                'audio'=> $episode->getAudio(),
+                'audio'=> $audioUrl,
                 'content' => $episode->getContent(),
                 'pubDate' => $episode->getCreatedAt(),
+                'length' => $length,
             ];
         }
         // Fabriquer la réponse 
@@ -48,5 +50,22 @@ class FluxrssController extends AbstractController
         $response->headers->set('Content-Type', 'text/xml');
 
         return $response;
+    }
+    /**
+     * Récupérer la taille du fichier distant en utilisant une requête HTTP
+     *
+     * @param string $url L'URL du fichier distant
+     * @return int|null La taille du fichier ou null si la requête échoue
+     */
+    private function getRemoteFileSize(string $url): ?int
+    {
+        $headers = get_headers($url, 1);
+
+        // Vérifier si la requête a réussi (200 OK)
+        if (isset($headers['Content-Length']) && is_numeric($headers['Content-Length'])) {
+            return (int) $headers['Content-Length'];
+        }
+
+        return null;
     }
 }

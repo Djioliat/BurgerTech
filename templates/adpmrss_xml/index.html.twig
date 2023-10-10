@@ -1,35 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
     <channel>
         <title>L'apéro des papas manchots !</title>
         <link>{{ hostname }}</link>
         <description>Podcast</description>
         <language>fr-FR</language>
 
+        <itunes:category text="Humour" />
+        <itunes:image href="https://donkluivert.cluster1.easy-hebergement.net/podcast/adpm_1/emisson_78_du_27_mai_2023_on_est_toujours_la.jpg" />
+        <itunes:explicit>no</itunes:explicit>
+
         {% for url in urls %}
             <item>
-                {% if url.title is defined %}
-                    <title>{{ url.title }}</title>
-                {% else %}
-                    <title>Titre par défaut</title>
-                {% endif %}
-
-                {% if url.images is defined %}
-                    <p>{{ url.images }}</p>
-                {% else %}
-                    <p>La variable `episode.coverImage` n'est pas définie.</p>
-                {% endif %}
-
-                {% if url.content is defined %}
-                    <description>{{ url.content }}</description>
-                {% else %}
-                    <description>Défault</description>
-                {% endif %}
-                
-
-                {% if url.audio is defined %}
-                    <enclosure url="{{ url.audio }}" length="1" type="audio/mpeg" />
-                {% endif %}
+                <title>{{ url.title }}</title>
+                <link>{{ url.loc }}</link>
+                <pubDate>{{ url.pubDate | date('r') }}</pubDate>
+                <description>{{ url.content }}</description>
+                <enclosure url="{{ url.audio }}" length="1" type="audio/mpeg" />
             </item>
         {% endfor %}
     </channel>

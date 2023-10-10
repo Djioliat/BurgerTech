@@ -13,8 +13,12 @@
                 {% else %}
                     <title>Titre par défaut</title>
                 {% endif %}
-                
-                
+
+                {% if url.images is defined %}
+                    <p>{{ url.images }}</p>
+                {% else %}
+                    <p>La variable `episode.coverImage` n'est pas définie.</p>
+                {% endif %}
 
                 {% if url.content is defined %}
                     <description>{{ url.content }}</description>

@@ -20,23 +20,17 @@ class FluxrssController extends AbstractController
         
         $urls = [];
 
-        // Url statique
-        $urls[] = ['loc' => $this->generateUrl('episode_index')];
-
         // Url dynamique
         $episodes = $episodeRepository->findAll();
 
         foreach($episodes as $episode){
-            $images = [
-                'loc' => $episode->getCoverImage(),
-                'title' => $episode->getTitle(),
-            ];
 
             $urls[] = [
-                'loc' => $this->generateUrl('episode_detail', [
+                'loc' => $this->generateUrl('episode_detail', [ 
                     'slug' => $episode->getSlug()
                 ]),
                 'title' => $episode->getTitle(),
+                'images' => $episode->getCoverImage(),
                 'audio'=> $episode->getAudio(),
                 'content' => $episode->getContent(),
                 'pubDate' => $episode->getCreatedAt(),

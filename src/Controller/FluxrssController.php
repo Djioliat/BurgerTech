@@ -52,10 +52,8 @@ class FluxrssController extends AbstractController
         return $response;
     }
     /**
-     * Récupérer la taille du fichier distant en utilisant une requête HTTP
-     *
-     * @param string $url L'URL du fichier distant
-     * @return int|null La taille du fichier ou null si la requête échoue
+     * @param string $url 
+     * @return int|null 
      */
     private function getRemoteFileSize(string $url): ?int
     {

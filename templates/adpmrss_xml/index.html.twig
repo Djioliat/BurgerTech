@@ -8,7 +8,6 @@
 
         <itunes:category text="Technology" />
         <itunes:image href="https://nsm09.casimages.com/img/2023/10/10//23101012042424921118272290.png" />
-        <itunes:explicit>no</itunes:explicit>
         <itunes:author>Donkluivert et John Guecko</itunes:author>
         <itunes:keywords>linux,opensource,librebloguelinux</itunes:keywords>
         <itunes:owner>
@@ -17,6 +16,7 @@
         </itunes:owner>
         {% for url in urls %}
             <item>
+                <itunes:explicit>yes</itunes:explicit>
                 <title>{{ url.title }}</title>
                 <link>{{ url.loc }}</link>
                 <guid>{{ url.loc }}</guid>

@@ -25,6 +25,7 @@
                 <description><![CDATA[{{ url.content }}]]></description> 
                 <itunes:summary><![CDATA[{{ url.content }}]]></itunes:summary>
                 <enclosure url="{{ url.audio }}" length="{{ url.length }}" type="audio/mpeg" />
+                <itunes:duration>{{ url.duration }}</itunes:duration>
             </item>
         {% endfor %}
     </channel>

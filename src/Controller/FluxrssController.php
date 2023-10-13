@@ -24,22 +24,26 @@ class FluxrssController extends AbstractController
         // Url dynamique
         $episodes = $episodeRepository->findAll();
 
-        foreach($episodes as $episode){
+        foreach ($episodes as $episode) {
             $audioUrl = $episode->getAudio();
             $length = $this->getRemoteFileSize($audioUrl);
+            $duration = $this->getAudioDuration($audioUrl);
+
             $urls[] = [
                 'loc' => $this->generateUrl('episode_detail', [ 
                     'slug' => $episode->getSlug()
                 ], UrlGeneratorInterface::ABSOLUTE_URL),
                 'title' => $episode->getTitle(),
                 'images' => $episode->getCoverImage(),
-                'audio'=> $audioUrl,
+                'audio' => $audioUrl,
                 'content' => $episode->getContent(),
                 'pubDate' => $episode->getCreatedAt(),
                 'length' => $length,
-                'LastPublishDate' => $episode->getPublishDate()
+                'LastPublishDate' => $episode->getPublishDate(),
+                'duration' => $duration,
             ];
         }
+        
         // Fabriquer la réponse 
         $response = new Response(
             $this->renderView('adpmrss_xml/index.html.twig', [
@@ -53,6 +57,7 @@ class FluxrssController extends AbstractController
 
         return $response;
     }
+
     /**
      * @param string $url 
      * @return int|null 
@@ -65,6 +70,19 @@ class FluxrssController extends AbstractController
         if (isset($headers['Content-Length']) && is_numeric($headers['Content-Length'])) {
             return (int) $headers['Content-Length'];
         }
+
+        return null;
+    }
+
+    /**
+     * @param string $url 
+     * @return int|null 
+     */
+    private function getAudioDuration(string $url): ?int
+    {
+        // Vous devez implémenter une logique pour obtenir la durée du fichier audio
+        // par exemple, en utilisant une bibliothèque externe comme getID3 ou une autre méthode appropriée pour votre cas.
+        // La fonction actuelle retourne null, vous devez adapter cela à votre besoin spécifique.
 
         return null;
     }

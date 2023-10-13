@@ -16,23 +16,26 @@ class FluxrssController extends AbstractController
      */
     public function index(Request $request, EpisodeRepository $episodeRepository): Response
     {
-        // Récupérer hôte depuis l'url
+        // Récupérer l'hôte depuis l'URL
         $hostname = $request->getSchemeAndHttpHost();
         
         $urls = [];
 
-        // Url dynamique
+        // Obtenir tous les épisodes depuis le référentiel
         $episodes = $episodeRepository->findAll();
 
         foreach ($episodes as $episode) {
             $audioUrl = $episode->getAudio();
+            
+            // Obtenir la taille du fichier audio distant
             $length = $this->getRemoteFileSize($audioUrl);
+
+            // Obtenir la durée du fichier audio (vous devez implémenter cette fonction)
             $duration = $this->getAudioDuration($audioUrl);
 
+            // Construire un tableau d'informations sur l'épisode
             $urls[] = [
-                'loc' => $this->generateUrl('episode_detail', [ 
-                    'slug' => $episode->getSlug()
-                ], UrlGeneratorInterface::ABSOLUTE_URL),
+                'loc' => $this->generateUrl('episode_detail', ['slug' => $episode->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'title' => $episode->getTitle(),
                 'images' => $episode->getCoverImage(),
                 'audio' => $audioUrl,
@@ -44,16 +47,23 @@ class FluxrssController extends AbstractController
             ];
         }
         
-        // Fabriquer la réponse 
+        // Générer la réponse
         $response = new Response(
             $this->renderView('adpmrss_xml/index.html.twig', [
                 'urls' => $urls,
-                'hostname' => $hostname
+                'hostname' => $hostname,
             ]),
             200
         );
 
+        // Ajouter l'en-tête Content-Type
         $response->headers->set('Content-Type', 'text/xml');
+
+        // Calculer la taille du contenu
+        $contentLength = mb_strlen($response->getContent(), '8bit');
+
+        // Ajouter l'en-tête Content-Length
+        $response->headers->set('Content-Length', $contentLength);
 
         return $response;
     }

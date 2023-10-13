@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Cocur\Slugify\Slugify;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EpisodeRepository;
 use Doctrine\Common\Collections\Collection;
@@ -44,6 +45,9 @@ class Episode
     #[ORM\OneToMany(mappedBy: 'episode', targetEntity: Articles::class)]
     private $article;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $PublishDate = null;
+
     public function __toString(){
         return $this->title; // Remplacer champ par une propriété "string" de l'entité
     }
@@ -53,6 +57,7 @@ class Episode
         $this->comments = new ArrayCollection();
         $this->created_at = new \DateTimeImmutable();
         $this->article = new ArrayCollection();
+        $this->PublishDate = new \DateTimeImmutable();
     }
 
     #[ORM\PrePersist]
@@ -209,6 +214,18 @@ class Episode
                 $article->setEpisode(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPublishDate(): ?\DateTimeInterface
+    {
+        return $this->PublishDate;
+    }
+
+    public function setPublishDate(?\DateTimeInterface $PublishDate): static
+    {
+        $this->PublishDate = $PublishDate;
 
         return $this;
     }

@@ -36,6 +36,7 @@ class FluxrssController extends AbstractController
                 'content' => $episode->getContent(),
                 'pubDate' => $episode->getCreatedAt(),
                 'length' => $length,
+                'LastPublishDate' => $episode->getPublishDate()
             ];
         }
         // Fabriquer la réponse 

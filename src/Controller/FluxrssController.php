@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\EpisodeRepository;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class FluxrssController extends AbstractController
 {
@@ -29,7 +30,7 @@ class FluxrssController extends AbstractController
             $urls[] = [
                 'loc' => $this->generateUrl('episode_detail', [ 
                     'slug' => $episode->getSlug()
-                ]),
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
                 'title' => $episode->getTitle(),
                 'images' => $episode->getCoverImage(),
                 'audio'=> $audioUrl,

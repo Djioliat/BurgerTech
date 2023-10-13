@@ -34,7 +34,7 @@ class FluxrssController extends AbstractController
             $duration = $this->getAudioDuration($audioUrl);
 
             // Construire un tableau d'informations sur l'épisode
-            $urls[] = [
+            $url = [
                 'loc' => $this->generateUrl('episode_detail', ['slug' => $episode->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'title' => $episode->getTitle(),
                 'images' => $episode->getCoverImage(),
@@ -45,6 +45,11 @@ class FluxrssController extends AbstractController
                 'LastPublishDate' => $episode->getPublishDate(),
                 'duration' => $duration,
             ];
+
+            // Vérifier si l'épisode existe déjà dans le tableau
+            if (!in_array($url, $urls)) {
+                $urls[] = $url;
+            }
         }
         
         // Générer la réponse

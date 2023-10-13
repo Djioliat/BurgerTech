@@ -19,10 +19,10 @@ class FluxrssController extends AbstractController
         // Récupérer l'hôte depuis l'URL
         $hostname = $request->getSchemeAndHttpHost();
         
-        $urls = [];
-
         // Obtenir tous les épisodes depuis le référentiel
         $episodes = $episodeRepository->findAll();
+
+        $urls = [];
 
         foreach ($episodes as $episode) {
             $audioUrl = $episode->getAudio();
@@ -59,11 +59,8 @@ class FluxrssController extends AbstractController
         // Ajouter l'en-tête Content-Type
         $response->headers->set('Content-Type', 'text/xml');
 
-        // Calculer la taille du contenu
-        $contentLength = mb_strlen($response->getContent(), '8bit');
-
         // Ajouter l'en-tête Content-Length
-        $response->headers->set('Content-Length', $contentLength);
+        $response->headers->set('Content-Length', mb_strlen($response->getContent(), '8bit'));
 
         return $response;
     }

@@ -20,7 +20,7 @@
                 <title>{{ url.title }}</title>
                 <link>{{ url.loc }}</link>
                 <guid>{{ url.loc }}</guid>
-                <pubDate>{{ url.pubDate | date('r') }}</pubDate>
+                {# <pubDate>{{ url.pubDate | date('r') }}</pubDate> #}
                 <lastPublishDate>{{ url.LastPublishDate | date('r') }}</lastPublishDate>
                 <description><![CDATA[{{ url.content }}]]></description>
                 <itunes:summary><![CDATA[{{ url.content }}]]></itunes:summary>

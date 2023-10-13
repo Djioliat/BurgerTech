@@ -16,13 +16,13 @@
         </itunes:owner>
         {% for url in urls %}
             <item>
-                <itunes:explicit>no</itunes:explicit>
+                <itunes:explicit>yes</itunes:explicit>
                 <title>{{ url.title }}</title>
                 <link>{{ url.loc }}</link>
                 <guid>{{ url.loc }}</guid>
                 <pubDate>{{ url.pubDate | date('r') }}</pubDate>
                 {# <lastPublishDate>{{ url.LastPublishDate | date('r') }}</lastPublishDate> #}
-                <description><![CDATA[{{ url.content }}]]></description>
+                {# <description><![CDATA[{{ url.content }}]]></description> #}
                 <itunes:summary><![CDATA[{{ url.content }}]]></itunes:summary>
                 <enclosure url="{{ url.audio }}" length="{{ url.length }}" type="audio/mpeg" />
             </item>

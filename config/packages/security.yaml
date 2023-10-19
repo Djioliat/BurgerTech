@@ -36,8 +36,11 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/article/cedric, roles: ROLE_CEDRIC }
-        - { path: ^/article/gaetan, roles: ROLE_GAETAN }
+        - { path: ^/article/new, roles: ROLE_ADMIN }
+        - { path: ^/article/dk, roles: ROLE_DK }
+        - { path: ^/article/morgan, roles: ROLE_MORGAN }
+        - { path: ^/article/john, roles: ROLE_JOHN }
+        - { path: ^/article/alex, roles: ROLE_ALEX }
         - { path: ^/profil, roles: ROLE_USER }
         - { path: ^/profil/supprimer, roles: ROLE_USER }
 when@test:

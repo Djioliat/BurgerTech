@@ -34,11 +34,11 @@ class ArticleController extends AbstractController
         ]);
     }
     // Article privé à un utilisateur
-    #[Route('/article/cedric', name: 'article_cedric')]
-    public function cedric(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
+    #[Route('/article/dk', name: 'article_dk')]
+    public function dk(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $data = $articlesRepository->findBy(
-            ['auteur' => 'cedric'],
+            ['auteur' => 'dk'],
             ['id' => 'DESC'],
         );
         $article = $paginator->paginate(
@@ -52,11 +52,11 @@ class ArticleController extends AbstractController
     }
     
     // Article privé à un utilisateur
-    #[Route('/article/gaetan', name: 'article_gaetan')]
-    public function gaetan(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
+    #[Route('/article/morgan', name: 'article_morgan')]
+    public function morgan(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
     {      
         $data = $articlesRepository->findBy(
-            ['auteur' => 'gaetan'],
+            ['auteur' => 'morgan'],
             ['id' => 'DESC']
         );
         $article = $paginator->paginate(
@@ -68,8 +68,43 @@ class ArticleController extends AbstractController
             [
                 'articles' => $article
             ]);
-        }
+    }
     
+    #[Route('/article/john', name: 'article_john')]
+    public function john(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
+    {      
+        $data = $articlesRepository->findBy(
+            ['auteur' => 'john'],
+            ['id' => 'DESC']
+        );
+        $article = $paginator->paginate(
+            $data,
+            $request->query->getInt('page',1),
+            6
+        );
+        return $this->render('article/index.html.twig', 
+            [
+                'articles' => $article
+            ]);
+    }
+
+    #[Route('/article/alex', name: 'article_alex')]
+    public function alex(ArticlesRepository $articlesRepository, PaginatorInterface $paginator, Request $request): Response
+    {      
+        $data = $articlesRepository->findBy(
+            ['auteur' => 'alex'],
+            ['id' => 'DESC']
+        );
+        $article = $paginator->paginate(
+            $data,
+            $request->query->getInt('page',1),
+            6
+        );
+        return $this->render('article/index.html.twig', 
+            [
+                'articles' => $article
+            ]);
+    }
 
     // Créer un article
     #[Route('/article/new', name: 'article_new')]

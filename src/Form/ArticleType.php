@@ -21,9 +21,10 @@ class ArticleType extends AbstractType
             ->add('url')
             ->add('auteur', ChoiceType::class, [
                 'choices' => [
-                    'Gaetan' => 'gaetan',
-                    'Cédric' => 'cedric',
-                    'Public' => 'public'
+                    'Dk' => 'dk',
+                    'Morgan' => 'morgan',
+                    'Jhon' => 'john',
+                    'Alex' => 'alex'
                 ]
                 ])
                 

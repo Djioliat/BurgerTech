@@ -53,7 +53,7 @@ class Episode
     }
     public function __construct()
     {
-        $this->articles = new ArrayCollection();
+        $this->article = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->created_at = new \DateTimeImmutable();
         $this->article = new ArrayCollection();

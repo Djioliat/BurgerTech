@@ -35,16 +35,16 @@
             <div class="text-center mt-5">
                 <h2 class="">Liste des articles de l'épisode</h2>
             </div>   
-            {% for articles in episode.article %}
+            {% for article in articles %}
             <div class="text-center card col-lg-3 border m-3 p-3 col-sm-12 ">
-                <p>{{ articles.title }}</p>
+                <p>{{ article.title }}</p>
                 <div> 
-                    <a href="{{ articles.url }}" target="_blank" class="btn btn-primary">Voir l'article</a>
+                    <a href="{{ article.url }}" target="_blank" class="btn btn-primary">Voir l'article</a>
                 </div> 
             </div>
             {% endfor %}
         </div>
-                    {# Commentaire #}
+        {# Commentaire #}
         <div class="col-12 mt-3">
             <div class="card text-center col-lg-6 col-sm-11 mx-auto mb-3">                 
                 {% if is_granted('ROLE_USER') %}  

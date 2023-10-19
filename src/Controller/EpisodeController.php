@@ -41,27 +41,14 @@ class EpisodeController extends AbstractController
         }
 
     #[Route('/episode/{slug}', name:('episode_detail'))]
-    public function details($slug,ArticlesRepository $articleRepository,CommentRepository $comment, EpisodeRepository $episode, EntityManagerInterface $entityManager, Request $request): Response
+    public function details($slug,ArticlesRepository $articleRepository,CommentRepository $comment, EpisodeRepository $episodeRepository, EntityManagerInterface $entityManager, Request $request): Response
         {
             // Afficher l'épisode
-            $episode = $episode->findOneBy
-            (
-                [
-                    'slug' => $slug
-                ],
-            );
-           /*  $article = $articleRepository->findAll(
-                [
-                    'id' => 'DESC'
-                ]
-            );  */
-            /* $comment = $comment->findAll(
-                [
-                    'id' => 'DESC'
-                ]
-                );
-             */
-            
+            $episode = $episodeRepository->findOneBy(['slug' => $slug]);
+
+            // Récupérer les articles avec le champ "author" égal à "public"
+            $articles = $articleRepository->findBy(['auteur' => 'Public'], ['id' => 'DESC']);
+
             // Traitement du formulaire
 
             $comment = new Comment();
@@ -82,6 +69,7 @@ class EpisodeController extends AbstractController
             }
             return $this->render('episode/detail.html.twig', [
                 'episode' => $episode,
+                'articles' => $articles,
                 'commentForm' => $commentForm->createView()
                 ]);
         }

@@ -1,0 +1,15 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h1>Liste des articles</h1>
+    
+        {% for article in articles %}
+            <div>
+                <h2>{{ article.title }}</h2>
+                <p>Auteur : {{ article.auteur }}</p>
+                <a href="{{article.url}}"><btn class="btn btn-primary">Lien de l'article</btn></a>
+            </div>
+            
+        {% endfor %}
+    
+{% endblock %}

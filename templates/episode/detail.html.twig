@@ -22,6 +22,7 @@
                 <div class="episode-content">
                     <p>{{ episode.content }}</p>
                 </div>
+                
                 <div class="text-end mt-5">
                     {% if is_granted('ROLE_ADMIN') %}
                         <a href="{{ url }}" class="btn btn-warning">Modifier</a>

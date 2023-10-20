@@ -18,7 +18,7 @@ class HomeController extends AbstractController
     {
         return $this->render('home/index.html.twig', [
         'episode' => $episodeRepository->findBy([],
-        ['id' => 'DESC'],4)
+        ['id' => 'DESC'],3)
         ]);
     }
     

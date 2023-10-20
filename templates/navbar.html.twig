@@ -11,27 +11,10 @@
 				</li>
 			</ul>
 			<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-				{% if is_granted('ROLE_DK') %}
-					<li class="nav-item">
-						<a class="nav-link font-weight-bold" aria-current="page" href="{{ path('article_dk') }}">Mes articles</a>
-					</li>
-				{% endif %}
-				{% if is_granted('ROLE_MORGAN') %}
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{{ path('article_morgan') }}">Mes articles</a>
-					</li>
-				{% endif %}
-				{% if is_granted('ROLE_JHON') %}
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{{ path('article_john') }}">Mes articles</a>
-					</li>
-				{% endif %}
-				{% if is_granted('ROLE_ALEX') %}
-					<li class="nav-item">
-						<a class="nav-link active" aria-current="page" href="{{ path('article_alex') }}">Mes articles</a>
-					</li>
-				{% endif %}
 				{% if is_granted('ROLE_ADMIN') %}
+					<li class="nav-item">
+						<a class="nav-link font-weight-bold" aria-current="page" href="{{ path('admin_preparation') }}">Préparation épisode</a>
+					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="{{ path('app_ajout') }}">Ajouter épisode</a>
 					</li>

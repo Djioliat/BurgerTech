@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Form\EditUserType;
+use App\Repository\ArticlesRepository;
 use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -55,6 +56,23 @@ class AdminController extends AbstractController
 
         $this->addFlash('success', "L'utilisateur {$user->getPseudo()} à bien été supprimé !");
         return $this->redirectToRoute('admin_utilisateurs');    
+    }
+
+    #[Route('/preparation', name: 'preparation')]
+    public function preparation(ArticlesRepository $articles): Response
+    {
+        $auteurs = ['alex', 'dk', 'morgan', 'john'];
+
+        $data = $articles->createQueryBuilder('a')
+            ->where('a.auteur IN (:auteurs)')
+            ->setParameter('auteurs', $auteurs)
+            ->orderBy('a.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('admin/preparation.html.twig', [
+            'articles' => $data
+    ]);
     }
 
 }

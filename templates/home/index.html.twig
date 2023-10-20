@@ -28,10 +28,9 @@
 							</a>
 							<div class="postcard__text">
 								<h1 class="postcard__title"><a href="#">{{ epi.title }}</a></h1>
-								<div class="postcard__subtitle small">
-								<i class="fa-solid fa-calendar-days"></i>
-									<i class="fa-solide fa-calendar-days mr-2">{{ epi.createdAt | date('d/m/Y') }}</i>
-								</div>
+
+									<img src="/icons/calendar.png" class="m-1" alt="Calendrier">{{ epi.createdAt | date('d/m/Y') }}
+
 								<div class="postcard__preview-txt mt-3">{{ epi.introduction }}</div>
 								<div class="postcard__tagbox">
 									<audio class="col-6 mt-3" controls preload="none">

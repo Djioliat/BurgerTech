@@ -209,11 +209,20 @@ main {
 .show-episode {
         margin-top: 7rem;
 }
-
+.title-episode-show {
+        font-size: 50px;
+}
 .episode-infos {
         margin-top: 7rem;
 }
-
+.image-episode {
+        width: 1102px;
+        height: 620px;
+}
+.article-episode {
+        background: linear-gradient(to right, #844d98, #18151f);
+        color: white;
+}
 .user-edit {
         margin-top: 7rem;
 }

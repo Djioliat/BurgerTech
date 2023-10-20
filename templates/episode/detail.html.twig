@@ -1,35 +1,35 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-	<div class="container-fluid episode-infos">
-		<div class="row mt-5 mb-3">
-        	{% set url = path ('episode_edit', {'slug': episode.slug}) %}
-			<div class="text-center col-lg-6 col-sm-12">
-				<img class="card-img-detail" src="{{ episode.coverImage }}" alt="logo image">
-			</div>
-            <div class="mt-4 col-lg-6 col-sm-12 text-center ">
-                <div>
-                    <h4>{{ episode.title }}</h4>
-                </div>
-                <div class="episode-title">
-                    <p>{{ episode.introduction }}</p>
-                </div>
-                <div>
-                    <audio controls>
-                        <source class="col-lg-6" src="{{ episode.audio }}">
-                    </audio>
-                </div>
-                <div class="episode-content">
-                    <p>{{ episode.content }}</p>
-                </div>
-                
-                <div class="text-end mt-5">
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ url }}" class="btn btn-warning">Modifier</a>
-                    {% endif %}
-                </div>
-            <div>
-		</div>
+	<div class="">
+        <div class="episode-infos text-center">
+        {% set url = path ('episode_edit', {'slug': episode.slug}) %}
+            <div class="mb-5">
+                <h1 class="title-episode-show">{{ episode.title|upper }}</h1>
+            </div>
+            <div class="mb-5">
+                <img src="/icons/calendar-bg-white.png"></img>
+                <time><strong>{{episode.createdAt | date('d/m/Y')}}</strong></time>
+            </div>
+            <div class="">
+                <img class="image-episode" src="{{ episode.coverImage }}" alt="logo image">
+            </div>
+            <div class="mt-5">
+                <h2>{{ episode.introduction }}</h2>
+            </div>
+            <div class="">
+                <audio controls class="col-lg-8">
+                    <source src="{{ episode.audio }}">
+                </audio>
+            </div>
+        </div>
+        <div>
+            <div class="text-end">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ url }}" class="btn btn-warning">Modifier</a>
+                {% endif %}
+            </div>
+        <div>
     </div>
     <div class="container">
         <div class="row justify-content-center">
@@ -37,10 +37,13 @@
                 <h2 class="">Liste des articles de l'épisode</h2>
             </div>   
             {% for article in articles %}
-            <div class="text-center card col-lg-3 border m-3 p-3 col-sm-12 ">
-                <p>{{ article.title }}</p>
-                <div> 
-                    <a href="{{ article.url }}" target="_blank" class="btn btn-primary">Voir l'article</a>
+            <div class="col-lg-8 border m-3 p-3 col-sm-12 article-episode">
+                <h4>
+                    <li>{{ article.title }}</li>
+                </h4>
+                <div class="col-12 text-center mt-3">
+                    <img src="/icons/right-arrow.png" alt=""> 
+                    <a href="{{ article.url }}" target="_blank" class="m-1 btn text-white">Voir l'article</a>
                 </div> 
             </div>
             {% endfor %}

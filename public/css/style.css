@@ -1,26 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2&display=swap");
+
+
+/* This pen */
+body {
+        font-family: "Baloo 2", cursive;
+        font-size: 16px;
+        text-rendering: optimizeLegibility;
+        font-weight: initial;
+}
+
+.light {
+        background: #f3f5f7;
+}
+
+a {
+        color: white;
+        text-decoration: none;
+}
+
+#pageHeaderTitle {
+        margin: 2rem 0;
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 2.5rem;
+}
+
+/* Cards */
+.postcard {
+        flex-wrap: wrap;
+        display: flex;
+
+        box-shadow: 0 4px 21px -12px rgba(258, 19%, 10%);
+        border-radius: 10px;
+        margin: 0 0 2rem 0;
+        overflow: hidden;
+        position: relative;
+        color: #ffffff;
+
+        &.dark {
+                background: linear-gradient(to right, #844d98, #18151f);
+        }
+
+        &.light {
+                background-color: #e1e5ea;
+        }
+
+        .t-dark {
+                color: hsl(258, 19%, 10%);
+        }
+
+        h1,
+        .h1 {
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+                line-height: 1.2;
+        }
+
+        .small {
+                font-size: 80%;
+        }
+
+        .postcard__title {
+                font-size: 1.75rem;
+        }
+
+        .postcard__img {
+                min-height: 300px;
+                width: 300px;
+                object-fit: cover;
+                position: relative;
+        }
+        .postcard__img_link {
+                display: contents;
+        }
+
+        .postcard__text {
+                padding: 1.5rem;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+        }
+
+        .postcard__preview-txt {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-align: justify;
+                height: 100%;
+        }
+
+        .postcard__tagbox {
+                display: flex;
+                flex-flow: row wrap;
+                font-size: 14px;
+                margin: 20px 0 0 0;
+                padding: 0;
+                justify-content: center;
+        }
+}
+
+@media screen and (min-width: 769px) {
+        .postcard {
+                flex-wrap: inherit;
+
+                .postcard__title {
+                        font-size: 2rem;
+                }
+
+                .postcard__tagbox {
+                        justify-content: start;
+                }
+
+                .postcard__img {
+                        width: 300px;
+                        min-height: 300px;
+                        transition: transform 0.3s ease;
+                }
+
+                .postcard__text {
+                        padding: 1rem;
+                        width: 100%;
+                }
+
+                &:hover .postcard__img {
+                        transform: scale(1.1);
+                }
+
+                &:nth-child(2n+1) {
+                        flex-direction: row;
+                }
+
+                &:nth-child(2n+0) {
+                        flex-direction: row-reverse;
+                }
+        }
+}
 .navbar {
         background: #edfdf3;
 }
+
 .img-acceuil {
         text-align: center;
         position: relative;
         margin-top: 5rem;
         margin-bottom: 3rem;
 }
+
 .img-acceuil img {
         width: 80%;
 }
-html, main {
-        margin:0;
-        padding:0;
-        min-height:100%;
+
+html,
+main {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
         position: relative;
-     }
+}
+
 .section {
-        min-height:100%;
-        position:relative;
-        padding-bottom:100px; 
-     }
+        min-height: 100%;
+        position: relative;
+        padding-bottom: 100px;
+}
+
 .home-title {
         position: absolute;
         top: 40%;
@@ -29,107 +171,74 @@ html, main {
         color: #444444;
         text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
 }
+
 .home-title-h1 {
         font-size: 3.5rem;
 }
-/* .card-index {
-        width: 25rem;
-        height: 45rem;
-        margin: 2rem;
-} */
-.card-title {
-        margin-top: 15px;
-        height: 120px;
-}
-.card-img-top {
-        margin-top: 3rem;
-        height: 250px;
-        width: 250px;
-}
-.card-img-detail {
-        border-radius: 10%;
-        height: 250px;
-        width: 250px;
-}
-.episode-title p {
-        text-align: center;
-        font-style: italic;
-}
-.episode-content {
-        margin-top: 10px;
-}
-.epi-art {
-        display: flex;
-        
-}
+
 .border {
 
         margin-right: 0px;
 }
-.epi-art p {
-        display: inline-block;
-        width: 60%;
-        
-}
-.epi-art a {
-        background-color: #2e92f7;
-}
-.card-date {
-        font-style: italic;
-}
-.card-audio {
-        margin-top: 40px;
-}
-.card-btn {
-        margin-bottom: 10px;
-        margin-top: 50px;
-}
+
 .btn-infos {
         width: 150px;
         color: white;
         background-color: #a4b3ae;
 }
+
 .btn-edit {
         width: 150px;
         color: white;
         background-color: #5DB8FD;
 }
+
 .btn-profil a {
         width: 100px;
 }
+
 .full-episode {
         padding-bottom: 170px;
-     }
+}
+
 .full-episode a {
         color: white;
         background-color: #1789FC;
 }
+
 .show-episode {
         margin-top: 7rem;
 }
+
 .episode-infos {
         margin-top: 7rem;
 }
+
 .user-edit {
         margin-top: 7rem;
 }
+
 .comment {
         margin-top: 7rem;
         margin-bottom: 170px;
 }
+
 .comment-title {
         width: 50%;
 }
+
 .new-episode {
         margin-top: 5rem;
 }
-/*                     page profil     */
+
+/*   page profil     */
 .banner {
         position: relative;
-        height: 100px; 
+        height: 100px;
         background: rgb(114, 114, 114);
         margin-top: 30px;
 }
+
 .avatar {
         width: 100px;
         border-radius: 100%;
@@ -139,65 +248,77 @@ html, main {
         transform: translate(-50%, -50%);
         box-shadow: 10px 10px 10px #ffffff, -16px -9px 20px 0px #474747;
 }
+
 .card-user {
         margin-top: 80px;
         background-image: linear-gradient(to right, rgb(239, 239, 239), rgb(214, 203, 252));
 }
+
 .pagination {
         margin-bottom: 6rem;
         justify-content: center;
 }
+
 .footer {
         background: #49525B;
         color: white;
-        position:absolute;
-        bottom:0;  
-        width:100%;
-        height:145px;
-     }
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 145px;
+}
+
 .footer-img {
         margin: 10px;
-     }
+}
+
 .title-epi {
         margin-top: 5rem;
 }
+
 .title-epi p {
         margin-top: 2rem;
         font-size: 20px;
         font-style: italic;
 }
+
 @media screen and (max-width: 1000px) {
-                .home-title h1 {
-                        font-size: 30px;
-                        position: absolute;
-                        top: 45%;
-                        left: 35%;
-                        transform: translate(-50%, -50%) rotate(-10deg);
-                        color: #444444;
-                        text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
-                }
+        .home-title h1 {
+                font-size: 30px;
+                position: absolute;
+                top: 45%;
+                left: 35%;
+                transform: translate(-50%, -50%) rotate(-10deg);
+                color: #444444;
+                text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
         }
+}
+
 @media screen and (max-width: 700px) {
-                .home-title h1 {
-                        font-size: 20px;
-                        position: absolute;
-                        top: 45%;
-                        left: 35%;
-                        transform: translate(-50%, -50%) rotate(-10deg);
-                        color: #444444;
-                        text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
-                }
-                .pagination {
-                        margin-top: 2rem;
-                }
+        .home-title h1 {
+                font-size: 20px;
+                position: absolute;
+                top: 45%;
+                left: 35%;
+                transform: translate(-50%, -50%) rotate(-10deg);
+                color: #444444;
+                text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
         }
+
+        .pagination {
+                margin-top: 2rem;
+        }
+}
+
 @media screen and (max-width: 500px) {
         .img-acceuil img {
                 width: 100%;
         }
+
         .home-title {
                 top: 55px;
         }
+
         .home-title h1 {
                 font-size: 15px;
                 position: absolute;
@@ -207,9 +328,8 @@ html, main {
                 color: #444444;
                 text-shadow: 1px 0px 1px #f0e7e7, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
         }
+
         .pagination {
                 margin-top: 2rem;
         }
 }
-
-      

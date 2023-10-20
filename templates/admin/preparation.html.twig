@@ -4,10 +4,12 @@
     <h1>Liste des articles</h1>
     
         {% for article in articles %}
+        {% set edit = path ('article_detail_edit', {'slug': article.slug}) %}
             <div>
                 <h2>{{ article.title }}</h2>
                 <p>Auteur : {{ article.auteur }}</p>
                 <a href="{{article.url}}"><btn class="btn btn-primary">Lien de l'article</btn></a>
+                <a href="{{ edit }}"><btn class="btn btn-success">Modifier</btn></a>
             </div>
             
         {% endfor %}

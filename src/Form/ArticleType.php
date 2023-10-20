@@ -24,7 +24,8 @@ class ArticleType extends AbstractType
                     'Dk' => 'dk',
                     'Morgan' => 'morgan',
                     'Jhon' => 'john',
-                    'Alex' => 'alex'
+                    'Alex' => 'alex',
+                    'Public' => 'public'
                 ]
                 ])
                 

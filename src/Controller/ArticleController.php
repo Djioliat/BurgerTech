@@ -141,11 +141,11 @@ class ArticleController extends AbstractController
                 
                 return $this->redirectToRoute('episode_index');
             }
-            return $this->renderForm('article/edit.html.twig',
+            return $this->render('article/edit.html.twig',
                 [
                     'form' => $form,    
                 ]);         
-        }
+    }
     
     // Afficher un article
     #[Route('/article/{slug}', name:'article_detail')]

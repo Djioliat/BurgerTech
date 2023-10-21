@@ -226,7 +226,10 @@ main {
 .user-edit {
         margin-top: 7rem;
 }
-
+.preparation {
+        margin-top: 6rem;
+        margin-bottom: 10rem;
+}
 .comment {
         margin-top: 7rem;
         margin-bottom: 170px;

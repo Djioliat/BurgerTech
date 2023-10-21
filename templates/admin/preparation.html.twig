@@ -1,18 +1,20 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-    <div class="container mt-5">
-        <div class="text-center">
+    <div class="preparation container">
+        <div class="text-center mb-5">
             <h1>Episode en préparation</h1>
         </div>
 
         {% for article in articles %}
         {% set edit = path ('article_detail_edit', {'slug': article.slug}) %}
+        {% set delete = path ('article_delete', {'slug': article.slug}) %}
             <div>
                 <h2>{{ article.title }}</h2>
                 <p>Auteur : {{ article.auteur }}</p>
                 <a href="{{article.url}}"><btn class="btn btn-primary">Lien de l'article</btn></a>
                 <a href="{{ edit }}"><btn class="btn btn-success">Modifier</btn></a>
+                <a href="{{ edit }}"><btn class="btn btn-danger float-end">Supprimer</btn></a>
             </div>
         {% endfor %}
     </div>

@@ -119,7 +119,7 @@ class ArticleController extends AbstractController
             $entityManager->persist($art);
             $entityManager->flush();
             
-            return $this->redirectToRoute('episode_index');
+            return $this->redirectToRoute('admin_preparation');
         }
         return $this->render('article/new.html.twig',[
             'form' => $form->createView()

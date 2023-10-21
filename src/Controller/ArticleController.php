@@ -167,7 +167,7 @@ class ArticleController extends AbstractController
 
         $this->addFlash('success',
         "L'annonce {$article->getTitle()} à bien été supprimée"
-    );
-        return $this->redirectToRoute("episode_index");
+        );
+        return $this->redirectToRoute("admin_preparation");
     }
 }

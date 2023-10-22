@@ -32,7 +32,7 @@ class EpisodeController extends AbstractController
             $episodes = $paginator->paginate(
                 $data,
                 $request->query->getInt('page', 1),
-                3
+                4
             );
             return $this->render('episode/index.html.twig', 
             [
@@ -85,7 +85,7 @@ class EpisodeController extends AbstractController
                 $entityManager->flush();
                 return $this->redirectToRoute('episode_index');
             }
-            return $this->renderForm('episode/edit.html.twig',
+            return $this->render('episode/edit.html.twig',
             [
                 'form' => $form,
                 'espisode' => $episode  

@@ -7,37 +7,42 @@
 				<h1>Les Episodes de l' apéro des papas manchots</h1>
 				<h3 class="mt-5 mb-3">Des news, du geekage, du linux et de l'open source</h3>
 			</div>
-			{% for epi in episode %}
-				{% set url = path ('episode_detail', {'slug': epi.slug}) %}
+			<div class="container">
+			<div class="row">	
+				{% for epi in episode %}
 				{% set edit = path ('episode_edit', {'slug': epi.slug}) %}
-				<div class="col-lg-5 border text-center m-3">
-					<div class="">
-						<div class="">
-							<h3 class="card-title mt-3">{{ epi.title }}<h3>
-						</div>
-						<img src="{{ epi.coverImage }}" class="card-img-top" alt="logo-burger">
-						<div>
-							<p>{{ epi.introduction }}</p>
-						</div>
-						<div class="card-date">
-							<time>Publié le :
-								{{ epi.createdAt | date('d/m/Y') }}</time>
-						</div>
-						<div class="mt-3">
-							<audio controls preload="none">
-								<source src="{{ epi.audio }}">
-							</audio>
-						</div>
-						<div class="card-btn">
-							<a href="{{ url }}" class="btn-infos btn rounded-pill">Plus d'infos</a>
-							{% if is_granted('ROLE_ADMIN') %}
-								<a href="{{ edit }}" class="btn-edit btn rounded-pill">Modifier</a>
-							{% endif %}
-						</div>
+					<div class="container">
+						<h3 class="h1 text-center" id="pageHeaderTitle"></h3>
+						<article class="postcard dark">
+							<a class="postcard__img_link" href="{{ path('episode_detail', {'slug': epi.slug})}}">
+								<div class="postcard__img-container">
+									<div class="mx-auto">
+										<img class="postcard__img" src="{{ epi.coverImage }}" alt="Image Title" />
+									</div>
+								</div>
+							</a>
+							<div class="postcard__text">
+								<h1 class="postcard__title">{{ epi.title }}</h1>
+
+									<img src="/icons/calendar.png" class="m-1" alt="Calendrier">{{ epi.createdAt | date('d/m/Y') }}
+
+								<div class="postcard__preview-txt mt-3">{{ epi.introduction }}</div>
+								<div class="postcard__tagbox">
+									<audio class="col-6 mt-3" controls preload="none">
+										<source src="{{ epi.audio }}">
+									</audio>
+								</div>
+								<div class="card-btn text-center col-6">
+									<a href="{{ path('episode_detail', {'slug': epi.slug})}}" class="btn-infos btn rounded-pill">Toute les infos</a>
+									{% if is_granted('ROLE_ADMIN') %}
+										<a href="{{ edit }}" class="btn-edit btn rounded-pill">Modifier</a>
+									{% endif %}
+								</div>
+							</div>
+						</article>
 					</div>
-				</div>
-			{% endfor %}
-		</div>
+				{% endfor %}
+			</div>
 		<div class="pagination mt-5">
 			{% do episode.setPageRange(2) %}
 			{{ knp_pagination_render(episode, 'base/pagination.html.twig') }}

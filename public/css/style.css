@@ -207,7 +207,10 @@ main {
 }
 
 .show-episode {
-        margin-top: 7rem;
+        margin-top: 6rem;
+}
+.detail {
+        margin-bottom: 165px;
 }
 .title-episode-show {
         font-size: 50px;

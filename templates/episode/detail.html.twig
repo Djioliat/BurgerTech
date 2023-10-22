@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-	<div class="">
+	<div class="detail">
         <div class="episode-infos text-center">
         {% set url = path ('episode_edit', {'slug': episode.slug}) %}
             <div class="mb-5">
@@ -49,26 +49,6 @@
             {% endfor %}
         </div>
         {# Commentaire #}
-        <div class="col-12 mt-3">
-            <div class="card text-center col-lg-6 col-sm-11 mx-auto mb-3">                 
-                {% if is_granted('ROLE_USER') %}  
-                    <div  id="ajout-commentaire ">
-                        <h4 class="">Ajouter votre commentaire</h4>
-                            {{ form(commentForm) }}
-                    </div>
-                    {% else %}
-                    <div class="card text-center ">
-                        <div class="" id="ajout-commentaire">
-                            <h4 class="mt-3">Envie de partager votre avis.<br> Connectez vous !</h4>
-                        </div>
-                        <div class="mt-3">
-                            <a href="{{ path('app_register') }}" class="btn btn-success m-3">Inscription</a>
-                            <a href="{{ path('app_login') }}" class="btn btn-primary m-3">Connection</a>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
         <div class="container comment">
             <div class="row justify-content-center">
                 <div class="text-center">
@@ -85,6 +65,26 @@
                     </div>
                 {% endfor %}
                 
+            </div>
+        </div>
+        <div class="col-12 mt-3">
+            <div class="card text-center col-lg-6 col-sm-11 mx-auto mb-3">                 
+                {% if is_granted('ROLE_USER') %}  
+                    <div  id="ajout-commentaire mb-5">
+                        <h4 class="">Ajouter votre commentaire</h4>
+                            {{ form(commentForm) }}
+                    </div>
+                    {% else %}
+                    <div class="card text-center ">
+                        <div class="" id="ajout-commentaire">
+                            <h4 class="mt-3">Envie de partager votre avis.<br> Connectez vous !</h4>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ path('app_register') }}" class="btn btn-success m-3">Inscription</a>
+                            <a href="{{ path('app_login') }}" class="btn btn-primary m-3">Connection</a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>   
 	</div>

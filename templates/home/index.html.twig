@@ -33,11 +33,11 @@
 
 								<div class="postcard__preview-txt mt-3">{{ epi.introduction }}</div>
 								<div class="postcard__tagbox">
-									<audio class="col-6 mt-3" controls preload="none">
+									<audio class="col-sm-8 col-lg-6 mt-3" controls preload="none">
 										<source src="{{ epi.audio }}">
 									</audio>
 								</div>
-								<div class="card-btn text-center col-6">
+								<div class="card-btn text-center col-6 mx-auto mt-3 mb-5">
 									<a href="{{ path('episode_detail', {'slug': epi.slug})}}" class="btn-infos btn rounded-pill">Toute les infos</a>
 									{% if is_granted('ROLE_ADMIN') %}
 										<a href="{{ edit }}" class="btn-edit btn rounded-pill">Modifier</a>

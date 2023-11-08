@@ -65,8 +65,6 @@ a {
         }
 
         .postcard__img {
-                min-height: 300px;
-                width: 300px;
                 object-fit: cover;
                 position: relative;
         }
@@ -217,10 +215,6 @@ main {
 }
 .episode-infos {
         margin-top: 7rem;
-}
-.image-episode {
-        width: 1102px;
-        height: 620px;
 }
 .article-episode {
         background: linear-gradient(to right, #844d98, #18151f);
